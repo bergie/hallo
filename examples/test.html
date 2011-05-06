@@ -1,8 +1,9 @@
 <html>
   <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+    <link rel="stylesheet" href="Aristo/jquery-ui-1.8.7.custom.css" />    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js"></script>
     <script src="hallo.js"></script>
+    <script src="format.js"></script>
     <title>Hallo example</title>
   </head>
   <body>
@@ -18,10 +19,12 @@
     <button id="enable">Enable</button>
     <button id="disable">Disable</button>
     <script>
-      jQuery('#enable').click(function() {
-        jQuery('.editable').hallo();
+      jQuery('#enable').button().click(function() {
+        jQuery('.editable').hallo({
+          plugins: ['halloformat']
+        });
       });
-      jQuery('#disable').click(function() {
+      jQuery('#disable').button().click(function() {
         jQuery('.editable').hallo({editable: false});
       });
     </script>
