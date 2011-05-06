@@ -3,7 +3,40 @@ Hallo - contentEditable for jQuery UI
 
 Hallo is a very simple in-place rich text editor for web pages. It uses jQuery UI and the HTML5 contentEditable functionality to edit web content.
 
-The widget has been written as a simple and liberally licensed alternative to more popular editors like Aloha.
+The widget has been written as a simple and liberally licensed editor. It doesn't aim to replace popular editors like Aloha, but instead provide a smaller and less full-featured option.
+
+## Using the editor
+
+You need jQuery and jQuery UI loaded. An easy way to do this is to use Google's JS service:
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script> 
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js"></script>
+
+The editor toolbar is using jQuery UI theming, so you'll probably also want to [grab a theme](http://jqueryui.com/themeroller/) that fits your needs.
+
+Then include Hallo itself:
+
+    <script src="hallo.js"></script>
+
+Editor activation is easy:
+
+    jQuery('p').hallo();
+
+You can also deactivate the editor:
+
+    jQuery('p').hallo({editable: false});
+
+Hallo itself only makes the selected DOM elements editable and doesn't provide any formatting tools. Formatting is accomplished by loading plugins when initializing Hallo:
+
+    jQuery('.editable').hallo({
+        plugins: {
+            'halloformat': {}
+        }
+    });
+
+This example would enable the simple formatting plugin that provides functionality like _bold_ and _italic_. You can include as many Hallo plugins as you want, and if necessary pass them options.
+
+Please note that you need to load the plugin JavaScript files you want to use manually.
 
 ## Licensing
 
@@ -13,6 +46,38 @@ Hallo is free software available under the [MIT license](http://en.wikipedia.org
 
 Hallo is written in [CoffeeScript](http://jashkenas.github.com/coffee-script/), a simple language that compiles into JavaScript. To generate the JavaScript code from Hallo sources, run:
 
-    $ coffee -c -o examples hallo.coffee
+    $ coffee -c -o examples *.coffee
 
-Hallo development is coordinated using Git. Just fork the Hallo repository on GitHub and [send pull requests](http://help.github.com/pull-requests/).
+Hallo development is coordinated using Git. Just fork the [Hallo repository on GitHub](https://github.com/bergie/hallo) and [send pull requests](http://help.github.com/pull-requests/).
+
+### Writing plugins
+
+Hallo plugins are written as regular [jQuery UI widgets](http://semantic-interaction.org/blog/2011/03/01/jquery-ui-widget-factory/).
+
+When Hallo is loaded it will also load all the enabled plugins for the element, and pass them two additional options:
+
+* `editable`: The main Hallo widget instance
+* `toolbar`: Toolbar jQuery object for that Hallo instance
+
+A simplistic plugin would look like the following:
+
+    #    Formatting plugin for Hallo
+    #    (c) 2011 Henri Bergius, IKS Consortium
+    #    Hallo may be freely distributed under the MIT license
+    ((jQuery) ->
+        jQuery.widget "IKS.halloformat",
+            bold: null
+
+            options:
+                editable: null
+                toolbar: null
+
+            _create: ->
+                @bold = jQuery("<button>Bold</button>").button()
+                @bold.click =>
+                    @options.editable.execute "bold"
+                @options.toolbar.append @bold
+
+            _init: ->
+
+    )(jQuery)
