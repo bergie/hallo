@@ -4,24 +4,28 @@
       options: {
         editable: null,
         toolbar: null,
+        uuid: "",
         formattings: ["bold", "italic"]
       },
       _create: function() {
-        var button, format, widget, _i, _len, _ref, _results;
+        var button, buttonset, format, id, label, widget, _i, _len, _ref;
         widget = this;
+        buttonset = jQuery("<span></span>");
         _ref = this.options.formattings;
-        _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           format = _ref[_i];
-          button = jQuery("<button>" + format + "</button>").button();
+          label = format.substr(0, 1).toUpperCase();
+          id = "" + this.options.uuid + "-" + format;
+          buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\">" + label + "</label>").button());
+          button = jQuery("#" + id, buttonset);
           button.attr("hallo-command", format);
-          button.click(function() {
+          button.bind("change", function(event) {
             format = jQuery(this).attr("hallo-command");
             return widget.options.editable.execute(format);
           });
-          _results.push(this.options.toolbar.append(button));
         }
-        return _results;
+        buttonset.buttonset();
+        return this.options.toolbar.append(buttonset);
       },
       _init: function() {}
     });

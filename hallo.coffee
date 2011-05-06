@@ -56,8 +56,7 @@
         toolbar: null
         bound: false
         originalContent: ""
-        _modifiedContent: ""
-        changeTimer: undefined
+        uuid: ""
 
         options:
             editable: true
@@ -67,6 +66,7 @@
 
         _create: ->
             @originalContent = @getContents()
+            @id = @_generateUUID()
             @_prepareToolbar()
 
             for plugin, options of @options.plugins
@@ -74,6 +74,7 @@
                     options = {}
                 options["editable"] = this
                 options["toolbar"] = @toolbar
+                options["uuid"] = @id
                 jQuery(@element)[plugin] options
 
         _init: ->
@@ -87,10 +88,8 @@
             @element.attr "contentEditable", false
             @element.unbind "focus", @_activated
             @element.unbind "blur", @_deactivated
+            @element.unbind "keyup paste change", this, @_checkModified
             @bound = false
-
-            if @changeTimer isnt undefined
-                window.clearInterval @changeTimer
 
         # Enable an editable
         enable: ->
@@ -99,9 +98,8 @@
             if not @bound
                 @element.bind "focus", this, @_activated
                 @element.bind "blur", this, @_deactivated
+                @element.bind "keyup paste change", this, @_checkModified
                 widget = this
-                @changeTimer = window.setInterval ->
-                    widget._checkModified()
                 @bound = true
 
         # Activate an editable for editing
@@ -122,8 +120,14 @@
 
         # Execute a contentEditable command
         execute: (command) ->
-            document.execCommand command, false, null
+            if document.execCommand command, false, null
+                @element.trigger "change"
             @activate()
+
+        _generateUUID: ->
+            S4 = ->
+                ((1 + Math.random()) * 0x10000|0).toString(16).substring 1
+            "#{S4()}#{S4()}-#{S4()}-#{S4()}-#{S4()}-#{S4()}#{S4()}#{S4()}"
 
         _prepareToolbar: ->
             @toolbar = jQuery('<div></div>').hide()
@@ -131,13 +135,15 @@
             @toolbar.css "top", @element.offset().top - 20
             @toolbar.css "left", @element.offset().left
             jQuery('body').append(@toolbar)
+            @toolbar.bind "mousedown", (event) ->
+                event.preventDefault()
 
-        _checkModified: ->
-            if @isModified() and @getContents() isnt @_modifiedContents
-                @_modifiedContents = @getContents()
-                @_trigger "modified", null,
-                    editable: this
-                    content: @_modifiedContents
+        _checkModified: (event) ->
+            widget = event.data
+            if widget.isModified()
+                widget._trigger "modified", null,
+                    editable: widget
+                    content: widget.getContents()
 
         _activated: (event) ->
             widget = event.data
@@ -149,9 +155,6 @@
 
         _deactivated: (event) ->
             widget = event.data
-            window.setTimeout ->
-                widget.toolbar.hide()
-            , 200
-
+            widget.toolbar.hide()
             widget._trigger "deactivated", event
 )(jQuery)

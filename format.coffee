@@ -6,18 +6,24 @@
         options:
             editable: null
             toolbar: null
+            uuid: ""
             formattings: ["bold", "italic"]
 
         _create: ->
             widget = this
+            buttonset = jQuery "<span></span>"
             for format in @options.formattings
-                button = jQuery("<button>#{format}</button>").button()
+                label = format.substr(0, 1).toUpperCase()
+                id = "#{@options.uuid}-#{format}"
+                buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\">#{label}</label>").button()
+                button = jQuery "##{id}", buttonset
                 button.attr "hallo-command", format
-                button.click ->
+                button.bind "change", (event) ->
                     format = jQuery(this).attr "hallo-command"
                     widget.options.editable.execute format
-                @options.toolbar.append button
+
+            buttonset.buttonset()
+            @options.toolbar.append buttonset
 
         _init: ->
-
 )(jQuery)

@@ -4,8 +4,7 @@
       toolbar: null,
       bound: false,
       originalContent: "",
-      _modifiedContent: "",
-      changeTimer: void 0,
+      uuid: "",
       options: {
         editable: true,
         plugins: {},
@@ -15,6 +14,7 @@
       _create: function() {
         var options, plugin, _ref, _results;
         this.originalContent = this.getContents();
+        this.id = this._generateUUID();
         this._prepareToolbar();
         _ref = this.options.plugins;
         _results = [];
@@ -25,6 +25,7 @@
           }
           options["editable"] = this;
           options["toolbar"] = this.toolbar;
+          options["uuid"] = this.id;
           _results.push(jQuery(this.element)[plugin](options));
         }
         return _results;
@@ -40,10 +41,8 @@
         this.element.attr("contentEditable", false);
         this.element.unbind("focus", this._activated);
         this.element.unbind("blur", this._deactivated);
-        this.bound = false;
-        if (this.changeTimer !== void 0) {
-          return window.clearInterval(this.changeTimer);
-        }
+        this.element.unbind("keyup paste change", this, this._checkModified);
+        return this.bound = false;
       },
       enable: function() {
         var widget;
@@ -51,10 +50,8 @@
         if (!this.bound) {
           this.element.bind("focus", this, this._activated);
           this.element.bind("blur", this, this._deactivated);
+          this.element.bind("keyup paste change", this, this._checkModified);
           widget = this;
-          this.changeTimer = window.setInterval(function() {
-            return widget._checkModified();
-          });
           return this.bound = true;
         }
       },
@@ -71,22 +68,35 @@
         return this.originalContent = this.getContents();
       },
       execute: function(command) {
-        document.execCommand(command, false, null);
+        if (document.execCommand(command, false, null)) {
+          this.element.trigger("change");
+        }
         return this.activate();
+      },
+      _generateUUID: function() {
+        var S4;
+        S4 = function() {
+          return ((1 + Math.random()) * 0x10000 | 0).toString(16).substring(1);
+        };
+        return "" + (S4()) + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + (S4()) + (S4());
       },
       _prepareToolbar: function() {
         this.toolbar = jQuery('<div></div>').hide();
         this.toolbar.css("position", "absolute");
         this.toolbar.css("top", this.element.offset().top - 20);
         this.toolbar.css("left", this.element.offset().left);
-        return jQuery('body').append(this.toolbar);
+        jQuery('body').append(this.toolbar);
+        return this.toolbar.bind("mousedown", function(event) {
+          return event.preventDefault();
+        });
       },
-      _checkModified: function() {
-        if (this.isModified() && this.getContents() !== this._modifiedContents) {
-          this._modifiedContents = this.getContents();
-          return this._trigger("modified", null, {
-            editable: this,
-            content: this._modifiedContents
+      _checkModified: function(event) {
+        var widget;
+        widget = event.data;
+        if (widget.isModified()) {
+          return widget._trigger("modified", null, {
+            editable: widget,
+            content: widget.getContents()
           });
         }
       },
@@ -102,9 +112,7 @@
       _deactivated: function(event) {
         var widget;
         widget = event.data;
-        window.setTimeout(function() {
-          return widget.toolbar.hide();
-        }, 200);
+        widget.toolbar.hide();
         return widget._trigger("deactivated", event);
       }
     });
