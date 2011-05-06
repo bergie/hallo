@@ -12,7 +12,7 @@
         _create: ->
             widget = this
             buttonset = jQuery "<span></span>"
-            for format in @options.formattings
+            buttonize = (format) =>
                 label = format.substr(0, 1).toUpperCase()
                 id = "#{@options.uuid}-#{format}"
                 buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\">#{label}</label>").button()
@@ -21,9 +21,19 @@
                 button.bind "change", (event) ->
                     format = jQuery(this).attr "hallo-command"
                     widget.options.editable.execute format
+                @element.bind "keyup paste change", ->
+                    if document.queryCommandState format
+                        button.attr "checked", true
+                        button.button "refresh"
+                    else
+                        button.attr "checked", false
+                        button.button "refresh"
+
+            buttonize format for format in @options.formattings
 
             buttonset.buttonset()
             @options.toolbar.append buttonset
 
         _init: ->
+
 )(jQuery)
