@@ -40,6 +40,7 @@
             else
                 @element.unbind "focus", @activated
                 @element.unbind "blur", @deactivated
+                @bound = false
 
         _prepareToolbar: ->
             @toolbar = jQuery('<div></div>').hide()

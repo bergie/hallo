@@ -33,7 +33,8 @@
           }
         } else {
           this.element.unbind("focus", this.activated);
-          return this.element.unbind("blur", this.deactivated);
+          this.element.unbind("blur", this.deactivated);
+          return this.bound = false;
         }
       },
       _prepareToolbar: function() {
