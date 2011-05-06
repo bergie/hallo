@@ -30,6 +30,9 @@
         jQuery('.editable').bind('hallomodified', function(event, data) {
             jQuery('#modified').html("Editables modified");
         });
+        jQuery('.editable').bind('halloactivated', function() {
+            console.log("Activated");
+        });
       });
       jQuery('#disable').button().click(function() {
         jQuery('.editable').hallo({editable: false});

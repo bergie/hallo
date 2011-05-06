@@ -1,6 +1,6 @@
-#    Hallo - a rich text editing jQuery UI widget
-#    (c) 2011 Henri Bergius, IKS Consortium
-#    Hallo may be freely distributed under the MIT license
+#     Hallo - a rich text editing jQuery UI widget
+#     (c) 2011 Henri Bergius, IKS Consortium
+#     Hallo may be freely distributed under the MIT license
 ((jQuery) ->
     # Hallo provides a jQuery UI widget `hallo`. Usage:
     #
@@ -9,6 +9,49 @@
     # Getting out of the editing state:
     #
     #     jQuery('p').hallo({editable: false});
+    #
+    # When content is in editable state, users can just click on
+    # an editable element in order to start modifying it. This
+    # relies on browser having support for the HTML5 contentEditable
+    # functionality, which means that some mobile browsers are not
+    # supported.
+    #
+    # If plugins providing toolbar buttons have been enabled for
+    # Hallo, then a floating editing toolbar will be rendered above
+    # the editable contents when an area is active.
+    #
+    # ## Events
+    #
+    # The Hallo editor provides several jQuery events that web
+    # applications can use for integration:
+    #
+    # ### Activated
+    #
+    # When user activates an editable (usually by clicking or tabbing
+    # to an editable element), a `halloactivated` event will be fired.
+    #
+    #     jQuery('p').bind('halloactivated', function() {
+    #         console.log("Activated");
+    #     });
+    #
+    # ### Deactivated
+    #
+    # When user gets out of an editable element, a `hallodeactivated`
+    # event will be fired.
+    #
+    #     jQuery('p').bind('hallodeactivated', function() {
+    #         console.log("Deactivated");
+    #     });
+    #
+    # ### Modified
+    #
+    # When contents in an editable have been modified, a
+    # `hallomodified` event will be fired.
+    #
+    #     jQuery('p').bind('hallomodified', function(event, data) {
+    #         console.log("New contents are " + data.content);
+    #     });
+    #
     jQuery.widget "IKS.hallo",
         toolbar: null
         bound: false
@@ -22,7 +65,6 @@
             activated: ->
             deactivated: ->
 
-        # Called once for each element
         _create: ->
             @originalContent = @getContents()
             @_prepareToolbar()
@@ -34,7 +76,6 @@
                 options["toolbar"] = @toolbar
                 jQuery(@element)[plugin] options
 
-        # Called per each invokation
         _init: ->
             if @options.editable
                 @enable()
