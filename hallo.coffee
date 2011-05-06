@@ -16,6 +16,8 @@
         options:
             editable: true
             plugins: {}
+            activated: ->
+            deactivated: ->
 
         # Called once for each element
         _create: ->
@@ -55,11 +57,15 @@
                 widget.toolbar.css "top", widget.element.offset().top - widget.toolbar.height()
                 widget.toolbar.show()
 
+            widget._trigger "activated", event
+
         deactivated: (event) ->
             widget = event.data
             window.setTimeout ->
                 widget.toolbar.hide()
             , 200
+
+            widget._trigger "deactivated", event
 
         execute: (command) ->
             document.execCommand command, false, null

@@ -5,7 +5,9 @@
       bound: false,
       options: {
         editable: true,
-        plugins: {}
+        plugins: {},
+        activated: function() {},
+        deactivated: function() {}
       },
       _create: function() {
         var options, plugin, _ref, _results;
@@ -49,15 +51,17 @@
         widget = event.data;
         if (widget.toolbar.html() !== "") {
           widget.toolbar.css("top", widget.element.offset().top - widget.toolbar.height());
-          return widget.toolbar.show();
+          widget.toolbar.show();
         }
+        return widget._trigger("activated", event);
       },
       deactivated: function(event) {
         var widget;
         widget = event.data;
-        return window.setTimeout(function() {
+        window.setTimeout(function() {
           return widget.toolbar.hide();
         }, 200);
+        return widget._trigger("deactivated", event);
       },
       execute: function(command) {
         document.execCommand(command, false, null);
