@@ -21,7 +21,9 @@
     <script>
       jQuery('#enable').button().click(function() {
         jQuery('.editable').hallo({
-          plugins: ['halloformat']
+          plugins: {
+            'halloformat': {}
+          }
         });
       });
       jQuery('#disable').button().click(function() {

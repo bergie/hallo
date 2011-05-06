@@ -12,7 +12,6 @@
         _create: ->
             @bold = jQuery("<button>Bold</button>").button()
             @bold.click =>
-                console.log "Bold clicked"
                 @options.editable.execute "bold"
             @options.toolbar.append @bold
 

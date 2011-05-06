@@ -15,16 +15,18 @@
 
         options:
             editable: true
-            plugins: []
+            plugins: {}
 
         # Called once for each element
         _create: ->
             @_prepareToolbar()
 
-            for plugin in @options.plugins
-                    jQuery(@element)[plugin]
-                        editable: this
-                        toolbar: @toolbar
+            for plugin, options of @options.plugins
+                if not jQuery.isPlainObject options
+                    options = {}
+                options["editable"] = this
+                options["toolbar"] = @toolbar
+                jQuery(@element)[plugin] options
 
         # Called per each invokation
         _init: ->

@@ -5,19 +5,21 @@
       bound: false,
       options: {
         editable: true,
-        plugins: []
+        plugins: {}
       },
       _create: function() {
-        var plugin, _i, _len, _ref, _results;
+        var options, plugin, _ref, _results;
         this._prepareToolbar();
         _ref = this.options.plugins;
         _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          plugin = _ref[_i];
-          _results.push(jQuery(this.element)[plugin]({
-            editable: this,
-            toolbar: this.toolbar
-          }));
+        for (plugin in _ref) {
+          options = _ref[plugin];
+          if (!jQuery.isPlainObject(options)) {
+            options = {};
+          }
+          options["editable"] = this;
+          options["toolbar"] = this.toolbar;
+          _results.push(jQuery(this.element)[plugin](options));
         }
         return _results;
       },
@@ -44,7 +46,6 @@
       activated: function(event) {
         var widget;
         widget = event.data;
-        console.log("Got activated");
         if (widget.toolbar.html() !== "") {
           widget.toolbar.css("top", widget.element.offset().top - widget.toolbar.height());
           return widget.toolbar.show();
@@ -53,7 +54,6 @@
       deactivated: function(event) {
         var widget;
         widget = event.data;
-        console.log("Got deactivated");
         return window.setTimeout(function() {
           return widget.toolbar.hide();
         }, 200);

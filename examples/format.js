@@ -10,7 +10,6 @@
       _create: function() {
         this.bold = jQuery("<button>Bold</button>").button();
         this.bold.click(__bind(function() {
-          console.log("Bold clicked");
           return this.options.editable.execute("bold");
         }, this));
         return this.options.toolbar.append(this.bold);
