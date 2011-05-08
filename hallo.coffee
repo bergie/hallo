@@ -119,8 +119,8 @@
            @originalContent = @getContents()
 
         # Execute a contentEditable command
-        execute: (command) ->
-            if document.execCommand command, false, null
+        execute: (command, value) ->
+            if document.execCommand command, false, value
                 @element.trigger "change"
             @activate()
 
