@@ -30,20 +30,20 @@
         };
         dialog.find("form").submit(dialogSubmitCb);
         buttonset = jQuery("<span></span>");
-        buttonize = __bind(function(type, label) {
+        buttonize = __bind(function(type) {
           var button, id;
           id = "" + this.options.uuid + "-" + type;
-          buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\">" + label + "</label>").button());
+          buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\">" + type + "</label>").button());
           button = jQuery("#" + id, buttonset);
           return button.bind("change", function(event) {
             return dialog.dialog('open');
           });
         }, this);
         if (this.options.link) {
-          buttonize("Link", "A");
+          buttonize("A");
         }
         if (this.options.image) {
-          buttonize("Unordered", "UL");
+          buttonize("UL");
         }
         if (this.options.link && this.options.image) {
           buttonset.buttonset();

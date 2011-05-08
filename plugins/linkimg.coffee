@@ -29,17 +29,17 @@
             dialog.find("form").submit dialogSubmitCb
 
             buttonset = jQuery "<span></span>"
-            buttonize = (type, label) =>
+            buttonize = (type) =>
                 id = "#{@options.uuid}-#{type}"
-                buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\">#{label}</label>").button()
+                buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\">#{type}</label>").button()
                 button = jQuery "##{id}", buttonset
                 button.bind "change", (event) ->
                     dialog.dialog('open')
 
             if (@options.link)
-                buttonize "Link", "A"
+                buttonize "A"
             if (@options.image)
-                buttonize "Unordered", "UL"
+                buttonize "UL"
 
             if (@options.link && @options.image)
                 buttonset.buttonset()
