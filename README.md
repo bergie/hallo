@@ -38,6 +38,15 @@ This example would enable the simple formatting plugin that provides functionali
 
 Please note that you need to load the plugin JavaScript files you want to use manually.
 
+## Plugins
+
+* halloformat - Adds Bold, Italic, StrikeThrough and Underline support to the toolbar. (Pick with options: "formattings": ["bold", "italic", "strikeThough", "underline"])
+* halloheadings - Adds support for H1, H2, H3. You can pass a headings option key "headers" with an array of header sizes (i.e. headers: [1,2,5,6])
+* hallojustify - Adds align left, center, right support
+* hallolists - Adds support for ordered and unordered lists
+* halloreundo - Adds support for undo and redo
+* hallolinkimg - Adds support to add links to a selection (currently not working)
+
 ## Licensing
 
 Hallo is free software available under the [MIT license](http://en.wikipedia.org/wiki/MIT_License).
