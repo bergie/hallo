@@ -6,7 +6,7 @@
         editable: null,
         toolbar: null,
         uuid: "",
-        formattings: ["bold", "italic"]
+        formattings: ["bold", "italic", "strikeThrough", "underline"]
       },
       _create: function() {
         var buttonize, buttonset, format, widget, _i, _len, _ref;
