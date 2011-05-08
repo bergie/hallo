@@ -67,8 +67,8 @@
       setUnmodified: function() {
         return this.originalContent = this.getContents();
       },
-      execute: function(command) {
-        if (document.execCommand(command, false, null)) {
+      execute: function(command, value) {
+        if (document.execCommand(command, false, value)) {
           this.element.trigger("change");
         }
         return this.activate();
