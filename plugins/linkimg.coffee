@@ -38,10 +38,8 @@
 
             if (@options.link)
                 buttonize "A"
-            if (@options.image)
-                buttonize "UL"
 
-            if (@options.link && @options.image)
+            if (@options.link)
                 buttonset.buttonset()
                 @options.toolbar.append buttonset
                 dialog.dialog(@options.dialogOpts)

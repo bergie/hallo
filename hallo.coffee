@@ -99,6 +99,7 @@
                 @element.bind "focus", this, @_activated
                 @element.bind "blur", this, @_deactivated
                 @element.bind "keyup paste change", this, @_checkModified
+                @element.bind "keyup", this, @_keys
                 widget = this
                 @bound = true
 
@@ -144,6 +145,11 @@
                 widget._trigger "modified", null,
                     editable: widget
                     content: widget.getContents()
+
+        _keys: (event) ->
+            widget = event.data
+            if event.keyCode == 27
+                this.disable # TODO: Why doesnt this work? (neither does widget.disable)
 
         _activated: (event) ->
             widget = event.data

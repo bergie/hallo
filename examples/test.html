@@ -13,6 +13,11 @@
     <title>Hallo example</title>
   </head>
   <body>
+
+    <button id="enable">Enable</button>
+    <button id="disable">Disable</button>
+    <p id="modified">Editables have not been modified</p>
+
     <h1 class="editable">Hello World</h1>
     <div class="editable">
       <p>
@@ -29,9 +34,7 @@
           </tr>
       </table>
     </div>
-    <button id="enable">Enable</button>
-    <button id="disable">Disable</button>
-    <p id="modified">Editables have not been modified</p>
+
     <script>
       jQuery('#enable').button().click(function() {
         jQuery('.editable').hallo({
@@ -51,6 +54,10 @@
       });
       jQuery('#disable').button().click(function() {
         jQuery('.editable').hallo({editable: false});
+      });
+      jQuery('.editable').bind('hellodeactivated', function() {
+          alert("foobar");
+        $(this).hallo({editable:false});
       });
     </script>
   </body>

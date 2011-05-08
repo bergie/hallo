@@ -51,6 +51,7 @@
           this.element.bind("focus", this, this._activated);
           this.element.bind("blur", this, this._deactivated);
           this.element.bind("keyup paste change", this, this._checkModified);
+          this.element.bind("keyup", this, this._keys);
           widget = this;
           return this.bound = true;
         }
@@ -98,6 +99,13 @@
             editable: widget,
             content: widget.getContents()
           });
+        }
+      },
+      _keys: function(event) {
+        var widget;
+        widget = event.data;
+        if (event.keyCode === 27) {
+          return this.disable;
         }
       },
       _activated: function(event) {

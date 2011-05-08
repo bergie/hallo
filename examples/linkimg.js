@@ -42,10 +42,7 @@
         if (this.options.link) {
           buttonize("A");
         }
-        if (this.options.image) {
-          buttonize("UL");
-        }
-        if (this.options.link && this.options.image) {
+        if (this.options.link) {
           buttonset.buttonset();
           this.options.toolbar.append(buttonset);
           return dialog.dialog(this.options.dialogOpts);
