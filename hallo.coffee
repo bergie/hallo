@@ -107,6 +107,20 @@
         activate: ->
             @element.focus()
 
+        replaceSelection: (cb) ->
+            if ( $.browser.msie )
+                t = document.selection.createRange().text;
+                r = document.selection.createRange()
+                r.pasteHTML(cb(t));
+            else
+                sel = window.getSelection();
+                range = sel.getRangeAt(0);
+                newTextNode = document.createTextNode(cb(range.extractContents()));
+                range.insertNode(newTextNode);
+                range.setStartAfter(newTextNode);
+                sel.removeAllRanges();
+                sel.addRange(range);
+
         # Get contents of an editable as HTML string
         getContents: ->
            @element.html()

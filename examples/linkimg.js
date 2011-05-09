@@ -24,7 +24,10 @@
         dialogSubmitCb = function() {
           var link;
           link = $(this).find(".url").val();
-          widget.options.editable.execute("createLink", link);
+          widget.options.editable.replaceSelection(function(text) {
+            var html;
+            return html = '<a href="' + link + '">' + text + '</a>';
+          });
           dialog.dialog('close');
           return false;
         };

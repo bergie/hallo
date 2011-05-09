@@ -59,6 +59,23 @@
       activate: function() {
         return this.element.focus();
       },
+      replaceSelection: function(cb) {
+        var newTextNode, r, range, sel, t;
+        if ($.browser.msie) {
+          t = document.selection.createRange().text;
+          r = document.selection.createRange();
+          t = cb(t);
+          return r.pasteHTML(t);
+        } else {
+          sel = window.getSelection();
+          range = sel.getRangeAt(0);
+          newTextNode = document.createTextNode(cb(range.extractContents()));
+          range.insertNode(newTextNode);
+          range.setStartAfter(newTextNode);
+          sel.removeAllRanges();
+          return sel.addRange(range);
+        }
+      },
       getContents: function() {
         return this.element.html();
       },

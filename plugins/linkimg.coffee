@@ -23,7 +23,8 @@
             dialog = jQuery "<div id=\"#{dialogId}\"><form action=\"#\" method=\"post\"><input class=\"url\" type=\"text\" name=\"url\" size=\"40\" value=\"http://\" /><input type=\"submit\" value=\"Insert\" /></form></div>"
             dialogSubmitCb = () ->
                 link = $(this).find(".url").val()
-                widget.options.editable.execute "createLink", link
+                widget.options.editable.replaceSelection (text) ->
+                    html = '<a href="' + link + '">' + text + '</a>'
                 dialog.dialog('close')
                 return false
             dialog.find("form").submit dialogSubmitCb
