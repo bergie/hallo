@@ -1,0 +1,48 @@
+{
+	"name": "hallo",
+	"version": "0.1.0",
+	"description": "Simplicistic ContentEditable Wrapper",
+	"homepage": "https://github.com/bergie/hallo",
+	"keywords": [
+		"contenteditable",
+		"html5"
+	],
+	"author": {
+		"name": "Henri Bergius",
+		"email": "henri.bergius@iki.fi",
+		"web": "http://bergie.iki.fi/"
+	},
+	"maintainers": [
+		{
+			"name": "Henri Bergius",
+			"email": "henri.bergius@iki.fi",
+			"web": "http://bergie.iki.fi/"
+		}
+	],
+	"contributors": [
+		{
+			"name": "Henri Bergius",
+			"email": "henri.bergius@iki.fi",
+			"web": "http://bergie.iki.fi/"
+		}
+	],
+	"bugs": {
+		"web": "https://github.com/bergie/hallo/issues"
+	},
+	"licenses": [
+		{
+			"type": "MIT",
+			"url": "http://creativecommons.org/licenses/MIT/"
+		}
+	],
+	"repository" : {
+		"type" : "git",
+		"url" : "http://github.com/bergie/hallo.git"
+	},
+	"dependencies": {
+		"express": ">=2.3.2"
+	},
+	"engines" : {
+		"node": ">=0.4.0"
+	}
+}
