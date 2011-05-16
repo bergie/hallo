@@ -122,7 +122,6 @@
         execute: (command) ->
             if document.execCommand command, false, null
                 @element.trigger "change"
-            @activate()
 
         _generateUUID: ->
             S4 = ->

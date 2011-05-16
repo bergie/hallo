@@ -69,9 +69,8 @@
       },
       execute: function(command) {
         if (document.execCommand(command, false, null)) {
-          this.element.trigger("change");
+          return this.element.trigger("change");
         }
-        return this.activate();
       },
       _generateUUID: function() {
         var S4;

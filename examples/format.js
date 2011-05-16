@@ -23,7 +23,7 @@
             format = jQuery(this).attr("hallo-command");
             return widget.options.editable.execute(format);
           });
-          return this.element.bind("keyup paste change", function() {
+          return this.element.bind("keyup paste change mouseup", function(event) {
             if (document.queryCommandState(format)) {
               button.attr("checked", true);
               return button.button("refresh");
