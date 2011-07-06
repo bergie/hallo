@@ -5,11 +5,14 @@
       bound: false,
       originalContent: "",
       uuid: "",
+      selection: null,
       options: {
         editable: true,
         plugins: {},
         activated: function() {},
-        deactivated: function() {}
+        deactivated: function() {},
+        selected: function() {},
+        unselected: function() {}
       },
       _create: function() {
         var options, plugin, _ref, _results;
@@ -42,6 +45,7 @@
         this.element.unbind("focus", this._activated);
         this.element.unbind("blur", this._deactivated);
         this.element.unbind("keyup paste change", this, this._checkModified);
+        this.element.unbind("keyup mouseup", this, this._checkSelection);
         return this.bound = false;
       },
       enable: function() {
@@ -51,6 +55,7 @@
           this.element.bind("focus", this, this._activated);
           this.element.bind("blur", this, this._deactivated);
           this.element.bind("keyup paste change", this, this._checkModified);
+          this.element.bind("keyup mouseup", this, this._checkSelection);
           widget = this;
           return this.bound = true;
         }
@@ -96,6 +101,40 @@
           return widget._trigger("modified", null, {
             editable: widget,
             content: widget.getContents()
+          });
+        }
+      },
+      _rangesEqual: function(r1, r2) {
+        return r1.startContainer === r2.startContainer && r1.startOffset === r2.startOffset && r1.endContainer === r2.endContainer && r1.endOffset === r2.endOffset;
+      },
+      _checkSelection: function(event) {
+        var changed, i, range, sel, selectedRanges, widget, _ref;
+        widget = event.data;
+        sel = window.getSelection();
+        if (sel.type === "Caret") {
+          if (widget.selection) {
+            widget.selection = null;
+            widget._trigger("unselected", null, {
+              editable: widget
+            });
+          }
+          return;
+        }
+        selectedRanges = [];
+        changed = !widget.section || (sel.rangeCount !== widget.selection.length);
+        for (i = 0, _ref = sel.rangeCount; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
+          range = sel.getRangeAt(i).cloneRange();
+          selectedRanges[i] = range;
+          if (!changed && !widget._rangesEqual(range, widget.selection[i])) {
+            changed = true;
+          }
+          ++i;
+        }
+        widget.selection = selectedRanges;
+        if (changed) {
+          return widget._trigger("selected", null, {
+            editable: widget,
+            selection: selectedRanges
           });
         }
       },

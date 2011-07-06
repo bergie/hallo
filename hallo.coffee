@@ -57,12 +57,15 @@
         bound: false
         originalContent: ""
         uuid: ""
+        selection: null
 
         options:
             editable: true
             plugins: {}
             activated: ->
             deactivated: ->
+            selected: ->
+            unselected: ->
 
         _create: ->
             @originalContent = @getContents()
@@ -89,6 +92,7 @@
             @element.unbind "focus", @_activated
             @element.unbind "blur", @_deactivated
             @element.unbind "keyup paste change", this, @_checkModified
+            @element.unbind "keyup mouseup", this, @_checkSelection
             @bound = false
 
         # Enable an editable
@@ -99,6 +103,7 @@
                 @element.bind "focus", this, @_activated
                 @element.bind "blur", this, @_deactivated
                 @element.bind "keyup paste change", this, @_checkModified
+                @element.bind "keyup mouseup", this, @_checkSelection
                 widget = this
                 @bound = true
 
@@ -143,6 +148,34 @@
                 widget._trigger "modified", null,
                     editable: widget
                     content: widget.getContents()
+
+        _rangesEqual: (r1, r2) ->
+            r1.startContainer is r2.startContainer and r1.startOffset is r2.startOffset and r1.endContainer is r2.endContainer and r1.endOffset is r2.endOffset
+
+        _checkSelection: (event) ->
+            widget = event.data
+            sel = window.getSelection()
+            if sel.type is "Caret"
+                if widget.selection
+                    widget.selection = null
+                    widget._trigger "unselected", null,
+                        editable: widget
+                return
+
+            selectedRanges = []
+            changed = not widget.section or (sel.rangeCount != widget.selection.length)
+
+            for i in [0..sel.rangeCount]
+                range = sel.getRangeAt(i).cloneRange()
+                selectedRanges[i] = range
+
+                changed = true if not changed and not widget._rangesEqual(range, widget.selection[i])
+                ++i
+            widget.selection = selectedRanges
+            if changed
+                widget._trigger "selected", null,
+                    editable: widget
+                    selection: selectedRanges
 
         _activated: (event) ->
             widget = event.data
