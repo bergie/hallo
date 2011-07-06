@@ -84,6 +84,20 @@
         };
         return "" + (S4()) + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + (S4()) + (S4());
       },
+      _getToolbarPosition: function(event, selection) {
+        var newRange, position, range, tmpSpan;
+        if (event.originalEvent instanceof MouseEvent) {
+          return [event.pageX, event.pageY];
+        }
+        range = selection.getRangeAt(0);
+        tmpSpan = jQuery("<span/>");
+        newRange = document.createRange();
+        newRange.setStart(selection.focusNode, range.endOffset);
+        newRange.insertNode(tmpSpan.get(0));
+        position = [tmpSpan.offset().left, tmpSpan.offset().top];
+        tmpSpan.remove();
+        return position;
+      },
       _prepareToolbar: function() {
         this.toolbar = jQuery('<div></div>').hide();
         this.toolbar.css("position", "absolute");
@@ -94,10 +108,11 @@
           return event.preventDefault();
         });
         this.element.bind("halloselected", function(event, data) {
-          var widget;
+          var position, widget;
           widget = data.editable;
-          widget.toolbar.css("top", data.originalEvent.pageY);
-          widget.toolbar.css("left", data.originalEvent.pageX);
+          position = widget._getToolbarPosition(data.originalEvent, data.selection);
+          widget.toolbar.css("top", position[1]);
+          widget.toolbar.css("left", position[0]);
           return widget.toolbar.show();
         });
         return this.element.bind("hallounselected", function(event, data) {

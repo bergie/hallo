@@ -133,6 +133,20 @@
                 ((1 + Math.random()) * 0x10000|0).toString(16).substring 1
             "#{S4()}#{S4()}-#{S4()}-#{S4()}-#{S4()}-#{S4()}#{S4()}#{S4()}"
 
+        _getToolbarPosition: (event, selection) ->
+            if event.originalEvent instanceof MouseEvent
+                return [event.pageX, event.pageY]
+
+            range = selection.getRangeAt 0
+            tmpSpan = jQuery "<span/>"
+            newRange = document.createRange()
+            newRange.setStart selection.focusNode, range.endOffset
+            newRange.insertNode tmpSpan.get 0
+
+            position = [tmpSpan.offset().left, tmpSpan.offset().top]
+            tmpSpan.remove()
+            position
+
         _prepareToolbar: ->
             @toolbar = jQuery('<div></div>').hide()
             @toolbar.css "position", "absolute"
@@ -144,12 +158,9 @@
 
             @element.bind "halloselected", (event, data) ->
                 widget = data.editable
-
-                # TODO: Handle keyboard selections differently
-                # if data.originalEvent.originalEvent typeof KeyboardEvent
-
-                widget.toolbar.css "top", data.originalEvent.pageY
-                widget.toolbar.css "left", data.originalEvent.pageX
+                position = widget._getToolbarPosition data.originalEvent, data.selection
+                widget.toolbar.css "top", position[1]
+                widget.toolbar.css "left", position[0]
                 widget.toolbar.show()
 
             @element.bind "hallounselected", (event, data) ->
