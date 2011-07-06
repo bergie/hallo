@@ -32,6 +32,7 @@
             jQuery('#modified').html("Editables modified");
         });
         jQuery('.editable').bind('halloselected', function(event, data) {
+            console.log(data);
             jQuery('#modified').html("Selection made");
         });
         jQuery('.editable').bind('hallounselected', function(event, data) {

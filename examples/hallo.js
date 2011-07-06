@@ -90,8 +90,18 @@
         this.toolbar.css("top", this.element.offset().top - 20);
         this.toolbar.css("left", this.element.offset().left);
         jQuery('body').append(this.toolbar);
-        return this.toolbar.bind("mousedown", function(event) {
+        this.toolbar.bind("mousedown", function(event) {
           return event.preventDefault();
+        });
+        this.element.bind("halloselected", function(event, data) {
+          var widget;
+          widget = data.editable;
+          widget.toolbar.css("top", data.originalEvent.pageY);
+          widget.toolbar.css("left", data.originalEvent.pageX);
+          return widget.toolbar.show();
+        });
+        return this.element.bind("hallounselected", function(event, data) {
+          return data.editable.toolbar.hide();
         });
       },
       _checkModified: function(event) {
@@ -115,7 +125,8 @@
           if (widget.selection) {
             widget.selection = null;
             widget._trigger("unselected", null, {
-              editable: widget
+              editable: widget,
+              originalEvent: event
             });
           }
           return;
@@ -134,7 +145,9 @@
         if (changed) {
           return widget._trigger("selected", null, {
             editable: widget,
-            selection: selectedRanges
+            selection: sel,
+            ranges: selectedRanges,
+            originalEvent: event
           });
         }
       },
@@ -143,7 +156,6 @@
         widget = event.data;
         if (widget.toolbar.html() !== "") {
           widget.toolbar.css("top", widget.element.offset().top - widget.toolbar.height());
-          widget.toolbar.show();
         }
         return widget._trigger("activated", event);
       },

@@ -142,6 +142,19 @@
             @toolbar.bind "mousedown", (event) ->
                 event.preventDefault()
 
+            @element.bind "halloselected", (event, data) ->
+                widget = data.editable
+
+                # TODO: Handle keyboard selections differently
+                # if data.originalEvent.originalEvent typeof KeyboardEvent
+
+                widget.toolbar.css "top", data.originalEvent.pageY
+                widget.toolbar.css "left", data.originalEvent.pageX
+                widget.toolbar.show()
+
+            @element.bind "hallounselected", (event, data) ->
+                data.editable.toolbar.hide()
+
         _checkModified: (event) ->
             widget = event.data
             if widget.isModified()
@@ -160,6 +173,7 @@
                     widget.selection = null
                     widget._trigger "unselected", null,
                         editable: widget
+                        originalEvent: event
                 return
 
             selectedRanges = []
@@ -175,13 +189,15 @@
             if changed
                 widget._trigger "selected", null,
                     editable: widget
-                    selection: selectedRanges
+                    selection: sel
+                    ranges: selectedRanges
+                    originalEvent: event
 
         _activated: (event) ->
             widget = event.data
             if widget.toolbar.html() isnt ""
                 widget.toolbar.css "top", widget.element.offset().top - widget.toolbar.height()
-                widget.toolbar.show()
+                #widget.toolbar.show()
 
             widget._trigger "activated", event
 
