@@ -3,7 +3,7 @@ Hallo - contentEditable for jQuery UI
 
 Hallo is a very simple in-place rich text editor for web pages. It uses jQuery UI and the [HTML5 contentEditable functionality](https://developer.mozilla.org/en/rich-text_editing_in_mozilla) to edit web content.
 
-The widget has been written as a simple and liberally licensed editor. It doesn't aim to replace popular editors like [Aloha](http://aloha-editor.org), but instead provide a smaller and less full-featured option.
+The widget has been written as a simple and liberally licensed editor. It doesn't aim to replace popular editors like [Aloha](http://aloha-editor.org), but instead provide a smaller and less full-featured option. It is also intended to serve as a testbed for Aloha's [jQuery UI migration](https://github.com/alohaeditor/Aloha-Editor/issues/55), and so ideas and code from Hallo may flow back to the Aloha project.
 
 ## Using the editor
 
