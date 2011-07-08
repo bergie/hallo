@@ -7,7 +7,7 @@
             editable: null
             toolbar: null
             uuid: ""
-            formattings: ["bold", "italic"]
+            formattings: ["bold", "italic", "strikeThrough", "underline"]
 
         _create: ->
             widget = this

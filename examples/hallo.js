@@ -63,6 +63,22 @@
       activate: function() {
         return this.element.focus();
       },
+      replaceSelection: function(cb) {
+        var newTextNode, r, range, sel, t;
+        if ($.browser.msie) {
+          t = document.selection.createRange().text;
+          r = document.selection.createRange();
+          return r.pasteHTML(cb(t));
+        } else {
+          sel = window.getSelection();
+          range = sel.getRangeAt(0);
+          newTextNode = document.createTextNode(cb(range.extractContents()));
+          range.insertNode(newTextNode);
+          range.setStartAfter(newTextNode);
+          sel.removeAllRanges();
+          return sel.addRange(range);
+        }
+      },
       getContents: function() {
         return this.element.html();
       },
@@ -72,8 +88,8 @@
       setUnmodified: function() {
         return this.originalContent = this.getContents();
       },
-      execute: function(command) {
-        if (document.execCommand(command, false, null)) {
+      execute: function(command, value) {
+        if (document.execCommand(command, false, value)) {
           return this.element.trigger("change");
         }
       },
@@ -127,6 +143,13 @@
             editable: widget,
             content: widget.getContents()
           });
+        }
+      },
+      _keys: function(event) {
+        var widget;
+        widget = event.data;
+        if (event.keyCode === 27) {
+          return this.disable;
         }
       },
       _rangesEqual: function(r1, r2) {
