@@ -111,6 +111,20 @@
         activate: ->
             @element.focus()
 
+        replaceSelection: (cb) ->
+            if ( $.browser.msie )
+                t = document.selection.createRange().text;
+                r = document.selection.createRange()
+                r.pasteHTML(cb(t));
+            else
+                sel = window.getSelection();
+                range = sel.getRangeAt(0);
+                newTextNode = document.createTextNode(cb(range.extractContents()));
+                range.insertNode(newTextNode);
+                range.setStartAfter(newTextNode);
+                sel.removeAllRanges();
+                sel.addRange(range);
+
         # Get contents of an editable as HTML string
         getContents: ->
            @element.html()
@@ -124,8 +138,8 @@
            @originalContent = @getContents()
 
         # Execute a contentEditable command
-        execute: (command) ->
-            if document.execCommand command, false, null
+        execute: (command, value) ->
+            if document.execCommand command, false, value
                 @element.trigger "change"
 
         _generateUUID: ->
@@ -173,6 +187,10 @@
                     editable: widget
                     content: widget.getContents()
 
+        _keys: (event) ->
+            widget = event.data
+            if event.keyCode == 27
+                this.disable # TODO: Why doesnt this work? (neither does widget.disable)
         _rangesEqual: (r1, r2) ->
             r1.startContainer is r2.startContainer and r1.startOffset is r2.startOffset and r1.endContainer is r2.endContainer and r1.endOffset is r2.endOffset
 
@@ -203,7 +221,6 @@
                     selection: sel
                     ranges: selectedRanges
                     originalEvent: event
-
         _activated: (event) ->
             widget = event.data
             if widget.toolbar.html() isnt ""
