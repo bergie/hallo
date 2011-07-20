@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Hallo &mdash; Distraction-free writing for the Web</title>
+        <link rel="stylesheet" href="css/hallo.css" />
+		<link type="text/css" href="css/pepper-grinder/jquery-ui-1.8.14.custom.css" rel="stylesheet" />
+		<script type="text/javascript" src="js/jquery-1.5.1.min.js"></script>
+		<script type="text/javascript" src="js/jquery-ui-1.8.14.custom.min.js"></script>
+        <script type="text/javascript" src="js/hallo/hallo.js"></script>
+        <script type="text/javascript" src="js/hallo/format.js"></script>
+    </head>
+    <body>
+        <header>
+            <a href="https://github.com/bergie/hallo"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://d3nwyuy0nl342s.cloudfront.net/img/71eeaab9d563c2b3c590319b398dd35683265e85/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub"></a>
+        </header>
+        <article>
+            <h1 class="editable">Hallo &mdash; distraction-free writing for the web</h1>
+
+            <div class="editable">
+                <p>
+                    Hallo is the simplest web editor imaginable. Instead of cluttered forms or toolbars, you edit your web content as it is. Just you, your web design, and your content.
+                </p>
+
+                <p>
+                    Actually, this text you're reading has Hallo loaded. To try it out, just click here and start writing. If you want to make more comprehensive modifications, just select some text.
+                </p>
+
+                <!--
+                TODO in 1.0
+                <p>
+                    Adding images and other files is just as easy. Grab a file from your file manager and drag it here. Or if you want to include social media, like YouTube videos or pictures from Flickr, just paste a URL here and it will be included.
+                </p>
+                -->
+
+                <h2>What Hallo is not</h2>
+
+                <p>
+                    Hallo is not <a href="http://tinymce.moxiecode.com/">TinyMCE</a> or <a href="http://aloha-editor.org/">Aloha Editor</a>. Hallo isn't Microsoft Word, or even Google Docs. It is just the most simple and pleasurable web writing tool imaginable, available to be included into any web application under the liberal MIT open source license.
+                </p>
+
+                <h2>Developing Hallo</h2>
+
+                <p>
+                    Hallo is still in the early stages of its life and not quite yet ready for real-world use. If you're interested in contributing, simply fork the <a href="https://github.com/bergie/hallo">Hallo repository on GitHub</a> and send <a href="http://help.github.com/pull-requests/">pull requests</a>. Make sure to check out the <a href="https://github.com/bergie/hallo/issues">current list of issues</a>.
+                </p>
+
+                <p>
+                    The Hallo editor operates as a <a href="http://jqueryui.com/">jQuery UI</a> plugin and has been written in <a href="http://jashkenas.github.com/coffee-script/">CoffeeScript</a> for the sake of simplicity. CoffeeScript is a beautiful little language that compiles into JavaScript.
+                </p>
+            </div>
+        </article>
+        <footer>
+            <p>Hallo is <a href="http://www.opensource.org/licenses/mit-license.php">free software</a> developed by <a href="http://bergie.iki.fi/">Henri Bergius</a> for the <a href="http://iks-project.eu/">IKS Project</a> and co-funded by the European Union</p>
+        </footer>
+
+        <script>
+            jQuery('.editable').hallo({
+                plugins: {
+                    'halloformat': {}
+                }
+            });
+        </script>
+    </body>
+</html>
