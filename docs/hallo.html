@@ -1,0 +1,216 @@
+<!DOCTYPE html>  <html> <head>   <title>hallo.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               hallo.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <pre><code>Hallo - a rich text editing jQuery UI widget
+(c) 2011 Henri Bergius, IKS Consortium
+Hallo may be freely distributed under the MIT license
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="p">(</span><span class="nf">(jQuery) -&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Hallo provides a jQuery UI widget <code>hallo</code>. Usage:</p>
+
+<pre><code>jQuery('p').hallo();
+</code></pre>
+
+<p>Getting out of the editing state:</p>
+
+<pre><code>jQuery('p').hallo({editable: false});
+</code></pre>
+
+<p>When content is in editable state, users can just click on
+an editable element in order to start modifying it. This
+relies on browser having support for the HTML5 contentEditable
+functionality, which means that some mobile browsers are not
+supported.</p>
+
+<p>If plugins providing toolbar buttons have been enabled for
+Hallo, then a floating editing toolbar will be rendered above
+the editable contents when an area is active.</p>
+
+<h2>Events</h2>
+
+<p>The Hallo editor provides several jQuery events that web
+applications can use for integration:</p>
+
+<h3>Activated</h3>
+
+<p>When user activates an editable (usually by clicking or tabbing
+to an editable element), a <code>halloactivated</code> event will be fired.</p>
+
+<pre><code>jQuery('p').bind('halloactivated', function() {
+    console.log("Activated");
+});
+</code></pre>
+
+<h3>Deactivated</h3>
+
+<p>When user gets out of an editable element, a <code>hallodeactivated</code>
+event will be fired.</p>
+
+<pre><code>jQuery('p').bind('hallodeactivated', function() {
+    console.log("Deactivated");
+});
+</code></pre>
+
+<h3>Modified</h3>
+
+<p>When contents in an editable have been modified, a
+<code>hallomodified</code> event will be fired.</p>
+
+<pre><code>jQuery('p').bind('hallomodified', function(event, data) {
+    console.log("New contents are " + data.content);
+});
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">jQuery</span><span class="p">.</span><span class="nx">widget</span> <span class="s2">&quot;IKS.hallo&quot;</span><span class="p">,</span>
+        <span class="nv">toolbar: </span><span class="kc">null</span>
+        <span class="nv">bound: </span><span class="kc">false</span>
+        <span class="nv">originalContent: </span><span class="s2">&quot;&quot;</span>
+        <span class="nv">uuid: </span><span class="s2">&quot;&quot;</span>
+        <span class="nv">selection: </span><span class="kc">null</span>
+
+        <span class="nv">options:</span>
+            <span class="nv">editable: </span><span class="kc">true</span>
+            <span class="nv">plugins: </span><span class="p">{}</span>
+            <span class="nv">activated: </span><span class="o">-&gt;</span>
+            <span class="nv">deactivated: </span><span class="o">-&gt;</span>
+            <span class="nv">selected: </span><span class="o">-&gt;</span>
+            <span class="nv">unselected: </span><span class="o">-&gt;</span>
+
+        <span class="nv">_create: </span><span class="o">-&gt;</span>
+            <span class="vi">@originalContent = </span><span class="nx">@getContents</span><span class="p">()</span>
+            <span class="vi">@id = </span><span class="nx">@_generateUUID</span><span class="p">()</span>
+            <span class="nx">@_prepareToolbar</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="nx">plugin</span><span class="p">,</span> <span class="nx">options</span> <span class="k">of</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">plugins</span>
+                <span class="k">if</span> <span class="o">not</span> <span class="nx">jQuery</span><span class="p">.</span><span class="nx">isPlainObject</span> <span class="nx">options</span>
+                    <span class="nv">options = </span><span class="p">{}</span>
+                <span class="nx">options</span><span class="p">[</span><span class="s2">&quot;editable&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="k">this</span>
+                <span class="nx">options</span><span class="p">[</span><span class="s2">&quot;toolbar&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@toolbar</span>
+                <span class="nx">options</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@id</span>
+                <span class="nx">jQuery</span><span class="p">(</span><span class="nx">@element</span><span class="p">)[</span><span class="nx">plugin</span><span class="p">]</span> <span class="nx">options</span>
+
+        <span class="nv">_init: </span><span class="o">-&gt;</span>
+            <span class="k">if</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">editable</span>
+                <span class="nx">@enable</span><span class="p">()</span>
+            <span class="k">else</span>
+                <span class="nx">@disable</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>Disable an editable</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="nv">disable: </span><span class="o">-&gt;</span>
+            <span class="nx">@element</span><span class="p">.</span><span class="nx">attr</span> <span class="s2">&quot;contentEditable&quot;</span><span class="p">,</span> <span class="kc">false</span>
+            <span class="nx">@element</span><span class="p">.</span><span class="nx">unbind</span> <span class="s2">&quot;focus&quot;</span><span class="p">,</span> <span class="nx">@_activated</span>
+            <span class="nx">@element</span><span class="p">.</span><span class="nx">unbind</span> <span class="s2">&quot;blur&quot;</span><span class="p">,</span> <span class="nx">@_deactivated</span>
+            <span class="nx">@element</span><span class="p">.</span><span class="nx">unbind</span> <span class="s2">&quot;keyup paste change&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">@_checkModified</span>
+            <span class="nx">@element</span><span class="p">.</span><span class="nx">unbind</span> <span class="s2">&quot;keyup mouseup&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">@_checkSelection</span>
+            <span class="vi">@bound = </span><span class="kc">false</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Enable an editable</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="nv">enable: </span><span class="o">-&gt;</span>
+            <span class="nx">@element</span><span class="p">.</span><span class="nx">attr</span> <span class="s2">&quot;contentEditable&quot;</span><span class="p">,</span> <span class="kc">true</span>
+
+            <span class="k">if</span> <span class="o">not</span> <span class="nx">@bound</span>
+                <span class="nx">@element</span><span class="p">.</span><span class="nx">bind</span> <span class="s2">&quot;focus&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">@_activated</span>
+                <span class="nx">@element</span><span class="p">.</span><span class="nx">bind</span> <span class="s2">&quot;blur&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">@_deactivated</span>
+                <span class="nx">@element</span><span class="p">.</span><span class="nx">bind</span> <span class="s2">&quot;keyup paste change&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">@_checkModified</span>
+                <span class="nx">@element</span><span class="p">.</span><span class="nx">bind</span> <span class="s2">&quot;keyup mouseup&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">@_checkSelection</span>
+                <span class="nv">widget = </span><span class="k">this</span>
+                <span class="vi">@bound = </span><span class="kc">true</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Activate an editable for editing</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="nv">activate: </span><span class="o">-&gt;</span>
+            <span class="nx">@element</span><span class="p">.</span><span class="nx">focus</span><span class="p">()</span>
+
+        <span class="nv">replaceSelection: </span><span class="nf">(cb) -&gt;</span>
+            <span class="k">if</span> <span class="p">(</span> <span class="nx">$</span><span class="p">.</span><span class="nx">browser</span><span class="p">.</span><span class="nx">msie</span> <span class="p">)</span>
+                <span class="nv">t = </span><span class="nb">document</span><span class="p">.</span><span class="nx">selection</span><span class="p">.</span><span class="nx">createRange</span><span class="p">().</span><span class="nx">text</span><span class="p">;</span>
+                <span class="nv">r = </span><span class="nb">document</span><span class="p">.</span><span class="nx">selection</span><span class="p">.</span><span class="nx">createRange</span><span class="p">()</span>
+                <span class="nx">r</span><span class="p">.</span><span class="nx">pasteHTML</span><span class="p">(</span><span class="nx">cb</span><span class="p">(</span><span class="nx">t</span><span class="p">));</span>
+            <span class="k">else</span>
+                <span class="nv">sel = </span><span class="nb">window</span><span class="p">.</span><span class="nx">getSelection</span><span class="p">();</span>
+                <span class="nv">range = </span><span class="nx">sel</span><span class="p">.</span><span class="nx">getRangeAt</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+                <span class="nv">newTextNode = </span><span class="nb">document</span><span class="p">.</span><span class="nx">createTextNode</span><span class="p">(</span><span class="nx">cb</span><span class="p">(</span><span class="nx">range</span><span class="p">.</span><span class="nx">extractContents</span><span class="p">()));</span>
+                <span class="nx">range</span><span class="p">.</span><span class="nx">insertNode</span><span class="p">(</span><span class="nx">newTextNode</span><span class="p">);</span>
+                <span class="nx">range</span><span class="p">.</span><span class="nx">setStartAfter</span><span class="p">(</span><span class="nx">newTextNode</span><span class="p">);</span>
+                <span class="nx">sel</span><span class="p">.</span><span class="nx">removeAllRanges</span><span class="p">();</span>
+                <span class="nx">sel</span><span class="p">.</span><span class="nx">addRange</span><span class="p">(</span><span class="nx">range</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>Get contents of an editable as HTML string</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="nv">getContents: </span><span class="o">-&gt;</span>
+           <span class="nx">@element</span><span class="p">.</span><span class="nx">html</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>Check whether the editable has been modified</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="nv">isModified: </span><span class="o">-&gt;</span>
+           <span class="nx">@originalContent</span> <span class="o">isnt</span> <span class="nx">@getContents</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>Set the editable as unmodified</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="nv">setUnmodified: </span><span class="o">-&gt;</span>
+           <span class="vi">@originalContent = </span><span class="nx">@getContents</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>Execute a contentEditable command</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="nv">execute: </span><span class="nf">(command, value) -&gt;</span>
+            <span class="k">if</span> <span class="nb">document</span><span class="p">.</span><span class="nx">execCommand</span> <span class="nx">command</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">value</span>
+                <span class="nx">@element</span><span class="p">.</span><span class="nx">trigger</span> <span class="s2">&quot;change&quot;</span>
+
+        <span class="nv">_generateUUID: </span><span class="o">-&gt;</span>
+            <span class="nv">S4 = </span><span class="o">-&gt;</span>
+                <span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">())</span> <span class="o">*</span> <span class="mh">0x10000</span><span class="o">|</span><span class="mi">0</span><span class="p">).</span><span class="nx">toString</span><span class="p">(</span><span class="mi">16</span><span class="p">).</span><span class="nx">substring</span> <span class="mi">1</span>
+            <span class="s2">&quot;#{S4()}#{S4()}-#{S4()}-#{S4()}-#{S4()}-#{S4()}#{S4()}#{S4()}&quot;</span>
+
+        <span class="nv">_getToolbarPosition: </span><span class="nf">(event, selection) -&gt;</span>
+            <span class="k">if</span> <span class="nx">event</span><span class="p">.</span><span class="nx">originalEvent</span> <span class="k">instanceof</span> <span class="nx">MouseEvent</span>
+                <span class="k">return</span> <span class="p">[</span><span class="nx">event</span><span class="p">.</span><span class="nx">pageX</span><span class="p">,</span> <span class="nx">event</span><span class="p">.</span><span class="nx">pageY</span><span class="p">]</span>
+
+            <span class="nv">range = </span><span class="nx">selection</span><span class="p">.</span><span class="nx">getRangeAt</span> <span class="mi">0</span>
+            <span class="nv">tmpSpan = </span><span class="nx">jQuery</span> <span class="s2">&quot;&lt;span/&gt;&quot;</span>
+            <span class="nv">newRange = </span><span class="nb">document</span><span class="p">.</span><span class="nx">createRange</span><span class="p">()</span>
+            <span class="nx">newRange</span><span class="p">.</span><span class="nx">setStart</span> <span class="nx">selection</span><span class="p">.</span><span class="nx">focusNode</span><span class="p">,</span> <span class="nx">range</span><span class="p">.</span><span class="nx">endOffset</span>
+            <span class="nx">newRange</span><span class="p">.</span><span class="nx">insertNode</span> <span class="nx">tmpSpan</span><span class="p">.</span><span class="nx">get</span> <span class="mi">0</span>
+
+            <span class="nv">position = </span><span class="p">[</span><span class="nx">tmpSpan</span><span class="p">.</span><span class="nx">offset</span><span class="p">().</span><span class="nx">left</span><span class="p">,</span> <span class="nx">tmpSpan</span><span class="p">.</span><span class="nx">offset</span><span class="p">().</span><span class="nx">top</span><span class="p">]</span>
+            <span class="nx">tmpSpan</span><span class="p">.</span><span class="nx">remove</span><span class="p">()</span>
+            <span class="nx">position</span>
+
+        <span class="nv">_prepareToolbar: </span><span class="o">-&gt;</span>
+            <span class="vi">@toolbar = </span><span class="nx">jQuery</span><span class="p">(</span><span class="s1">&#39;&lt;div&gt;&lt;/div&gt;&#39;</span><span class="p">).</span><span class="nx">hide</span><span class="p">()</span>
+            <span class="nx">@toolbar</span><span class="p">.</span><span class="nx">css</span> <span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="s2">&quot;absolute&quot;</span>
+            <span class="nx">@toolbar</span><span class="p">.</span><span class="nx">css</span> <span class="s2">&quot;top&quot;</span><span class="p">,</span> <span class="nx">@element</span><span class="p">.</span><span class="nx">offset</span><span class="p">().</span><span class="nx">top</span> <span class="o">-</span> <span class="mi">20</span>
+            <span class="nx">@toolbar</span><span class="p">.</span><span class="nx">css</span> <span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="nx">@element</span><span class="p">.</span><span class="nx">offset</span><span class="p">().</span><span class="nx">left</span>
+            <span class="nx">jQuery</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">@toolbar</span><span class="p">)</span>
+            <span class="nx">@toolbar</span><span class="p">.</span><span class="nx">bind</span> <span class="s2">&quot;mousedown&quot;</span><span class="p">,</span> <span class="nf">(event) -&gt;</span>
+                <span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">()</span>
+
+            <span class="nx">@element</span><span class="p">.</span><span class="nx">bind</span> <span class="s2">&quot;halloselected&quot;</span><span class="p">,</span> <span class="nf">(event, data) -&gt;</span>
+                <span class="nv">widget = </span><span class="nx">data</span><span class="p">.</span><span class="nx">editable</span>
+                <span class="nv">position = </span><span class="nx">widget</span><span class="p">.</span><span class="nx">_getToolbarPosition</span> <span class="nx">data</span><span class="p">.</span><span class="nx">originalEvent</span><span class="p">,</span> <span class="nx">data</span><span class="p">.</span><span class="nx">selection</span>
+                <span class="nx">widget</span><span class="p">.</span><span class="nx">toolbar</span><span class="p">.</span><span class="nx">css</span> <span class="s2">&quot;top&quot;</span><span class="p">,</span> <span class="nx">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="nx">widget</span><span class="p">.</span><span class="nx">toolbar</span><span class="p">.</span><span class="nx">css</span> <span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="nx">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="nx">widget</span><span class="p">.</span><span class="nx">toolbar</span><span class="p">.</span><span class="nx">show</span><span class="p">()</span>
+
+            <span class="nx">@element</span><span class="p">.</span><span class="nx">bind</span> <span class="s2">&quot;hallounselected&quot;</span><span class="p">,</span> <span class="nf">(event, data) -&gt;</span>
+                <span class="nx">data</span><span class="p">.</span><span class="nx">editable</span><span class="p">.</span><span class="nx">toolbar</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span>
+
+        <span class="nv">_checkModified: </span><span class="nf">(event) -&gt;</span>
+            <span class="nv">widget = </span><span class="nx">event</span><span class="p">.</span><span class="nx">data</span>
+            <span class="k">if</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">isModified</span><span class="p">()</span>
+                <span class="nx">widget</span><span class="p">.</span><span class="nx">_trigger</span> <span class="s2">&quot;modified&quot;</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span>
+                    <span class="nv">editable: </span><span class="nx">widget</span>
+                    <span class="nv">content: </span><span class="nx">widget</span><span class="p">.</span><span class="nx">getContents</span><span class="p">()</span>
+
+        <span class="nv">_keys: </span><span class="nf">(event) -&gt;</span>
+            <span class="nv">widget = </span><span class="nx">event</span><span class="p">.</span><span class="nx">data</span>
+            <span class="k">if</span> <span class="nx">event</span><span class="p">.</span><span class="nx">keyCode</span> <span class="o">==</span> <span class="mi">27</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">disable</span> <span class="c1"># TODO: Why doesnt this work? (neither does widget.disable)</span>
+        <span class="nv">_rangesEqual: </span><span class="nf">(r1, r2) -&gt;</span>
+            <span class="nx">r1</span><span class="p">.</span><span class="nx">startContainer</span> <span class="o">is</span> <span class="nx">r2</span><span class="p">.</span><span class="nx">startContainer</span> <span class="o">and</span> <span class="nx">r1</span><span class="p">.</span><span class="nx">startOffset</span> <span class="o">is</span> <span class="nx">r2</span><span class="p">.</span><span class="nx">startOffset</span> <span class="o">and</span> <span class="nx">r1</span><span class="p">.</span><span class="nx">endContainer</span> <span class="o">is</span> <span class="nx">r2</span><span class="p">.</span><span class="nx">endContainer</span> <span class="o">and</span> <span class="nx">r1</span><span class="p">.</span><span class="nx">endOffset</span> <span class="o">is</span> <span class="nx">r2</span><span class="p">.</span><span class="nx">endOffset</span>
+
+        <span class="nv">_checkSelection: </span><span class="nf">(event) -&gt;</span>
+            <span class="nv">widget = </span><span class="nx">event</span><span class="p">.</span><span class="nx">data</span>
+            <span class="nv">sel = </span><span class="nb">window</span><span class="p">.</span><span class="nx">getSelection</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nx">sel</span><span class="p">.</span><span class="nx">type</span> <span class="o">is</span> <span class="s2">&quot;Caret&quot;</span>
+                <span class="k">if</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">selection</span>
+                    <span class="nv">widget.selection = </span><span class="kc">null</span>
+                    <span class="nx">widget</span><span class="p">.</span><span class="nx">_trigger</span> <span class="s2">&quot;unselected&quot;</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span>
+                        <span class="nv">editable: </span><span class="nx">widget</span>
+                        <span class="nv">originalEvent: </span><span class="nx">event</span>
+                <span class="k">return</span>
+
+            <span class="nv">selectedRanges = </span><span class="p">[]</span>
+            <span class="nv">changed = </span><span class="o">not</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">section</span> <span class="o">or</span> <span class="p">(</span><span class="nx">sel</span><span class="p">.</span><span class="nx">rangeCount</span> <span class="o">!=</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">selection</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="nx">i</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">..</span><span class="nx">sel</span><span class="p">.</span><span class="nx">rangeCount</span><span class="p">]</span>
+                <span class="nv">range = </span><span class="nx">sel</span><span class="p">.</span><span class="nx">getRangeAt</span><span class="p">(</span><span class="nx">i</span><span class="p">).</span><span class="nx">cloneRange</span><span class="p">()</span>
+                <span class="nx">selectedRanges</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">range</span>
+
+                <span class="nv">changed = </span><span class="kc">true</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">changed</span> <span class="o">and</span> <span class="o">not</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">_rangesEqual</span><span class="p">(</span><span class="nx">range</span><span class="p">,</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">selection</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span>
+                <span class="o">++</span><span class="nx">i</span>
+            <span class="nv">widget.selection = </span><span class="nx">selectedRanges</span>
+            <span class="k">if</span> <span class="nx">changed</span>
+                <span class="nx">widget</span><span class="p">.</span><span class="nx">_trigger</span> <span class="s2">&quot;selected&quot;</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span>
+                    <span class="nv">editable: </span><span class="nx">widget</span>
+                    <span class="nv">selection: </span><span class="nx">sel</span>
+                    <span class="nv">ranges: </span><span class="nx">selectedRanges</span>
+                    <span class="nv">originalEvent: </span><span class="nx">event</span>
+        <span class="nv">_activated: </span><span class="nf">(event) -&gt;</span>
+            <span class="nv">widget = </span><span class="nx">event</span><span class="p">.</span><span class="nx">data</span>
+            <span class="k">if</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">toolbar</span><span class="p">.</span><span class="nx">html</span><span class="p">()</span> <span class="o">isnt</span> <span class="s2">&quot;&quot;</span>
+                <span class="nx">widget</span><span class="p">.</span><span class="nx">toolbar</span><span class="p">.</span><span class="nx">css</span> <span class="s2">&quot;top&quot;</span><span class="p">,</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">element</span><span class="p">.</span><span class="nx">offset</span><span class="p">().</span><span class="nx">top</span> <span class="o">-</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">toolbar</span><span class="p">.</span><span class="nx">height</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>widget.toolbar.show()</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nx">widget</span><span class="p">.</span><span class="nx">_trigger</span> <span class="s2">&quot;activated&quot;</span><span class="p">,</span> <span class="nx">event</span>
+
+        <span class="nv">_deactivated: </span><span class="nf">(event) -&gt;</span>
+            <span class="nv">widget = </span><span class="nx">event</span><span class="p">.</span><span class="nx">data</span>
+            <span class="nx">widget</span><span class="p">.</span><span class="nx">toolbar</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span>
+            <span class="nx">widget</span><span class="p">.</span><span class="nx">_trigger</span> <span class="s2">&quot;deactivated&quot;</span><span class="p">,</span> <span class="nx">event</span>
+<span class="p">)(</span><span class="nx">jQuery</span><span class="p">)</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
