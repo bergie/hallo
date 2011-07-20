@@ -10,14 +10,14 @@
         <script type="text/javascript" src="js/hallo/hallo.js"></script>
         <script type="text/javascript" src="js/hallo/format.js"></script>
     </head>
-    <body>
+    <body prefix="doap: http://usefulinc.com/ns/doap#" about="http://bergie.github.com/hallo/" typeof="doap:Project">
         <header>
-            <a href="https://github.com/bergie/hallo"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://d3nwyuy0nl342s.cloudfront.net/img/71eeaab9d563c2b3c590319b398dd35683265e85/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub"></a>
+            <a href="https://github.com/bergie/hallo" rel="doap:homepage"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://d3nwyuy0nl342s.cloudfront.net/img/71eeaab9d563c2b3c590319b398dd35683265e85/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub"></a>
         </header>
         <article>
-            <h1 class="editable">Hallo &mdash; distraction-free writing for the web</h1>
+            <h1 class="editable"><span property="doap:name">Hallo</span> &mdash; <span property="doap:shortdesc">distraction-free writing for the web</span></h1>
 
-            <div class="editable">
+            <div property="doap:description" class="editable">
                 <p>
                     Hallo is the simplest web editor imaginable. Instead of cluttered forms or toolbars, you edit your web content as it is. Just you, your web design, and your content.
                 </p>
@@ -42,16 +42,16 @@
                 <h2>Developing Hallo</h2>
 
                 <p>
-                    Hallo is still in the early stages of its life and not quite yet ready for real-world use. If you're interested in contributing, simply fork the <a href="https://github.com/bergie/hallo">Hallo repository on GitHub</a> and send <a href="http://help.github.com/pull-requests/">pull requests</a>. Make sure to check out the <a href="https://github.com/bergie/hallo/issues">current list of issues</a>.
+                    Hallo is still in the early stages of its life and not quite yet ready for real-world use. If you're interested in contributing, simply fork the <a href="https://github.com/bergie/hallo">Hallo repository on GitHub</a> and send <a href="http://help.github.com/pull-requests/">pull requests</a>. Make sure to check out the <a href="https://github.com/bergie/hallo/issues" rel="doap:bug-database">current list of issues</a>.
                 </p>
 
                 <p>
-                    The Hallo editor operates as a <a href="http://jqueryui.com/">jQuery UI</a> plugin and has been written in <a href="http://jashkenas.github.com/coffee-script/">CoffeeScript</a> for the sake of simplicity. CoffeeScript is a beautiful little language that compiles into JavaScript.
+                    The Hallo editor operates as a <a href="http://jqueryui.com/">jQuery UI</a> plugin and has been written in <a href="http://jashkenas.github.com/coffee-script/"><span about="http://bergie.github.com/hallo/" property="doap:programming-language">CoffeeScript</span></a> for the sake of simplicity. CoffeeScript is a beautiful little language that compiles into JavaScript.
                 </p>
             </div>
         </article>
-        <footer>
-            <p>Hallo is <a href="http://www.opensource.org/licenses/mit-license.php">free software</a> developed by <a href="http://bergie.iki.fi/">Henri Bergius</a> for the <a href="http://iks-project.eu/">IKS Project</a> and co-funded by the European Union</p>
+        <footer prefix="foaf: http://xmlns.com/foaf/0.1/">
+            <p>Hallo is <a href="http://www.opensource.org/licenses/mit-license.php" rel="doap:license">free software</a> developed by <span property="doap:maintainer"><a rel="foaf:homepage" typeof="foaf:Person" href="http://bergie.iki.fi/" property="foaf:name">Henri Bergius</a></span> for the <a href="http://iks-project.eu/">IKS Project</a> and co-funded by the European Union</p>
         </footer>
 
         <script>
