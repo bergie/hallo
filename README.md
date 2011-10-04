@@ -38,6 +38,8 @@ This example would enable the simple formatting plugin that provides functionali
 
 Please note that you need to load the plugin JavaScript files you want to use manually.
 
+Hallo has got more options you set when instantiating. See the hallo.coffee file for further documentation.
+
 ## Plugins
 
 * halloformat - Adds Bold, Italic, StrikeThrough and Underline support to the toolbar. (Pick with options: "formattings": ["bold", "italic", "strikeThough", "underline"])
