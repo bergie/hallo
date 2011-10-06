@@ -196,6 +196,7 @@
             position
 
         _prepareToolbar: ->
+            that = @
             @toolbar = jQuery('<div></div>').hide()
             @toolbar.css "position", "absolute"
             @toolbar.css "top", @element.offset().top - 20
