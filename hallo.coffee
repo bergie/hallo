@@ -140,7 +140,7 @@
             if ( $.browser.msie )
                 t = document.selection.createRange().text;
                 r = document.selection.createRange()
-                r.pasteHTML(cb(t));
+                r.pasteHTML(cb(t))
             else
                 sel = window.getSelection();
                 range = sel.getRangeAt(0);
