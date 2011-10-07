@@ -204,7 +204,7 @@
         var widget;
         widget = event.data;
         if (event.keyCode === 27) {
-          return this.disable;
+          return widget.disable();
         }
       },
       _rangesEqual: function(r1, r2) {
