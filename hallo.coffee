@@ -162,7 +162,7 @@
             position
 
         _prepareToolbar: ->
-            @toolbar = jQuery('<div></div>').hide()
+            @toolbar = jQuery('<div class="hallotoolbar"></div>').hide()
             @toolbar.css "position", "absolute"
             @toolbar.css "top", @element.offset().top - 20
             @toolbar.css "left", @element.offset().left
@@ -224,8 +224,7 @@
         _activated: (event) ->
             widget = event.data
             if widget.toolbar.html() isnt ""
-                widget.toolbar.css "top", widget.element.offset().top - widget.toolbar.height()
-                #widget.toolbar.show()
+                widget.toolbar.css "top", widget.element.offset().top - widget.toolbar.height() + 10
 
             widget._trigger "activated", event
 

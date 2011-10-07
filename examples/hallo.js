@@ -115,7 +115,7 @@
         return position;
       },
       _prepareToolbar: function() {
-        this.toolbar = jQuery('<div></div>').hide();
+        this.toolbar = jQuery('<div class="hallotoolbar"></div>').hide();
         this.toolbar.css("position", "absolute");
         this.toolbar.css("top", this.element.offset().top - 20);
         this.toolbar.css("left", this.element.offset().left);
@@ -193,7 +193,7 @@
         var widget;
         widget = event.data;
         if (widget.toolbar.html() !== "") {
-          widget.toolbar.css("top", widget.element.offset().top - widget.toolbar.height());
+          widget.toolbar.css("top", widget.element.offset().top - widget.toolbar.height() + 10);
         }
         return widget._trigger("activated", event);
       },
