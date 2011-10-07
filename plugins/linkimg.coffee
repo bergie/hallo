@@ -23,8 +23,9 @@
             dialog = jQuery "<div id=\"#{dialogId}\"><form action=\"#\" method=\"post\"><input class=\"url\" type=\"text\" name=\"url\" size=\"40\" value=\"http://\" /><input type=\"submit\" value=\"Insert\" /></form></div>"
             dialogSubmitCb = () ->
                 link = $(this).find(".url").val()
-                widget.options.editable.replaceSelection (text) ->
-                    html = '<a href="' + link + '">' + text + '</a>'
+                widget.options.editable.restoreSelection(widget.lastSelection)
+                document.execCommand "createLink", null, link
+                widget.options.editable.removeAllSelections()
                 dialog.dialog('close')
                 return false
             dialog.find("form").submit dialogSubmitCb
@@ -35,6 +36,8 @@
                 buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\">#{type}</label>").button()
                 button = jQuery "##{id}", buttonset
                 button.bind "change", (event) ->
+                    # we need to save the current selection because we will loose focus
+                    widget.lastSelection = widget.options.editable.getSelection()
                     dialog.dialog('open')
 
             if (@options.link)
