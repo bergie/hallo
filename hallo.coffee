@@ -136,6 +136,32 @@
         activate: ->
             @element.focus()
 
+        # Only supports one range for now (i.e. no multiselection)
+        getSelection: ->
+            if ( $.browser.msie )
+                range = document.selection.createRange()
+            else
+                if ( window.getSelection )
+                    userSelection = window.getSelection()
+                else if (document.selection) #opera
+                    userSelection = document.selection.createRange()
+                else
+                    throw "Your browser does not support selection handling"
+
+                if ( userSelection.getRangeAt )
+                    range = userSelection.getRangeAt(0)
+                else
+                    range = userSelection
+
+            return range
+
+        restoreSelection: (range) ->
+            if ( $.browser.msie )
+                range.select()
+            else
+                window.getSelection().removeAllRanges()
+                window.getSelection().addRange(range)
+
         replaceSelection: (cb) ->
             if ( $.browser.msie )
                 t = document.selection.createRange().text;
@@ -149,6 +175,12 @@
                 range.setStartAfter(newTextNode);
                 sel.removeAllRanges();
                 sel.addRange(range);
+
+        removeAllSelections: () ->
+            if ( $.browser.msie )
+                range.empty()
+            else
+                window.getSelection().removeAllRanges()
 
         # Get contents of an editable as HTML string
         getContents: ->
