@@ -20,6 +20,28 @@
     # Hallo, then a floating editing toolbar will be rendered above
     # the editable contents when an area is active.
     #
+    # ## Options
+    #
+    # Change from floating mode to relative positioning with using
+    # the offset to position the toolbar where you want it:
+    #
+    #    jQuery('selector').hallo({
+    #       floating: true,
+    #       offset: {
+    #         'x' : 0,
+    #         'y' : 0
+    #       }
+    #    });
+    #
+    # Force the toolbar to be shown at all times when a contenteditable
+    # element is focused:
+    #
+    #    jQuery('selector').hallo({
+    #       showalways: true
+    #    });
+    #
+    # showalways is false by default
+    #
     # ## Events
     #
     # The Hallo editor provides several jQuery events that web
@@ -62,6 +84,9 @@
         options:
             editable: true
             plugins: {}
+            floating: true
+            offset: {x:0,y:0}
+            showalways: false
             activated: ->
             deactivated: ->
             selected: ->
@@ -111,6 +136,32 @@
         activate: ->
             @element.focus()
 
+        # Only supports one range for now (i.e. no multiselection)
+        getSelection: ->
+            if ( $.browser.msie )
+                range = document.selection.createRange()
+            else
+                if ( window.getSelection )
+                    userSelection = window.getSelection()
+                else if (document.selection) #opera
+                    userSelection = document.selection.createRange()
+                else
+                    throw "Your browser does not support selection handling"
+
+                if ( userSelection.getRangeAt )
+                    range = userSelection.getRangeAt(0)
+                else
+                    range = userSelection
+
+            return range
+
+        restoreSelection: (range) ->
+            if ( $.browser.msie )
+                range.select()
+            else
+                window.getSelection().removeAllRanges()
+                window.getSelection().addRange(range)
+
         replaceSelection: (cb) ->
             if ( $.browser.msie )
                 t = document.selection.createRange().text;
@@ -124,6 +175,12 @@
                 range.setStartAfter(newTextNode);
                 sel.removeAllRanges();
                 sel.addRange(range);
+
+        removeAllSelections: () ->
+            if ( $.browser.msie )
+                range.empty()
+            else
+                window.getSelection().removeAllRanges()
 
         # Get contents of an editable as HTML string
         getContents: ->
@@ -149,7 +206,16 @@
 
         _getToolbarPosition: (event, selection) ->
             if event.originalEvent instanceof MouseEvent
-                return [event.pageX, event.pageY]
+                if @options.floating
+                    return [event.pageX, event.pageY]
+                else
+                    if $(event.target).attr('contenteditable') == "true"
+                        containerElement = $(event.target)
+                    else
+                        containerElement = $(event.target).parent('[contenteditable]').first()
+
+                    containerPosition = containerElement.position()
+                    return [containerPosition.left - @options.offset.x, containerPosition.top - @options.offset.y]
 
             range = selection.getRangeAt 0
             tmpSpan = jQuery "<span/>"
@@ -162,6 +228,7 @@
             position
 
         _prepareToolbar: ->
+            that = @
             @toolbar = jQuery('<div class="hallotoolbar"></div>').hide()
             @toolbar.css "position", "absolute"
             @toolbar.css "top", @element.offset().top - 20
@@ -178,7 +245,8 @@
                 widget.toolbar.show()
 
             @element.bind "hallounselected", (event, data) ->
-                data.editable.toolbar.hide()
+                if not that.options.showalways
+                    data.editable.toolbar.hide()
 
         _checkModified: (event) ->
             widget = event.data
