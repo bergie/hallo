@@ -1,0 +1,9 @@
+div.hallotoolbar {
+    border: 1px solid #babdb6;
+    padding: 2px;
+    background-color: #eeeeec;
+    border-radius: 6px;
+    font-size: 12pt;
+    line-height: 1.1em;
+    width: 260px;
+}

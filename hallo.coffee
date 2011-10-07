@@ -232,7 +232,7 @@
 
         _prepareToolbar: ->
             that = @
-            @toolbar = jQuery('<div></div>').addClass('halloToolbar').hide()
+            @toolbar = jQuery('<div class="hallotoolbar"></div>').hide()
             @toolbar.css "position", "absolute"
             @toolbar.css "top", @element.offset().top - 20
             @toolbar.css "left", @element.offset().left
@@ -309,6 +309,7 @@
 
         _activated: (event) ->
             widget = event.data
+
             jQuery(@).addClass 'inEditMode'
             #make sure the toolbar has not got the full width of the editable element when floating is set to true
             if widget.options.floating is false
