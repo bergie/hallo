@@ -196,6 +196,10 @@
         setUnmodified: ->
            @originalContent = @getContents()
 
+        # Restore the content original
+        restoreOriginalContent: ->
+            @element.html(@originalContent)
+
         # Execute a contentEditable command
         execute: (command, value) ->
             if document.execCommand command, false, value
