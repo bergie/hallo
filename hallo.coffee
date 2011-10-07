@@ -280,7 +280,7 @@
         _keys: (event) ->
             widget = event.data
             if event.keyCode == 27
-                this.disable # TODO: Why doesnt this work? (neither does widget.disable)
+                do widget.disable
 
         _rangesEqual: (r1, r2) ->
             r1.startContainer is r2.startContainer and r1.startOffset is r2.startOffset and r1.endContainer is r2.endContainer and r1.endOffset is r2.endOffset
