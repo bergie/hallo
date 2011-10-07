@@ -140,7 +140,7 @@
 
         # Only supports one range for now (i.e. no multiselection)
         getSelection: ->
-            if ( $.browser.msie )
+            if ( jQuery.browser.msie )
                 range = document.selection.createRange()
             else
                 if ( window.getSelection )
@@ -158,14 +158,14 @@
             return range
 
         restoreSelection: (range) ->
-            if ( $.browser.msie )
+            if ( jQuery.browser.msie )
                 range.select()
             else
                 window.getSelection().removeAllRanges()
                 window.getSelection().addRange(range)
 
         replaceSelection: (cb) ->
-            if ( $.browser.msie )
+            if ( jQuery.browser.msie )
                 t = document.selection.createRange().text;
                 r = document.selection.createRange()
                 r.pasteHTML(cb(t))
@@ -179,7 +179,7 @@
                 sel.addRange(range);
 
         removeAllSelections: () ->
-            if ( $.browser.msie )
+            if ( jQuery.browser.msie )
                 range.empty()
             else
                 window.getSelection().removeAllRanges()
@@ -211,10 +211,10 @@
                 if @options.floating
                     return [event.pageX, event.pageY]
                 else
-                    if $(event.target).attr('contenteditable') == "true"
-                        containerElement = $(event.target)
+                    if jQuery(event.target).attr('contenteditable') == "true"
+                        containerElement = jQuery(event.target)
                     else
-                        containerElement = $(event.target).parents('[contenteditable]').first()
+                        containerElement = jQuery(event.target).parents('[contenteditable]').first()
 
                     containerPosition = containerElement.position()
                     return [containerPosition.left - @options.offset.x, containerPosition.top - @options.offset.y]
@@ -301,8 +301,8 @@
                 #widget.toolbar.show()
 
             # add 'inEditMode' class onto the activated element
-            $(@).addClass('inEditMode')
-            widget.toolbar.css "width", $(@).width()+26
+            jQuery(@).addClass 'inEditMode'
+            widget.toolbar.css "width", jQuery(@).width()+26
             widget._trigger "activated", event
 
         _deactivated: (event) ->
