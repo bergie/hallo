@@ -206,6 +206,7 @@
                 ((1 + Math.random()) * 0x10000|0).toString(16).substring 1
             "#{S4()}#{S4()}-#{S4()}-#{S4()}-#{S4()}-#{S4()}#{S4()}#{S4()}"
 
+        # TODO this function is called way too many times!
         _getToolbarPosition: (event, selection) ->
             if event.originalEvent instanceof MouseEvent
                 if @options.floating
@@ -308,5 +309,7 @@
         _deactivated: (event) ->
             widget = event.data
             widget.toolbar.hide()
+            jQuery(widget.element).removeClass 'inEditMode'
             widget._trigger "deactivated", event
+
 )(jQuery)
