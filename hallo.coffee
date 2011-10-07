@@ -126,7 +126,9 @@
 
             if not @bound
                 @element.bind "focus", this, @_activated
-                @element.bind "blur", this, @_deactivated
+                # Only add the blur event when showalways is set to true
+                if not @options.showalways
+                    @element.bind "blur", this, @_deactivated
                 @element.bind "keyup paste change", this, @_checkModified
                 @element.bind "keyup mouseup", this, @_checkSelection
                 widget = this
@@ -166,7 +168,7 @@
             if ( $.browser.msie )
                 t = document.selection.createRange().text;
                 r = document.selection.createRange()
-                r.pasteHTML(cb(t));
+                r.pasteHTML(cb(t))
             else
                 sel = window.getSelection();
                 range = sel.getRangeAt(0);
@@ -212,7 +214,7 @@
                     if $(event.target).attr('contenteditable') == "true"
                         containerElement = $(event.target)
                     else
-                        containerElement = $(event.target).parent('[contenteditable]').first()
+                        containerElement = $(event.target).parents('[contenteditable]').first()
 
                     containerPosition = containerElement.position()
                     return [containerPosition.left - @options.offset.x, containerPosition.top - @options.offset.y]
@@ -225,10 +227,12 @@
 
             position = [tmpSpan.offset().left, tmpSpan.offset().top]
             tmpSpan.remove()
-            position
+            if not @options.showalways
+                position
 
         _prepareToolbar: ->
-            @toolbar = jQuery('<div></div>').hide()
+            that = @
+            @toolbar = jQuery('<div></div>').addClass('halloToolbar').hide()
             @toolbar.css "position", "absolute"
             @toolbar.css "top", @element.offset().top - 20
             @toolbar.css "left", @element.offset().left
@@ -239,9 +243,10 @@
             @element.bind "halloselected", (event, data) ->
                 widget = data.editable
                 position = widget._getToolbarPosition data.originalEvent, data.selection
-                widget.toolbar.css "top", position[1]
-                widget.toolbar.css "left", position[0]
-                widget.toolbar.show()
+                if position
+                    widget.toolbar.css "top", position[1]
+                    widget.toolbar.css "left", position[0]
+                    widget.toolbar.show()
 
             @element.bind "hallounselected", (event, data) ->
                 if not that.options.showalways
@@ -290,10 +295,14 @@
                     originalEvent: event
         _activated: (event) ->
             widget = event.data
-            if widget.toolbar.html() isnt ""
-                widget.toolbar.css "top", widget.element.offset().top - widget.toolbar.height()
+            #  avoid jumping of the toolbar Todo:: look into jumpy toolbar
+            #if widget.toolbar.html() isnt ""
+                #widget.toolbar.css "top", widget.element.offset().top - widget.toolbar.height()
                 #widget.toolbar.show()
 
+            # add 'inEditMode' class onto the activated element
+            $(@).addClass('inEditMode')
+            widget.toolbar.css "width", $(@).width()+26
             widget._trigger "activated", event
 
         _deactivated: (event) ->
