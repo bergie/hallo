@@ -9,6 +9,12 @@
       options: {
         editable: true,
         plugins: {},
+        floating: true,
+        offset: {
+          x: 0,
+          y: 0
+        },
+        showalways: false,
         activated: function() {},
         deactivated: function() {},
         selected: function() {},
@@ -63,6 +69,34 @@
       activate: function() {
         return this.element.focus();
       },
+      getSelection: function() {
+        var range, userSelection;
+        if ($.browser.msie) {
+          range = document.selection.createRange();
+        } else {
+          if (window.getSelection) {
+            userSelection = window.getSelection();
+          } else if (document.selection) {
+            userSelection = document.selection.createRange();
+          } else {
+            throw "Your browser does not support selection handling";
+          }
+          if (userSelection.getRangeAt) {
+            range = userSelection.getRangeAt(0);
+          } else {
+            range = userSelection;
+          }
+        }
+        return range;
+      },
+      restoreSelection: function(range) {
+        if ($.browser.msie) {
+          return range.select();
+        } else {
+          window.getSelection().removeAllRanges();
+          return window.getSelection().addRange(range);
+        }
+      },
       replaceSelection: function(cb) {
         var newTextNode, r, range, sel, t;
         if ($.browser.msie) {
@@ -77,6 +111,13 @@
           range.setStartAfter(newTextNode);
           sel.removeAllRanges();
           return sel.addRange(range);
+        }
+      },
+      removeAllSelections: function() {
+        if ($.browser.msie) {
+          return range.empty();
+        } else {
+          return window.getSelection().removeAllRanges();
         }
       },
       getContents: function() {
@@ -101,9 +142,19 @@
         return "" + (S4()) + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + (S4()) + (S4());
       },
       _getToolbarPosition: function(event, selection) {
-        var newRange, position, range, tmpSpan;
+        var containerElement, containerPosition, newRange, position, range, tmpSpan;
         if (event.originalEvent instanceof MouseEvent) {
-          return [event.pageX, event.pageY];
+          if (this.options.floating) {
+            return [event.pageX, event.pageY];
+          } else {
+            if ($(event.target).attr('contenteditable') === "true") {
+              containerElement = $(event.target);
+            } else {
+              containerElement = $(event.target).parent('[contenteditable]').first();
+            }
+            containerPosition = containerElement.position();
+            return [containerPosition.left - this.options.offset.x, containerPosition.top - this.options.offset.y];
+          }
         }
         range = selection.getRangeAt(0);
         tmpSpan = jQuery("<span/>");
@@ -115,6 +166,8 @@
         return position;
       },
       _prepareToolbar: function() {
+        var that;
+        that = this;
         this.toolbar = jQuery('<div class="hallotoolbar"></div>').hide();
         this.toolbar.css("position", "absolute");
         this.toolbar.css("top", this.element.offset().top - 20);
@@ -132,7 +185,9 @@
           return widget.toolbar.show();
         });
         return this.element.bind("hallounselected", function(event, data) {
-          return data.editable.toolbar.hide();
+          if (!that.options.showalways) {
+            return data.editable.toolbar.hide();
+          }
         });
       },
       _checkModified: function(event) {
