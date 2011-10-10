@@ -10,7 +10,7 @@
       _create: function() {
         var buttonize, buttonset, widget;
         widget = this;
-        buttonset = jQuery("<span></span>");
+        buttonset = jQuery(("<span id=\"" + this.options.uuid + "-") + widget.widgetName + "\"></span>");
         buttonize = __bind(function(type, label) {
           var button, id;
           id = "" + this.options.uuid + "-" + type;

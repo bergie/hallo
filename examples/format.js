@@ -11,7 +11,7 @@
       _create: function() {
         var buttonize, buttonset, format, widget, _i, _len, _ref;
         widget = this;
-        buttonset = jQuery("<span></span>");
+        buttonset = jQuery(("<span id=\"" + this.options.uuid + "-") + widget.widgetName + "\"></span>");
         buttonize = __bind(function(format) {
           var button, id, label;
           label = format.substr(0, 1).toUpperCase();
