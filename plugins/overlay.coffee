@@ -142,9 +142,9 @@
 
         _getMeasures: ->
             m =
-                editableHeight: @options.toolbar.outerHeight() + @options.currentEditable.outerHeight()
+                editableHeight: @options.currentEditable.outerHeight()
                 editableWidth: @options.currentEditable.outerWidth()
-                editableTop: parseInt @options.toolbar.css 'top'
+                editableTop: parseInt @options.currentEditable.offset().top
                 editableLeft: parseInt @options.currentEditable.offset().left
                 windowWidth: jQuery(window).width()
                 documentHeight: jQuery(window.document).height()
@@ -158,6 +158,5 @@
                 position: 'absolute'
                 backgroundColor: @options.backgroundColor
                 opacity: @.options.opacity
-
 
 )(jQuery)
