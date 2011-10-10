@@ -9,6 +9,12 @@
       options: {
         editable: true,
         plugins: {},
+        floating: true,
+        offset: {
+          x: 0,
+          y: 0
+        },
+        showalways: false,
         activated: function() {},
         deactivated: function() {},
         selected: function() {},
@@ -53,7 +59,9 @@
         this.element.attr("contentEditable", true);
         if (!this.bound) {
           this.element.bind("focus", this, this._activated);
-          this.element.bind("blur", this, this._deactivated);
+          if (!this.options.showalways) {
+            this.element.bind("blur", this, this._deactivated);
+          }
           this.element.bind("keyup paste change", this, this._checkModified);
           this.element.bind("keyup mouseup", this, this._checkSelection);
           widget = this;
@@ -63,9 +71,37 @@
       activate: function() {
         return this.element.focus();
       },
+      getSelection: function() {
+        var range, userSelection;
+        if (jQuery.browser.msie) {
+          range = document.selection.createRange();
+        } else {
+          if (window.getSelection) {
+            userSelection = window.getSelection();
+          } else if (document.selection) {
+            userSelection = document.selection.createRange();
+          } else {
+            throw "Your browser does not support selection handling";
+          }
+          if (userSelection.getRangeAt) {
+            range = userSelection.getRangeAt(0);
+          } else {
+            range = userSelection;
+          }
+        }
+        return range;
+      },
+      restoreSelection: function(range) {
+        if (jQuery.browser.msie) {
+          return range.select();
+        } else {
+          window.getSelection().removeAllRanges();
+          return window.getSelection().addRange(range);
+        }
+      },
       replaceSelection: function(cb) {
         var newTextNode, r, range, sel, t;
-        if ($.browser.msie) {
+        if (jQuery.browser.msie) {
           t = document.selection.createRange().text;
           r = document.selection.createRange();
           return r.pasteHTML(cb(t));
@@ -79,6 +115,13 @@
           return sel.addRange(range);
         }
       },
+      removeAllSelections: function() {
+        if (jQuery.browser.msie) {
+          return range.empty();
+        } else {
+          return window.getSelection().removeAllRanges();
+        }
+      },
       getContents: function() {
         return this.element.html();
       },
@@ -87,6 +130,9 @@
       },
       setUnmodified: function() {
         return this.originalContent = this.getContents();
+      },
+      restoreOriginalContent: function() {
+        return this.element.html(this.originalContent);
       },
       execute: function(command, value) {
         if (document.execCommand(command, false, value)) {
@@ -101,9 +147,19 @@
         return "" + (S4()) + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + (S4()) + (S4());
       },
       _getToolbarPosition: function(event, selection) {
-        var newRange, position, range, tmpSpan;
+        var containerElement, containerPosition, newRange, position, range, tmpSpan;
         if (event.originalEvent instanceof MouseEvent) {
-          return [event.pageX, event.pageY];
+          if (this.options.floating) {
+            return [event.pageX, event.pageY];
+          } else {
+            if (jQuery(event.target).attr('contenteditable') === "true") {
+              containerElement = jQuery(event.target);
+            } else {
+              containerElement = jQuery(event.target).parents('[contenteditable]').first();
+            }
+            containerPosition = containerElement.position();
+            return [containerPosition.left - this.options.offset.x, containerPosition.top - this.options.offset.y];
+          }
         }
         range = selection.getRangeAt(0);
         tmpSpan = jQuery("<span/>");
@@ -112,10 +168,14 @@
         newRange.insertNode(tmpSpan.get(0));
         position = [tmpSpan.offset().left, tmpSpan.offset().top];
         tmpSpan.remove();
-        return position;
+        if (!this.options.showalways) {
+          return position;
+        }
       },
       _prepareToolbar: function() {
-        this.toolbar = jQuery('<div></div>').hide();
+        var that;
+        that = this;
+        this.toolbar = jQuery('<div></div>').addClass('halloToolbar').hide();
         this.toolbar.css("position", "absolute");
         this.toolbar.css("top", this.element.offset().top - 20);
         this.toolbar.css("left", this.element.offset().left);
@@ -127,12 +187,16 @@
           var position, widget;
           widget = data.editable;
           position = widget._getToolbarPosition(data.originalEvent, data.selection);
-          widget.toolbar.css("top", position[1]);
-          widget.toolbar.css("left", position[0]);
-          return widget.toolbar.show();
+          if (position) {
+            widget.toolbar.css("top", position[1]);
+            widget.toolbar.css("left", position[0]);
+            return widget.toolbar.show();
+          }
         });
         return this.element.bind("hallounselected", function(event, data) {
-          return data.editable.toolbar.hide();
+          if (!that.options.showalways) {
+            return data.editable.toolbar.hide();
+          }
         });
       },
       _checkModified: function(event) {
@@ -192,15 +256,15 @@
       _activated: function(event) {
         var widget;
         widget = event.data;
-        if (widget.toolbar.html() !== "") {
-          widget.toolbar.css("top", widget.element.offset().top - widget.toolbar.height());
-        }
+        jQuery(this).addClass('inEditMode');
+        widget.toolbar.css("width", jQuery(this).width() + 26);
         return widget._trigger("activated", event);
       },
       _deactivated: function(event) {
         var widget;
         widget = event.data;
         widget.toolbar.hide();
+        jQuery(widget.element).removeClass('inEditMode');
         return widget._trigger("deactivated", event);
       }
     });
