@@ -280,23 +280,26 @@
         _checkSelection: (event) ->
             widget = event.data
             sel = window.getSelection()
-            if sel.type is "Caret"
-                if widget.selection
-                    widget.selection = null
-                    widget._trigger "unselected", null,
-                        editable: widget
-                        originalEvent: event
-                return
+
+            # TODO: sel.type is not crossbrowser compatible
+            #if sel.type is "Caret"
+            #    if widget.selection
+            #        widget.selection = null
+            #        widget._trigger "unselected", null,
+            #            editable: widget
+            #            originalEvent: event
+            #    return
 
             selectedRanges = []
             changed = not widget.section or (sel.rangeCount != widget.selection.length)
 
-            for i in [0..sel.rangeCount]
-                range = sel.getRangeAt(i).cloneRange()
-                selectedRanges[i] = range
+            if(sel.rangeCount > 0) #fixing possible chrome error on click on editButton: "Uncaught Error: INDEX_SIZE_ERR: DOM Exception 1"
+                for i in [0..sel.rangeCount]
+                    range = sel.getRangeAt(i).cloneRange()
+                    selectedRanges[i] = range
 
-                changed = true if not changed and not widget._rangesEqual(range, widget.selection[i])
-                ++i
+                    changed = true if not changed and not widget._rangesEqual(range, widget.selection[i])
+                    ++i
             widget.selection = selectedRanges
             if changed
                 widget._trigger "selected", null,
