@@ -12,7 +12,7 @@
 #   It requires that all widgets have an id consisting of the uuid and the name for the surrounding element
 #   (<span id=\"#{@options.uuid}-" + widget.widgetName + "\">)
 #
-#   The only option is 'after', which should be an array of widgetnames, after which a linebreak should be inserted
+#   The only option is 'after', which should be an array of widgetnames after which a linebreak should be inserted
 #
 ((jQuery) ->
     jQuery.widget "IKS.hallolinebreak",
