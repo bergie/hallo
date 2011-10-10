@@ -83,7 +83,7 @@
           });
           return this.options.pieces.bottom.css({
             top: m.editableTop + m.editableHeight - this.options.offsetBottom,
-            height: m.documentHeight - m.editableTop + m.editableHeight + this.options.offsetBottom
+            height: m.documentHeight - (m.editableTop + m.editableHeight) + this.options.offsetBottom
           });
         }
       },
@@ -122,7 +122,7 @@
           top: m.editableTop + m.editableHeight - this.options.offsetBottom,
           left: 0,
           width: '100%',
-          height: m.documentHeight - m.editableTop + m.editableHeight + this.options.offsetBottom
+          height: m.documentHeight - (m.editableTop + m.editableHeight) + this.options.offsetBottom
         });
         jQuery(document.body).append(bottom);
         this.options.pieces.bottom = bottom;
@@ -137,9 +137,9 @@
       _getMeasures: function() {
         var m;
         m = {
-          editableHeight: this.options.toolbar.outerHeight() + this.options.currentEditable.outerHeight(),
+          editableHeight: this.options.currentEditable.outerHeight(),
           editableWidth: this.options.currentEditable.outerWidth(),
-          editableTop: parseInt(this.options.toolbar.css('top')),
+          editableTop: parseInt(this.options.currentEditable.offset().top),
           editableLeft: parseInt(this.options.currentEditable.offset().left),
           windowWidth: jQuery(window).width(),
           documentHeight: jQuery(window.document).height()

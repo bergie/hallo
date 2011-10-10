@@ -96,7 +96,7 @@
 
                 @options.pieces.bottom.css
                     top: m.editableTop + m.editableHeight - @options.offsetBottom
-                    height: m.documentHeight - m.editableTop + m.editableHeight + @options.offsetBottom
+                    height: m.documentHeight - (m.editableTop + m.editableHeight) + @options.offsetBottom
 
         _createOverlay: () ->
             m = @_getMeasures();
@@ -133,7 +133,7 @@
                 top: m.editableTop + m.editableHeight - @options.offsetBottom
                 left: 0
                 width: '100%'
-                height: m.documentHeight - m.editableTop + m.editableHeight + @options.offsetBottom
+                height: m.documentHeight - (m.editableTop + m.editableHeight) + @options.offsetBottom
             jQuery(document.body).append bottom
             @options.pieces.bottom = bottom
 
