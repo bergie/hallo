@@ -10,7 +10,7 @@
 
         _create: ->
             widget = this
-            buttonset = jQuery "<span id=\"#{@options.uuid}-" + widget.widgetName + "\"></span>"
+            buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
             buttonize = (cmd, label) =>
                 id = "#{@options.uuid}-#{cmd}"
                 buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\">#{label}</label>").button()
