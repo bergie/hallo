@@ -30,7 +30,7 @@
                 return false
             dialog.find("form").submit dialogSubmitCb
 
-            buttonset = jQuery "<span></span>"
+            buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
             buttonize = (type) =>
                 id = "#{@options.uuid}-#{type}"
                 buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\">#{type}</label>").button()
