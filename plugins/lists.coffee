@@ -20,7 +20,7 @@
                     cmd = jQuery(this).attr "hallo-command"
                     widget.options.editable.execute cmd
 
-            buttonize "Ordered", "OL"
+            #buttonize "Ordered", "OL"
             buttonize "Unordered", "UL"
 
             buttonset.buttonset()
