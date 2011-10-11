@@ -13,7 +13,7 @@
             buttonset = jQuery "<span id=\"#{@options.uuid}-" + widget.widgetName + "\"></span>"
             buttonize = (alignment) =>
                 id = "#{@options.uuid}-#{alignment}"
-                buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\">#{alignment}</label>").button()
+                buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\" class=\"#{alignment}_button\" >#{alignment}</label>").button()
                 button = jQuery "##{id}", buttonset
                 button.attr "hallo-command", "justify" + alignment
                 button.bind "change", (event) ->
