@@ -11,7 +11,7 @@
 
         _create: ->
             widget = this
-            buttonset = jQuery "<span></span>"
+            buttonset = jQuery "<span id=\"#{@options.uuid}-" + widget.widgetName + "\"></span>"
             id = "#{@options.uuid}-#paragraph"
             label = "P"
             buttonset.append jQuery("<input id=\"#{id}\" type=\"radio\" /><label for=\"#{id}\">#{label}</label>").button()

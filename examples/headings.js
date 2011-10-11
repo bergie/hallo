@@ -11,7 +11,7 @@
       _create: function() {
         var button, buttonize, buttonset, header, id, label, widget, _i, _len, _ref;
         widget = this;
-        buttonset = jQuery("<span></span>");
+        buttonset = jQuery(("<span id=\"" + this.options.uuid + "-") + widget.widgetName + "\"></span>");
         id = "" + this.options.uuid + "-#paragraph";
         label = "P";
         buttonset.append(jQuery("<input id=\"" + id + "\" type=\"radio\" /><label for=\"" + id + "\">" + label + "</label>").button());
