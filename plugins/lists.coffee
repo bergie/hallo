@@ -14,6 +14,7 @@
             buttonize = (type, label) =>
                 id = "#{@options.uuid}-#{type}"
                 buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\" class=\"#{type}_button\">#{label}</label>").button()
+                buttonset.children("label").unbind('mouseout')
                 button = jQuery "##{id}", buttonset
                 button.attr "hallo-command", "insert" + type + "List"
                 button.bind "change", (event) ->

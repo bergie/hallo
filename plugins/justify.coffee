@@ -14,6 +14,7 @@
             buttonize = (alignment) =>
                 id = "#{@options.uuid}-#{alignment}"
                 buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\" class=\"#{alignment}_button\" >#{alignment}</label>").button()
+                buttonset.children("label").unbind('mouseout')
                 button = jQuery "##{id}", buttonset
                 button.attr "hallo-command", "justify" + alignment
                 button.bind "change", (event) ->

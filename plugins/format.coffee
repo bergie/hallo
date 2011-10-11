@@ -16,6 +16,7 @@
                 label = format.substr(0, 1).toUpperCase()
                 id = "#{@options.uuid}-#{format}"
                 buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\" class=\"#{format}_button\">#{label}</label>").button()
+                buttonset.children("label").unbind('mouseout')
                 button = jQuery "##{id}", buttonset
                 button.attr "hallo-command", format
                 button.addClass format
