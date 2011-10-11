@@ -216,9 +216,9 @@
 
                     containerPosition = containerElement.position()
                     switch @options.offset.y
-                        when "top" then offsety = containerPosition.top - jQuery('.halloToolbar').first().outerHeight()
-                        #TODO: "bottom" causes an issue with the overlay
-                        #when "bottom" then offsety = containerPosition.top + containerElement.outerHeight()
+                        when "top" then offsety = containerPosition.top - @toolbar.outerHeight()
+                        #TODO: "bottom" may break style
+                        when "bottom" then offsety = containerPosition.top + containerElement.outerHeight()
                         else offsety = containerPosition.top - @options.offset.y;
 
                     return [containerPosition.left - @options.offset.x, offsety]
