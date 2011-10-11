@@ -17,9 +17,15 @@
                 button = jQuery "##{id}", buttonset
                 button.attr "hallo-command", "insert" + type + "List"
                 button.bind "change", (event) ->
-                    cmd = jQuery(this).attr "hallo-command"
-                    widget.options.editable.execute cmd
-
+                    list = jQuery(this).attr "hallo-command"
+                    widget.options.editable.execute list
+                @element.bind "keyup paste change mouseup", (event) ->
+                    if document.queryCommandState "insert" + type + "List"
+                        button.attr "checked", true
+                        button.button "refresh"
+                    else
+                        button.attr "checked", false
+                        button.button "refresh"
             #buttonize "Ordered", "OL"
             buttonize "Unordered", "UL"
 

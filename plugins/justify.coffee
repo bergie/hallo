@@ -17,9 +17,15 @@
                 button = jQuery "##{id}", buttonset
                 button.attr "hallo-command", "justify" + alignment
                 button.bind "change", (event) ->
-                    cmd = jQuery(this).attr "hallo-command"
-                    widget.options.editable.execute cmd
-
+                    justify = jQuery(this).attr "hallo-command"
+                    widget.options.editable.execute justify
+                @element.bind "keyup paste change mouseup", (event) ->
+                    if document.queryCommandState "justify" + alignment
+                        button.attr "checked", true
+                        button.button "refresh"
+                    else
+                        button.attr "checked", false
+                        button.button "refresh"
             buttonize "Left"
             buttonize "Center"
             buttonize "Right"
