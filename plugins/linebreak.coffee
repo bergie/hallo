@@ -31,7 +31,7 @@
                 rowcounter++
                 for buttonset in buttonsets
                     queuedButtonsets = jQuery(queuedButtonsets).add(jQuery(buttonset))
-                    if buttonset.id == @options.uuid + '-' + row
+                    if jQuery(buttonset).hasClass row
                         queuedButtonsets.wrapAll('<div class="hallo-buttonrow-' + rowcounter + '" />')
                         buttonsets = buttonsets.not(queuedButtonsets)
                         queuedButtonsets = jQuery()
