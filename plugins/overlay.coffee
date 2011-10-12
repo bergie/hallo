@@ -49,7 +49,7 @@
                     if widget.options.visible
                         widget.updateOverlay()
 
-                # abort editing when pressing ESCAPE
+                # abort editing when pressing ESCAPE --- This should be covered in hallo core, it's just not working yet
                 widget.options.editable.element.keydown (event, data) ->
                     if event.keyCode == 27
                         widget.options.editable.restoreOriginalContent()
