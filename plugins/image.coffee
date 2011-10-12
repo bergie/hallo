@@ -24,18 +24,18 @@
             @options.dialog = jQuery "<div id=\"#{dialogId}\"><div class=\"#{widget.widgetName}-dialognav\">Suggestions | Search | Upload</div><div class=\"#{widget.widgetName}-dialogcontent\"><img src=\"http://www.wordtravels.com/dbpics/countries/Florida/Pensacola_Beach.jpg\" class=\"#{widget.widgetName}-activeimage\" /></div></div>"
 
             insertImage = () ->
-                uri = $(this).attr('src')
-                document.execCommand "insertImage", null, uri #This may need to insert an image that does not have the same URL as the preview image, since it may be a different size
+                #This may need to insert an image that does not have the same URL as the preview image, since it may be a different size
+                document.execCommand "insertImage", null, $(this).attr('src')
                 widget._closeDialog()
 
-            @options.dialog.find("#activeimage").click insertImage
+            @options.dialog.find(".halloimage-activeimage").click insertImage
 
             buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
 
             id = "#{@options.uuid}-image"
             buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\" class=\"image_button\" >Image</label>").button()
             button = jQuery "##{id}", buttonset
-            button.bind "click", (event) ->
+            button.bind "change", (event) ->
                 if widget.options.dialog.dialog "isOpen"
                     widget._closeDialog()
                 else
