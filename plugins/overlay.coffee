@@ -153,10 +153,8 @@
             return m
 
         _getBasicPiece: ->
-            p = jQuery('<div>')
+            p = jQuery('<div class="halloOverlay">')
             p.css
                 position: 'absolute'
-                backgroundColor: @options.backgroundColor
-                opacity: @.options.opacity
 
 )(jQuery)
