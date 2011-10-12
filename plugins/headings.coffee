@@ -14,7 +14,8 @@
             buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
             id = "#{@options.uuid}-#paragraph"
             label = "P"
-            buttonset.append jQuery("<input id=\"#{id}\" type=\"radio\" /><label for=\"#{id}\">#{label}</label>").button()
+            buttonset.append jQuery("<input id=\"#{id}\" type=\"radio\" /><label for=\"#{id}\" class=\"p_button\">#{label}</label>").button()
+            buttonset.children("label").unbind('mouseout')
             button = jQuery "##{id}", buttonset
             button.attr "hallo-command", "removeFormat"
             button.bind "change", (event) ->
@@ -25,7 +26,8 @@
             buttonize = (headerSize) =>
                 label = "H" + headerSize
                 id = "#{@options.uuid}-#{headerSize}"
-                buttonset.append jQuery("<input id=\"#{id}\" type=\"radio\" /><label for=\"#{id}\">#{label}</label>").button()
+                buttonset.append jQuery("<input id=\"#{id}\" type=\"radio\" /><label for=\"#{id}\" class=\"h#{headerSize}_button\">#{label}</label>").button()
+                buttonset.children("label").unbind('mouseout')
                 button = jQuery "##{id}", buttonset
                 button.attr "hallo-size", "H"+headerSize
                 button.bind "change", (event) ->
