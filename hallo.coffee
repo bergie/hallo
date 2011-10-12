@@ -37,10 +37,10 @@
     # element is focused:
     #
     #    jQuery('selector').hallo({
-    #       showalways: true
+    #       showAlways: true
     #    });
     #
-    # showalways is false by default
+    # showAlways is false by default
     #
     # ## Events
     #
@@ -86,7 +86,7 @@
             plugins: {}
             floating: true
             offset: {x:0,y:0}
-            showalways: false
+            showAlways: false
             activated: ->
             deactivated: ->
             selected: ->
@@ -126,8 +126,8 @@
 
             if not @bound
                 @element.bind "focus", this, @_activated
-                # Only add the blur event when showalways is set to true
-                if not @options.showalways
+                # Only add the blur event when showAlways is set to true
+                if not @options.showAlways
                     @element.bind "blur", this, @_deactivated
                 @element.bind "keyup paste change", this, @_checkModified
                 @element.bind "keyup mouseup", this, @_checkSelection
@@ -260,7 +260,7 @@
                         that.toolbar.show()
 
                 @element.bind "hallounselected", (event, data) ->
-                    if not that.options.showalways
+                    if not that.options.showAlways
                         data.editable.toolbar.hide()
 
                 jQuery(window).resize (event) ->
