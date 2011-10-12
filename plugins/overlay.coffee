@@ -22,8 +22,6 @@
             editable: null
             toolbar: null
             uuid: ""
-            opacity: 0.5
-            backgroundColor: '#000000'
 
             # The pieces of the overlay are re-positioned when the editable is modified. This value defines
             # the minimal interval between two repositioning to avoid performance issues
