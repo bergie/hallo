@@ -33,7 +33,7 @@
             buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
 
             id = "#{@options.uuid}-image"
-            buttonset.append jQuery("<button id=\"#{id}\">Image</button>").button()
+            buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\" class=\"image_button\" >Image</label>").button()
             button = jQuery "##{id}", buttonset
             button.bind "click", (event) ->
                 if widget.options.dialog.dialog "isOpen"
