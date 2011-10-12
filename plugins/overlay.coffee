@@ -41,7 +41,7 @@
 
             if not @options.bound
                 @options.bound = true
-                widget.options.editable.element.bind "halloselected", (event, data) ->
+                widget.options.editable.element.bind "halloactivated", (event, data) ->
                     widget.options.currentEditable = jQuery(event.target)
                     widget.showOverlay()
 
