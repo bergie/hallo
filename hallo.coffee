@@ -220,11 +220,10 @@
                 top: @element.offset().top - this.toolbar.outerHeight()
                 left: @element.offset().left
 
-        _getCaretPosition: (selection) ->
-            range = selection.getRangeAt 0
+        _getCaretPosition: (range) ->
             tmpSpan = jQuery "<span/>"
             newRange = document.createRange()
-            newRange.setStart selection.focusNode, range.endOffset
+            newRange.setStart range.endContainer, range.endOffset
             newRange.insertNode tmpSpan.get 0
 
             position = {top: tmpSpan.offset().top, left: tmpSpan.offset().left}
@@ -286,45 +285,30 @@
         _rangesEqual: (r1, r2) ->
             r1.startContainer is r2.startContainer and r1.startOffset is r2.startOffset and r1.endContainer is r2.endContainer and r1.endOffset is r2.endOffset
 
+        # Check if some text is selected, and if this selection has changed. If it changed,
+        # trigger the "halloselected" event
         _checkSelection: (event) ->
             widget = event.data
-            sel = window.getSelection()
+            sel = widget.getSelection()
 
-            # TODO: sel.type is not crossbrowser compatible
-            #if sel.type is "Caret"
-            #    if widget.selection
-            #        widget.selection = null
-            #        widget._trigger "unselected", null,
-            #            editable: widget
-            #            originalEvent: event
-            #    return
+            if sel.collapsed is true
+                if widget.selection
+                    widget.selection = null
+                    widget._trigger "unselected", null,
+                        editable: widget
+                        originalEvent: event
+                return
 
-            selectedRanges = []
-            changed = not widget.section or (sel.rangeCount != widget.selection.length)
-
-            if(sel.rangeCount > 0) #fixing possible chrome error on click on editButton: "Uncaught Error: INDEX_SIZE_ERR: DOM Exception 1"
-                for i in [0..sel.rangeCount]
-                    range = sel.getRangeAt(i).cloneRange()
-                    selectedRanges[i] = range
-
-                    changed = true if not changed and not widget._rangesEqual(range, widget.selection[i])
-                    ++i
-            widget.selection = selectedRanges
-            if changed
+            if !widget.selection or not widget._rangesEqual sel, widget.selection
+                widget.selection = sel.cloneRange();
                 widget._trigger "selected", null,
                     editable: widget
-                    selection: sel
-                    ranges: selectedRanges
+                    selection: widget.selection
+                    ranges: [widget.selection]
                     originalEvent: event
 
         _activated: (event) ->
             widget = event.data
-            #  avoid jumping of the toolbar Todo:: look into jumpy toolbar
-            #if widget.toolbar.html() isnt ""
-                #widget.toolbar.css "top", widget.element.offset().top - widget.toolbar.height()
-                #widget.toolbar.show()
-
-            # add 'inEditMode' class onto the activated element
             jQuery(@).addClass 'inEditMode'
             widget.toolbar.css "width", jQuery(@).width()+26
             widget._trigger "activated", event
