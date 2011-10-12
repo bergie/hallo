@@ -41,7 +41,6 @@
                     dialog.dialog('open')
 
                 @element.bind "keyup paste change mouseup", (event) ->
-                    console.log(jQuery(event.target)[0].nodeName is "A")
                     if jQuery(event.target)[0].nodeName is "A"
                         button.attr "checked", true
                         button.next().addClass "ui-state-active"
