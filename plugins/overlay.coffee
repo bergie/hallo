@@ -58,6 +58,10 @@
                         widget.options.editable.element.blur()
                         widget.hideOverlay()
 
+                jQuery(window).resize ()->
+                    if widget.options.visible
+                        widget.updateOverlay(true)
+
         _init: ->
 
         showOverlay: ->
@@ -78,10 +82,13 @@
 
             @options.editable._deactivated {data: @options.editable}
 
-        updateOverlay: ->
-            # trying to avoid performance issue
+        # To prevent performance issue, we only allow the update if the last update did not occure
+        # a few millieconds ago (see options.updateInterval)
+        # Pass true as first argument if you want to force the update
+        updateOverlay: (force) ->
             now = new Date().getTime();
-            if @options.lastUpdate and now - @options.lastUpdate < @options.updateInterval
+            # trying to avoid performance issue
+            if !force and @options.lastUpdate and now - @options.lastUpdate < @options.updateInterval
                 return
 
             @options.lastUpdate = now
@@ -90,9 +97,11 @@
 
                 @options.pieces.left.css
                     height: m.editableHeight - @options.offsetTop - @options.offsetBottom
+                    width: m.editableLeft + @options.offsetLeft
 
                 @options.pieces.right.css
                     height: m.editableHeight - @options.offsetTop - @options.offsetBottom
+                    width: m.windowWidth - (m.editableLeft + m.editableWidth) + @options.offsetRight
 
                 @options.pieces.bottom.css
                     top: m.editableTop + m.editableHeight - @options.offsetBottom
