@@ -210,36 +210,26 @@
                 ((1 + Math.random()) * 0x10000|0).toString(16).substring 1
             "#{S4()}#{S4()}-#{S4()}-#{S4()}-#{S4()}-#{S4()}#{S4()}#{S4()}"
 
-        # TODO this function is called way too many times!
         _getToolbarPosition: (event, selection) ->
-            if event.originalEvent instanceof MouseEvent
-                if @options.floating
-                    return [event.pageX, event.pageY]
+            if @options.floating
+                if event.originalEvent instanceof MouseEvent
+                    return { top: event.pageY, left: event.pageX }
                 else
-                    if jQuery(event.target).attr('contenteditable') == "true"
-                        containerElement = jQuery(event.target)
-                    else
-                        containerElement = jQuery(event.target).parents('[contenteditable]').first()
+                    return this._getCaretPosition(selection)
+            else
+                top: @element.offset().top - this.toolbar.outerHeight()
+                left: @element.offset().left
 
-                    containerPosition = containerElement.position()
-                    switch @options.offset.y
-                        when "top" then offsety = containerPosition.top - @toolbar.outerHeight()
-                        #TODO: "bottom" may break style
-                        when "bottom" then offsety = containerPosition.top + containerElement.outerHeight()
-                        else offsety = containerPosition.top - @options.offset.y;
-
-                    return [containerPosition.left - @options.offset.x, offsety]
-
+        _getCaretPosition: (selection) ->
             range = selection.getRangeAt 0
             tmpSpan = jQuery "<span/>"
             newRange = document.createRange()
             newRange.setStart selection.focusNode, range.endOffset
             newRange.insertNode tmpSpan.get 0
 
-            position = [tmpSpan.offset().left, tmpSpan.offset().top]
+            position = {top: tmpSpan.offset().top, left: tmpSpan.offset().left}
             tmpSpan.remove()
-            if not @options.showalways
-                position
+            return position
 
         _prepareToolbar: ->
             that = @
@@ -251,17 +241,35 @@
             @toolbar.bind "mousedown", (event) ->
                 event.preventDefault()
 
-            @element.bind "halloselected", (event, data) ->
-                widget = data.editable
-                position = widget._getToolbarPosition data.originalEvent, data.selection
-                if position
-                    widget.toolbar.css "top", position[1]
-                    widget.toolbar.css "left", position[0]
-                    widget.toolbar.show()
+            if !@options.floating
+                @element.bind "halloactivated", (event, data) ->
+                    that._updateToolbarPosition that._getToolbarPosition()
+                    that.toolbar.show()
 
-            @element.bind "hallounselected", (event, data) ->
-                if not that.options.showalways
-                    data.editable.toolbar.hide()
+                @element.bind "hallodeactivated", (event, data) ->
+                    that.toolbar.hide()
+
+                jQuery(window).resize (event) ->
+                    that._updateToolbarPosition that._getToolbarPosition()
+
+            else
+                @element.bind "halloselected", (event, data) ->
+                    widget = data.editable
+                    position = widget._getToolbarPosition data.originalEvent, data.selection
+                    if position
+                        that._updateToolbarPosition position
+                        that.toolbar.show()
+
+                @element.bind "hallounselected", (event, data) ->
+                    if not that.options.showalways
+                        data.editable.toolbar.hide()
+
+                jQuery(window).resize (event) ->
+                    that.toolbar.hide()
+
+        _updateToolbarPosition: (position) ->
+            this.toolbar.css "top", position.top
+            this.toolbar.css "left", position.left
 
         _checkModified: (event) ->
             widget = event.data
@@ -274,6 +282,7 @@
             widget = event.data
             if event.keyCode == 27
                 this.disable # TODO: Why doesnt this work? (neither does widget.disable)
+
         _rangesEqual: (r1, r2) ->
             r1.startContainer is r2.startContainer and r1.startOffset is r2.startOffset and r1.endContainer is r2.endContainer and r1.endOffset is r2.endOffset
 
@@ -307,6 +316,7 @@
                     selection: sel
                     ranges: selectedRanges
                     originalEvent: event
+
         _activated: (event) ->
             widget = event.data
             #  avoid jumping of the toolbar Todo:: look into jumpy toolbar
