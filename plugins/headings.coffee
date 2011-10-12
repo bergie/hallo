@@ -20,7 +20,6 @@
             button.attr "hallo-command", "removeFormat"
             button.bind "change", (event) ->
                 cmd = jQuery(this).attr "hallo-command"
-                alert cmd
                 widget.options.editable.execute cmd
 
             buttonize = (headerSize) =>
