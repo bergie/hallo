@@ -48,7 +48,7 @@
                     widget.showOverlay()
 
                 widget.options.editable.element.bind "hallomodified", (event, data) ->
-                    if widget.visible
+                    if widget.options.visible
                         widget.updateOverlay()
 
                 # abort editing when pressing ESCAPE
