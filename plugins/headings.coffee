@@ -12,7 +12,7 @@
         _create: ->
             widget = this
             buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
-            id = "#{@options.uuid}-#paragraph"
+            id = "#{@options.uuid}-paragraph"
             label = "P"
             buttonset.append jQuery("<input id=\"#{id}\" type=\"radio\" /><label for=\"#{id}\" class=\"p_button\">#{label}</label>").button()
             buttonset.children("label").unbind('mouseout')
@@ -37,6 +37,22 @@
             buttonize header for header in @options.headers
 
             buttonset.buttonset()
+
+            @element.bind "keyup paste change mouseup", (event) ->
+                labelParent = jQuery(buttonset)
+                labelParent.children('input').attr "checked", false
+                format = document.queryCommandValue("formatBlock").toUpperCase()
+
+                if format is "P"
+                    selectedButton = jQuery("##{widget.options.uuid}-paragraph")
+                else
+                    selectedButton = jQuery("[hallo-size='#{format}']")
+
+                selectedButton.attr "checked", true
+                labelParent.children('label').removeClass "ui-state-active"
+                selectedButton.next().addClass "ui-state-active"
+                selectedButton.button("widget").button "refresh"
+
             @options.toolbar.append buttonset
 
         _init: ->
