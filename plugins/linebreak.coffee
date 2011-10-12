@@ -32,14 +32,14 @@
                 for buttonset in buttonsets
                     queuedButtonsets = jQuery(queuedButtonsets).add(jQuery(buttonset))
                     if jQuery(buttonset).hasClass row
-                        queuedButtonsets.wrapAll('<div class="hallo-buttonrow-' + rowcounter + '" />')
+                        queuedButtonsets.wrapAll('<div class="halloButtonrow halloButtonrow-' + rowcounter + '" />')
                         buttonsets = buttonsets.not(queuedButtonsets)
                         queuedButtonsets = jQuery()
                         break
 
             if buttonsets.length > 0
                 rowcounter++
-                buttonsets.wrapAll('<div class="hallo-buttonrow-' + rowcounter + '"" />')
+                buttonsets.wrapAll('<div class="halloButtonrow halloButtonrow-' + rowcounter + '"" />')
 
         _init: ->
 
