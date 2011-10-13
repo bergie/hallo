@@ -310,7 +310,16 @@
         _activated: (event) ->
             widget = event.data
             jQuery(@).addClass 'inEditMode'
-            widget.toolbar.css "width", jQuery(@).width()+26
+            #make sure the toolbar has not got the full width of the editable element when floating is set to true
+            if widget.options.floating is false
+                el = jQuery @
+                widthToAdd = parseFloat el.css('padding-left')
+                widthToAdd += parseFloat el.css('padding-right')
+                widthToAdd += parseFloat el.css('border-left-width')
+                widthToAdd += parseFloat el.css('border-right-width')
+                widget.toolbar.css "width", jQuery(@).width()+widthToAdd
+            else
+                widget.toolbar.css "width", "auto"
             widget._trigger "activated", event
 
         _deactivated: (event) ->
