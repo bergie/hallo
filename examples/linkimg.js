@@ -31,15 +31,26 @@
           return false;
         };
         dialog.find("form").submit(dialogSubmitCb);
-        buttonset = jQuery(("<span id=\"" + this.options.uuid + "-") + widget.widgetName + "\"></span>");
+        buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         buttonize = __bind(function(type) {
           var button, id;
           id = "" + this.options.uuid + "-" + type;
-          buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\">" + type + "</label>").button());
+          buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\" class=\"anchor_button\" >" + type + "</label>").button());
           button = jQuery("#" + id, buttonset);
-          return button.bind("change", function(event) {
+          button.bind("change", function(event) {
             widget.lastSelection = widget.options.editable.getSelection();
             return dialog.dialog('open');
+          });
+          return this.element.bind("keyup paste change mouseup", function(event) {
+            if (jQuery(event.target)[0].nodeName === "A") {
+              button.attr("checked", true);
+              button.next().addClass("ui-state-active");
+              return button.button("refresh");
+            } else {
+              button.attr("checked", false);
+              button.next().removeClass("ui-state-active");
+              return button.button("refresh");
+            }
           });
         }, this);
         if (this.options.link) {

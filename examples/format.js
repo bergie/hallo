@@ -6,19 +6,21 @@
         editable: null,
         toolbar: null,
         uuid: "",
-        formattings: ["bold", "italic", "strikeThrough", "underline"]
+        formattings: ["bold", "italic", "underline"]
       },
       _create: function() {
         var buttonize, buttonset, format, widget, _i, _len, _ref;
         widget = this;
-        buttonset = jQuery(("<span id=\"" + this.options.uuid + "-") + widget.widgetName + "\"></span>");
+        buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         buttonize = __bind(function(format) {
           var button, id, label;
           label = format.substr(0, 1).toUpperCase();
           id = "" + this.options.uuid + "-" + format;
-          buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\">" + label + "</label>").button());
+          buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\" class=\"" + format + "_button\">" + label + "</label>").button());
+          buttonset.children("label").unbind('mouseout');
           button = jQuery("#" + id, buttonset);
           button.attr("hallo-command", format);
+          button.addClass(format);
           button.bind("change", function(event) {
             format = jQuery(this).attr("hallo-command");
             return widget.options.editable.execute(format);

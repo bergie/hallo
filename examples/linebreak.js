@@ -19,8 +19,8 @@
           for (_j = 0, _len2 = buttonsets.length; _j < _len2; _j++) {
             buttonset = buttonsets[_j];
             queuedButtonsets = jQuery(queuedButtonsets).add(jQuery(buttonset));
-            if (buttonset.id === this.options.uuid + '-' + row) {
-              queuedButtonsets.wrapAll('<div class="hallo-buttonrow-' + rowcounter + '" />');
+            if (jQuery(buttonset).hasClass(row)) {
+              queuedButtonsets.wrapAll('<div class="halloButtonrow halloButtonrow-' + rowcounter + '" />');
               buttonsets = buttonsets.not(queuedButtonsets);
               queuedButtonsets = jQuery();
               break;
@@ -29,7 +29,7 @@
         }
         if (buttonsets.length > 0) {
           rowcounter++;
-          return buttonsets.wrapAll('<div class="hallo-buttonrow-' + rowcounter + '"" />');
+          return buttonsets.wrapAll('<div class="halloButtonrow halloButtonrow-' + rowcounter + '"" />');
         }
       },
       _init: function() {}

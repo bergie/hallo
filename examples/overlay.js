@@ -5,8 +5,6 @@
         editable: null,
         toolbar: null,
         uuid: "",
-        opacity: 0.5,
-        backgroundColor: '#000000',
         updateInterval: 100,
         offsetTop: 0,
         offsetLeft: 0,
@@ -19,20 +17,25 @@
         widget = this;
         if (!this.options.bound) {
           this.options.bound = true;
-          widget.options.editable.element.bind("halloselected", function(event, data) {
+          widget.options.editable.element.bind("halloactivated", function(event, data) {
             widget.options.currentEditable = jQuery(event.target);
             return widget.showOverlay();
           });
           widget.options.editable.element.bind("hallomodified", function(event, data) {
-            if (widget.visible) {
+            if (widget.options.visible) {
               return widget.updateOverlay();
             }
           });
-          return widget.options.editable.element.keydown(function(event, data) {
+          widget.options.editable.element.keydown(function(event, data) {
             if (event.keyCode === 27) {
               widget.options.editable.restoreOriginalContent();
               widget.options.editable.element.blur();
               return widget.hideOverlay();
+            }
+          });
+          return jQuery(window).resize(function() {
+            if (widget.options.visible) {
+              return widget.updateOverlay(true);
             }
           });
         }
@@ -66,20 +69,22 @@
           data: this.options.editable
         });
       },
-      updateOverlay: function() {
+      updateOverlay: function(force) {
         var m, now;
         now = new Date().getTime();
-        if (this.options.lastUpdate && now - this.options.lastUpdate < this.options.updateInterval) {
+        if (!force && this.options.lastUpdate && now - this.options.lastUpdate < this.options.updateInterval) {
           return;
         }
         this.options.lastUpdate = now;
         if (this.options.pieces.top) {
           m = this._getMeasures();
           this.options.pieces.left.css({
-            height: m.editableHeight - this.options.offsetTop - this.options.offsetBottom
+            height: m.editableHeight - this.options.offsetTop - this.options.offsetBottom,
+            width: m.editableLeft + this.options.offsetLeft
           });
           this.options.pieces.right.css({
-            height: m.editableHeight - this.options.offsetTop - this.options.offsetBottom
+            height: m.editableHeight - this.options.offsetTop - this.options.offsetBottom,
+            width: m.windowWidth - (m.editableLeft + m.editableWidth) + this.options.offsetRight
           });
           return this.options.pieces.bottom.css({
             top: m.editableTop + m.editableHeight - this.options.offsetBottom,
@@ -150,11 +155,9 @@
       },
       _getBasicPiece: function() {
         var p;
-        p = jQuery('<div>');
+        p = jQuery('<div class="halloOverlay">');
         return p.css({
-          position: 'absolute',
-          backgroundColor: this.options.backgroundColor,
-          opacity: this.options.opacity
+          position: 'absolute'
         });
       }
     });
