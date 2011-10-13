@@ -40,7 +40,7 @@
                 buttonset.children("label").unbind('mouseout')
                 button = jQuery "##{id}", buttonset
                 button.bind "change", (event) ->
-                    # we need to save the current selection because we will loose focus
+                    # we need to save the current selection because we will lose focus
                     widget.lastSelection = widget.options.editable.getSelection()
                     if widget.lastSelection.startContainer.parentNode.href is null
                         jQuery(dialog).children().children(".url").val("http://")
