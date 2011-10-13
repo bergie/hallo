@@ -40,7 +40,7 @@
 
             if buttonsets.length > 0
                 rowcounter++
-                buttonsets.wrapAll('<div class="halloButtonrow halloButtonrow-' + rowcounter + '"" />')
+                buttonsets.wrapAll('<div class="halloButtonrow halloButtonrow-' + rowcounter + '" />')
 
         _init: ->
 
