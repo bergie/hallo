@@ -37,6 +37,7 @@
             buttonize = (type) =>
                 id = "#{@options.uuid}-#{type}"
                 buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\" class=\"anchor_button\" >#{type}</label>").button()
+                buttonset.children("label").unbind('mouseout')
                 button = jQuery "##{id}", buttonset
                 button.bind "change", (event) ->
                     # we need to save the current selection because we will loose focus
