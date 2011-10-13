@@ -13,7 +13,7 @@
                 height: 500
                 title: "Insert Images"
                 modal: false
-                resizeable: false
+                resizable: false
                 draggable: false
             dialog: null
 
