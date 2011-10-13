@@ -46,7 +46,7 @@
                     </div>
                     <div class=\"#{widget.widgetName}-metadata\">
                         <label for=\"caption\">Caption</label><input type=\"text\" id=\"caption\" />
-                        <input type=\"submit\" />
+                        <button>Add Image</button>
                     </div>
                 </div>
                 <div id=\"#{@options.uuid}-tab-search-content\" class=\"#{widget.widgetName}-tab #{widget.widgetName}-tab-search\">SEARCH</div>
@@ -55,7 +55,17 @@
 
             insertImage = () ->
                 #This may need to insert an image that does not have the same URL as the preview image, since it may be a different size
+
+                # Check if we have a selection and fall back to @lastSelection otherwise
+                try
+                    if not widget.options.editable.getSelection()
+                        throw new Error "SelectionNotSet"
+                catch error
+                    widget.options.editable.restoreSelection(widget.lastSelection)
+
                 document.execCommand "insertImage", null, $(this).attr('src')
+                img = document.getSelection().anchorNode.firstChild
+                jQuery(img).attr "alt", jQuery(".caption").value
                 widget._closeDialog()
 
             @options.dialog.find(".halloimage-activeImage").click insertImage
@@ -104,9 +114,12 @@
             # Update active Image
             jQuery("##{@options.uuid}-#{@widgetName}-activeImage").attr "src", jQuery(".#{@widgetName}-imageThumbnailActive").first().attr "src"
 
-            xposition = jQuery(@options.editable.element).offset().left + jQuery(@options.editable.element).outerWidth()
-            yposition = jQuery(@options.toolbar).offset().top - jQuery(document).scrollTop() - 30
+            # Save current caret point
+            @lastSelection = @options.editable.getSelection()
 
+            # Position correctly
+            xposition = jQuery(@options.editable.element).offset().left + jQuery(@options.editable.element).outerWidth() - 3 # 3 is the border width of the contenteditable border
+            yposition = jQuery(@options.toolbar).offset().top - jQuery(document).scrollTop() - 29
             @options.dialog.dialog("option", "position", [xposition, yposition])
             @options.dialog.dialog("open")
 
