@@ -20,7 +20,7 @@
             widget = this
 
             dialogId = "#{@options.uuid}-dialog"
-            dialog = jQuery "<div id=\"#{dialogId}\"><form action=\"#\" method=\"post\"><input class=\"url\" type=\"text\" name=\"url\" size=\"40\" value=\"http://\" /><input type=\"submit\" value=\"Insert\" /></form></div>"
+            dialog = jQuery "<div id=\"#{dialogId}\"><form action=\"#\" method=\"post\" class=\"linkForm\"><input class=\"url\" type=\"text\" name=\"url\" size=\"40\" value=\"http://\" /><input type=\"submit\" value=\"Insert\" /></form></div>"
             dialogSubmitCb = () ->
                 link = $(this).find(".url").val()
                 widget.options.editable.restoreSelection(widget.lastSelection)
