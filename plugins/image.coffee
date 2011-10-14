@@ -43,13 +43,13 @@
                     </div>
                     <div class=\"#{widget.widgetName}-activeImageContainer\">
                         <div class=\"#{widget.widgetName}-activeImageAligner\">
-                            <img src=\"http://imagesus.homeaway.com/mda01/badf2e69babf2f6a0e4b680fc373c041c705b891\" id=\"#{@options.uuid}-#{widget.widgetName}-activeImageBg\" class=\"#{widget.widgetName}-activeImage #{widget.widgetName}-activeImageBg\" />
+                            <img src=\"\" id=\"#{@options.uuid}-#{widget.widgetName}-activeImageBg\" class=\"#{widget.widgetName}-activeImage #{widget.widgetName}-activeImageBg\" />
                             <img src=\"\" id=\"#{@options.uuid}-#{widget.widgetName}-activeImage\" class=\"#{widget.widgetName}-activeImage\" />
                         </div>
                     </div>
                     <div class=\"#{widget.widgetName}-metadata\">
                         <label for=\"caption\">Caption</label><input type=\"text\" id=\"caption\" />
-                        <button>Add Image</button>
+                        <button id=\"#{@options.uuid}-#{widget.widgetName}-addimage\">Add Image</button>
                     </div>
                 </div>
                 <div id=\"#{@options.uuid}-tab-search-content\" class=\"#{widget.widgetName}-tab #{widget.widgetName}-tab-search\">SEARCH</div>
@@ -66,12 +66,12 @@
                 catch error
                     widget.options.editable.restoreSelection(widget.lastSelection)
 
-                document.execCommand "insertImage", null, $(this).attr('src')
+                document.execCommand "insertImage", null, $(".halloimage-activeImage").attr('src')
                 img = document.getSelection().anchorNode.firstChild
                 jQuery(img).attr "alt", jQuery(".caption").value
                 widget._closeDialog()
 
-            @options.dialog.find(".halloimage-activeImage").click insertImage
+            @options.dialog.find(".halloimage-activeImage, ##{widget.options.uuid}-#{widget.widgetName}-addimage").click insertImage
 
             buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
 
@@ -115,7 +115,7 @@
 
         _openDialog: ->
             # Update active Image
-            jQuery("##{@options.uuid}-#{@widgetName}-activeImage").attr "src", jQuery(".#{@widgetName}-imageThumbnailActive").first().attr "src"
+            jQuery(".#{@widgetName}-activeImage").attr "src", jQuery(".#{@widgetName}-imageThumbnailActive").first().attr "src"
 
             # Save current caret point
             @lastSelection = @options.editable.getSelection()
