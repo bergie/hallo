@@ -15,6 +15,8 @@
                 modal: false
                 resizable: false
                 draggable: false
+                close: (ev, ui) ->
+                    jQuery('.image_button').removeClass('ui-state-active')
             dialog: null
 
         _create: ->
