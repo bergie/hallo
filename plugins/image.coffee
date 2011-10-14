@@ -17,7 +17,7 @@
                 resizable: false
                 draggable: true
                 close: (ev, ui) ->
-                    jQuery('.image_button').removeClass('ui-state-active')
+                    jQuery('.image_button').removeClass('ui-state-clicked')
             dialog: null
 
         _create: ->
@@ -114,7 +114,6 @@
 
             id = "#{@options.uuid}-image"
             buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\" class=\"image_button\" >Image</label>").button()
-            buttonset.children("label").unbind('mouseout')
             button = jQuery "##{id}", buttonset
             button.bind "change", (event) ->
                 if widget.options.dialog.dialog "isOpen"
@@ -152,7 +151,7 @@
         _init: ->
 
         _openDialog: ->
-            jQuery('.image_button').addClass('ui-state-active')
+            jQuery('.image_button').addClass('ui-state-clicked')
 
             # Update active Image
             jQuery(".#{@widgetName}-activeImage").attr "src", jQuery(".#{@widgetName}-imageThumbnailActive").first().attr "src"
