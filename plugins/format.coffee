@@ -16,7 +16,6 @@
                 label = format.substr(0, 1).toUpperCase()
                 id = "#{@options.uuid}-#{format}"
                 buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\" class=\"#{format}_button\">#{label}</label>").button()
-                buttonset.children("label").unbind('mouseout')
                 button = jQuery "##{id}", buttonset
                 button.attr "hallo-command", format
                 button.addClass format
@@ -26,9 +25,11 @@
                 @element.bind "keyup paste change mouseup", (event) ->
                     if document.queryCommandState format
                         button.attr "checked", true
+                        button.next("label").addClass "ui-state-clicked"
                         button.button "refresh"
                     else
                         button.attr "checked", false
+                        button.next("label").removeClass "ui-state-clicked"
                         button.button "refresh"
 
             buttonize format for format in @options.formattings

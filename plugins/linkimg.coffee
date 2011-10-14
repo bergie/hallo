@@ -37,7 +37,6 @@
             buttonize = (type) =>
                 id = "#{@options.uuid}-#{type}"
                 buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\" class=\"anchor_button\" >#{type}</label>").button()
-                buttonset.children("label").unbind('mouseout')
                 button = jQuery "##{id}", buttonset
                 button.bind "change", (event) ->
                     # we need to save the current selection because we will lose focus
@@ -51,11 +50,11 @@
                 @element.bind "keyup paste change mouseup", (event) ->
                     if jQuery(event.target)[0].nodeName is "A"
                         button.attr "checked", true
-                        button.next().addClass "ui-state-active"
+                        button.next().addClass "ui-state-clicked"
                         button.button "refresh"
                     else
                         button.attr "checked", false
-                        button.next().removeClass "ui-state-active"
+                        button.next().removeClass "ui-state-clicked"
                         button.button "refresh"
 
             if (@options.link)
