@@ -17,10 +17,10 @@
             buttonset.append jQuery("<input id=\"#{id}\" type=\"radio\" /><label for=\"#{id}\" class=\"p_button\">#{label}</label>").button()
             buttonset.children("label").unbind('mouseout')
             button = jQuery "##{id}", buttonset
-            button.attr "hallo-command", "removeFormat"
+            button.attr "hallo-command", "formatBlock"
             button.bind "change", (event) ->
                 cmd = jQuery(this).attr "hallo-command"
-                widget.options.editable.execute cmd
+                widget.options.editable.execute cmd, "P"
 
             buttonize = (headerSize) =>
                 label = "H" + headerSize
