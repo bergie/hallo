@@ -52,9 +52,39 @@
                         <button id=\"#{@options.uuid}-#{widget.widgetName}-addimage\">Add Image</button>
                     </div>
                 </div>
-                <div id=\"#{@options.uuid}-tab-search-content\" class=\"#{widget.widgetName}-tab #{widget.widgetName}-tab-search\">SEARCH</div>
+                <div id=\"#{@options.uuid}-tab-search-content\" class=\"#{widget.widgetName}-tab #{widget.widgetName}-tab-search\">
+                    <form action=\"app_dev.php/liip/vie/assets/search/?page=1&length=4\" tpye=\"post\" id=\"search_form\">
+                        <input type=\"text\" class=\"searchInput\" /><input type=\"submit\" class=\"searchButton\" value=\"OK\"/>
+                    </form>
+                    <div class=\"searchResults\">
+                        Search results come here!
+                    </div>
+                    <div class=\"#{widget.widgetName}-activeImageContainer\">
+                        <img src=\"\" id=\"#{@options.uuid}-#{widget.widgetName}-activeImage_search\" class=\"#{widget.widgetName}-activeImage\" />
+                    </div>
+                </div>
                 <div id=\"#{@options.uuid}-tab-upload-content\" class=\"#{widget.widgetName}-tab #{widget.widgetName}-tab-upload\">UPLOAD</div>
             </div></div>"
+            
+            jQuery(@options.dialog).contents().find('#search_form').submit (event) ->
+                that = @
+                jQuery.ajax({
+                    type: "GET",
+                    url: "/app_dev.php/liip/vie/assets/search/",
+                    data: "page=1&length=4&searchString=2",
+                    success: (response) ->
+                        items = Array()
+                        $.each response.assets, (key, val) ->
+                            items.push("<img src=\"#{val.url}\" class=\"search_result_image #{widget.widgetName}-imageThumbnail\" />");
+                        jQuery(that).parents().contents().find('.searchResults').html(items.join(''))
+
+                        # Add action to image thumbnails
+                        jQuery(".#{widget.widgetName}-imageThumbnail").live "click", (event) ->
+                            jQuery(".#{widget.widgetName}-imageThumbnail").removeClass "#{widget.widgetName}-imageThumbnailActive"
+                            jQuery(this).addClass "#{widget.widgetName}-imageThumbnailActive"
+                            jQuery("##{widget.options.uuid}-#{widget.widgetName}-activeImage_search").attr "src", jQuery(this).attr "src"
+                })
+                event.preventDefault()
 
             insertImage = () ->
                 #This may need to insert an image that does not have the same URL as the preview image, since it may be a different size
