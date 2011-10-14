@@ -166,7 +166,6 @@
             @options.dialog.dialog("open")
 
         _closeDialog: ->
-            jQuery('.image_button').removeClass('ui-state-active')
             @options.dialog.dialog("close")
 
 )(jQuery)
