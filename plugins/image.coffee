@@ -99,6 +99,10 @@
                 document.execCommand "insertImage", null, $(".halloimage-activeImage").attr('src')
                 img = document.getSelection().anchorNode.firstChild
                 jQuery(img).attr "alt", jQuery(".caption").value
+
+                triggerModified = () ->
+                    widget.element.trigger "hallomodified"
+                window.setTimeout triggerModified, 100
                 widget._closeDialog()
 
             @options.dialog.find(".halloimage-activeImage, ##{widget.options.uuid}-#{widget.widgetName}-addimage").click insertImage
