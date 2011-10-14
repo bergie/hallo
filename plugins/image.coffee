@@ -42,7 +42,10 @@
                         <img src=\"http://www.costumeattic.com/images_product/preview/Rubies/885106.jpg\" class=\"#{widget.widgetName}-imageThumbnail\" />
                     </div>
                     <div class=\"#{widget.widgetName}-activeImageContainer\">
-                        <img src=\"\" id=\"#{@options.uuid}-#{widget.widgetName}-activeImage\" class=\"#{widget.widgetName}-activeImage\" />
+                        <div class=\"#{widget.widgetName}-activeImageAligner\">
+                            <img src=\"http://imagesus.homeaway.com/mda01/badf2e69babf2f6a0e4b680fc373c041c705b891\" id=\"#{@options.uuid}-#{widget.widgetName}-activeImageBg\" class=\"#{widget.widgetName}-activeImage #{widget.widgetName}-activeImageBg\" />
+                            <img src=\"\" id=\"#{@options.uuid}-#{widget.widgetName}-activeImage\" class=\"#{widget.widgetName}-activeImage\" />
+                        </div>
                     </div>
                     <div class=\"#{widget.widgetName}-metadata\">
                         <label for=\"caption\">Caption</label><input type=\"text\" id=\"caption\" />
@@ -100,7 +103,7 @@
                 jQuery(".#{widget.widgetName}-imageThumbnail").removeClass "#{widget.widgetName}-imageThumbnailActive"
                 jQuery(this).addClass "#{widget.widgetName}-imageThumbnailActive"
 
-                jQuery("##{widget.options.uuid}-#{widget.widgetName}-activeImage").attr "src", jQuery(this).attr "src"
+                jQuery(".#{widget.widgetName}-activeImage").attr "src", jQuery(this).attr "src"
 
 
 
