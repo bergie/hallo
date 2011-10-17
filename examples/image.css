@@ -1,0 +1,176 @@
+/****************/
+/* Image Dialog */
+/****************/
+.ui-dialog {
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    border: 3px solid black;
+    border-radius: 5px;
+    overflow: visible;
+}
+
+.ui-dialog .ui-dialog-content { padding: 0; }
+
+
+/* Title bar */
+.ui-dialog .ui-dialog-titlebar {
+    background: #000000;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+}
+
+.ui-dialog .ui-dialog-title {
+    font-weight: normal;
+    text-shadow: none;
+}
+
+
+/* Nav/Tabs */
+.ui-dialog .halloimage-dialognav {
+    height: 35px;
+    width: 100%;
+}
+
+.ui-dialog .halloimage-tabs {
+    text-transform: uppercase;
+    font-size: 10px;
+    color: white;
+    height: 30px;
+    line-height: 30px;
+}
+
+.ui-dialog .halloimage-tabs {
+    display: table;
+    width: 100%;
+}
+
+.ui-dialog .halloimage-tabs li {
+    display: table-cell;
+    padding: 0 5px;
+    cursor: pointer;
+    background: #01add2 url('/bundles/liipvie/img/divider.png') no-repeat right;
+    padding: 3px 6px 0 5px;
+    text-align: center;
+}
+.ui-dialog .halloimage-tabs li:hover {
+    background-color: #2EA0BE;
+}
+
+.ui-dialog .halloimage-tabs li:last-of-type {
+    background-image: none;
+}
+
+.halloimage-tab-search, .halloimage-tab-upload {
+    display: none;
+}
+
+.ui-dialog .halloimage-tab-activeIndicator {
+    vertical-align: top;
+    margin-left: 50px;
+}
+
+
+/* Content */
+.halloimage-dialogcontent {
+    text-align: center;
+    padding: 15px;
+}
+
+.halloimage-activeImage, .halloimage-activeImageBg {
+    -moz-transform: rotate(-3deg);
+    -webkit-transform: rotate(-3deg);
+    padding: 3px;
+    box-shadow: 4px 4px 7px #888;
+    max-width: 200px;
+    max-height: 150px;
+    /* cursor: move; */
+}
+
+.halloimage-activeImageBg {
+    opacity: 0.2;
+    position: absolute;
+}
+
+.halloimage-activeImage:hover {
+    position: relative;
+    left: -20px;
+    -moz-transform: rotate(-6deg);
+    -webkit-transform: rotate(-6deg);
+}
+
+.halloimage-activeImageContainer {
+    padding-top: 20px;
+}
+
+.halloimage-activeImageAligner {
+    display: table;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.halloimage-imageThumbnail {
+    max-width: 45px;
+    max-height: 45px;
+    padding: 2px;
+    border: 1px solid #E1E1E1;
+    box-shadow: 2px 2px 4px #888;
+}
+
+.halloimage-imageThumbnail:hover {
+    border: 1px solid #01add2;
+}
+
+.halloimage-imageThumbnailActive, .halloimage-imageThumbnailActive:hover {
+    padding: 0px;
+    border: 3px solid black;
+    box-shadow: 2px 2px 4px #888;
+    outline: 1px solid black;
+}
+
+.halloimage-metadata {
+    margin-top: 20px;
+    text-align: left;
+}
+
+.halloimage-metadata label {
+    color: #A1A1A1;
+    font-size: 14px;
+}
+
+.halloimage-metadata button {
+    color: white;
+    background-color: #646464;
+    padding: 5px;
+    border: 0;
+    border-radius: 3px;
+    margin-top: 10px;
+}
+
+.halloimage-metadata button:hover {
+    background-color: #01add2;
+}
+
+.ui-dialog input.searchInput{
+    height: 28px;
+    width: 178px;
+    border: none !important;
+    box-shadow: none !important;
+    background: url('/bundles/liipvie/img/search_input.png')
+}
+
+.ui-dialog input.searchButton{
+    background: url('/bundles/liipvie/img/ok_button.png') repeat scroll 0 0 transparent;
+    text-indent: 1000px;
+    overflow: hidden;
+    border: none;
+    width: 56px;
+    height: 34px;
+    position: relative;
+    top: 1px;
+}
+
+.ui-dialog .searchResults{
+    padding: 15px 0 0 0;
+}
