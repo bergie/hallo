@@ -13,8 +13,6 @@
 #   "floating" hallo option to be false to look nice. Furthermore, the
 #   toolbar should have the same width as the editable element.
 #
-#   The options are documented in the code.
-#
 
 ((jQuery) ->
     jQuery.widget "IKS.hallooverlay",
@@ -33,10 +31,6 @@
                     widget.options.currentEditable = jQuery(event.target)
                     widget.showOverlay()
 
-                widget.options.editable.element.bind "hallomodified", (event, data) ->
-                    if widget.options.visible
-                        widget.updateOverlay()
-
                 # abort editing when pressing ESCAPE --- This should be covered in hallo core, it's just not working yet
                 widget.options.editable.element.keydown (event, data) ->
                     if event.keyCode == 27
@@ -44,48 +38,39 @@
                         widget.options.editable.element.blur()
                         widget.hideOverlay()
 
-                jQuery(window).resize ()->
-                    if widget.options.visible
-                        widget.updateOverlay(true)
-
         _init: ->
 
         showOverlay: ->
             @options.visible = true
-            if @options.overlay
-                @options.overlay.show
+            if @options.overlay is null
+                @options.overlay = jQuery('<div class="halloOverlay">')
+                jQuery(document.body).append @options.overlay
+                @options.overlay.bind 'click', jQuery.proxy @hideOverlay, @
 
+            @options.overlay.show()
 
-                @options.originalBgColor = @options.currentEditable.css "background-color"
-                @options.currentEditable.css 'background-color', _findBackgroundColor(@options.currentEditable)
-                @options.originalZIndex = @options.currentEditable.css "z-index"
-                @options.currentEditable.css 'z-index', '350'
-
-            @_createOverlay()
+            @options.originalBgColor = @options.currentEditable.css "background-color"
+            @options.currentEditable.css 'background-color', @_findBackgroundColor(jQuery(@options.currentEditable))
+            @options.originalZIndex = @options.currentEditable.css "z-index"
+            @options.currentEditable.css 'z-index', '350'
 
         hideOverlay: ->
             @options.visible = false
-            @options.overlay.hide
+            @options.overlay.hide()
 
             @options.currentEditable.css 'background-color', @options.originalBgColor
-            @options.currentEditable.css 'z-index', originalZIndex
+            @options.currentEditable.css 'z-index', @options.originalZIndex
 
             @options.editable._deactivated {data: @options.editable}
 
-        _createOverlay: () ->
-            overlay = jQuery('<div class="halloOverlay">')
-            jQuery(document.body).append overlay
-            overlay.bind 'click', jQuery.proxy @hideOverlay, @
-
-        _findBackgroundColor: (field) ->
-            jQueryfield = jQuery(field)
+        _findBackgroundColor: (jQueryfield) ->
             color = jQueryfield.css("background-color")
-            if color isnt 'rgba(0,0,0,0)' and color isnt 'transparent'
+            if color isnt 'rgba(0, 0, 0, 0)' and color isnt 'transparent'
                 return color
 
             if jQueryfield.is "body"
-                return false;
+                return "white"
             else
-                return _findBackgroundColor(jQueryfield.parent())
+                return @_findBackgroundColor(jQueryfield.parent())
 
 )(jQuery)
