@@ -17,11 +17,11 @@
         buttonset.append(jQuery("<input id=\"" + id + "\" type=\"radio\" /><label for=\"" + id + "\" class=\"p_button\">" + label + "</label>").button());
         buttonset.children("label").unbind('mouseout');
         button = jQuery("#" + id, buttonset);
-        button.attr("hallo-command", "removeFormat");
+        button.attr("hallo-command", "formatBlock");
         button.bind("change", function(event) {
           var cmd;
           cmd = jQuery(this).attr("hallo-command");
-          return widget.options.editable.execute(cmd);
+          return widget.options.editable.execute(cmd, "P");
         });
         buttonize = __bind(function(headerSize) {
           label = "H" + headerSize;

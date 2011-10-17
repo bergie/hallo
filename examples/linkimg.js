@@ -20,12 +20,16 @@
         var buttonize, buttonset, dialog, dialogId, dialogSubmitCb, widget;
         widget = this;
         dialogId = "" + this.options.uuid + "-dialog";
-        dialog = jQuery("<div id=\"" + dialogId + "\"><form action=\"#\" method=\"post\"><input class=\"url\" type=\"text\" name=\"url\" size=\"40\" value=\"http://\" /><input type=\"submit\" value=\"Insert\" /></form></div>");
+        dialog = jQuery("<div id=\"" + dialogId + "\"><form action=\"#\" method=\"post\" class=\"linkForm\"><input class=\"url\" type=\"text\" name=\"url\" size=\"40\" value=\"http://\" /><input type=\"submit\" value=\"Insert\" /></form></div>");
         dialogSubmitCb = function() {
           var link;
           link = $(this).find(".url").val();
           widget.options.editable.restoreSelection(widget.lastSelection);
-          document.execCommand("createLink", null, link);
+          if (widget.lastSelection.startContainer.parentNode.href === void 0) {
+            document.execCommand("createLink", null, link);
+          } else {
+            widget.lastSelection.startContainer.parentNode.href = link;
+          }
           widget.options.editable.removeAllSelections();
           dialog.dialog('close');
           return false;
@@ -36,9 +40,15 @@
           var button, id;
           id = "" + this.options.uuid + "-" + type;
           buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\" class=\"anchor_button\" >" + type + "</label>").button());
+          buttonset.children("label").unbind('mouseout');
           button = jQuery("#" + id, buttonset);
           button.bind("change", function(event) {
             widget.lastSelection = widget.options.editable.getSelection();
+            if (widget.lastSelection.startContainer.parentNode.href === null) {
+              jQuery(dialog).children().children(".url").val("http://");
+            } else {
+              jQuery(dialog).children().children(".url").val(widget.lastSelection.startContainer.parentNode.href);
+            }
             return dialog.dialog('open');
           });
           return this.element.bind("keyup paste change mouseup", function(event) {
