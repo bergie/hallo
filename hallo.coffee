@@ -217,8 +217,9 @@
                 else
                     return this._getCaretPosition(selection)
             else
-                top: @element.offset().top - this.toolbar.outerHeight()
-                left: @element.offset().left
+                offset = parseFloat @element.css('outline-width') + parseFloat @element.css('outline-offset')
+                top: @element.offset().top - this.toolbar.outerHeight() - offset
+                left: @element.offset().left - offset
 
         _getCaretPosition: (range) ->
             tmpSpan = jQuery "<span/>"
@@ -318,6 +319,8 @@
                 widthToAdd += parseFloat el.css('padding-right')
                 widthToAdd += parseFloat el.css('border-left-width')
                 widthToAdd += parseFloat el.css('border-right-width')
+                widthToAdd += (parseFloat el.css('outline-width')) * 2
+                widthToAdd += (parseFloat el.css('outline-offset')) * 2
                 widget.toolbar.css "width", jQuery(@).width()+widthToAdd
             else
                 widget.toolbar.css "width", "auto"
