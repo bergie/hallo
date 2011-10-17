@@ -43,9 +43,13 @@
         showOverlay: ->
             @options.visible = true
             if @options.overlay is null
-                @options.overlay = jQuery('<div class="halloOverlay">')
-                jQuery(document.body).append @options.overlay
-                @options.overlay.bind 'click', jQuery.proxy @hideOverlay, @
+                if jQuery("#halloOverlay").length > 0
+                    @options.overlay = jQuery("#halloOverlay")
+                    @options.overlay.bind 'click', jQuery.proxy @hideOverlay, @
+                else
+                    @options.overlay = jQuery('<div id="halloOverlay" class="halloOverlay">')
+                    jQuery(document.body).append @options.overlay
+                    @options.overlay.bind 'click', jQuery.proxy @hideOverlay, @
 
             @options.overlay.show()
 
