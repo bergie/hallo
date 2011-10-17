@@ -51,7 +51,8 @@
 
             @options.originalBgColor = @options.currentEditable.css "background-color"
             @options.currentEditable.css 'background-color', @_findBackgroundColor(jQuery(@options.currentEditable))
-            @options.originalZIndex = @options.currentEditable.css "z-index"
+            if not @options.originalZIndex
+                @options.originalZIndex = @options.currentEditable.css "z-index"
             @options.currentEditable.css 'z-index', '350'
 
         hideOverlay: ->
