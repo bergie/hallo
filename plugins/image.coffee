@@ -7,7 +7,7 @@
             editable: null
             toolbar: null
             uuid: ""
-            searchUrl: "liip/vie/assets/search" #TODO: pass this in, set tdefault to ""
+            searchUrl: "liip/vie/assets/search" #TODO: pass this in, set default to ""
             dialogOpts:
                 autoOpen: false
                 width: 270
@@ -46,8 +46,8 @@
                     </div>
                     <div class=\"#{widget.widgetName}-activeImageContainer\">
                         <div class=\"#{widget.widgetName}-activeImageAligner\">
-                            <img src=\"\" id=\"#{@options.uuid}-#{widget.widgetName}-activeImageBg\" class=\"#{widget.widgetName}-activeImage #{widget.widgetName}-activeImageBg\" />
-                            <img src=\"\" id=\"#{@options.uuid}-#{widget.widgetName}-activeImage\" class=\"#{widget.widgetName}-activeImage\" />
+                            <img src=\"\" id=\"#{@options.uuid}-#{widget.widgetName}-sugg-activeImageBg\" class=\"#{widget.widgetName}-activeImage #{widget.widgetName}-activeImageBg\" />
+                            <img src=\"\" id=\"#{@options.uuid}-#{widget.widgetName}-sugg-activeImage\" class=\"#{widget.widgetName}-activeImage\" />
                         </div>
                     </div>
                     <div class=\"#{widget.widgetName}-metadata\">
@@ -57,13 +57,16 @@
                 </div>
                 <div id=\"#{@options.uuid}-tab-search-content\" class=\"#{widget.widgetName}-tab #{widget.widgetName}-tab-search\">
                     <form action=\"#{widget.options.searchUrl}/?page=1&length=4\" type=\"post\" id=\"search_form\">
-                        <input type=\"text\" class=\"searchInput\" /><input type=\"submit\" class=\"searchButton\" value=\"OK\"/>
+                        <input type=\"text\" class=\"searchInput\" /><input type=\"submit\" id=\"searchButton\" class=\"searchButton\" value=\"OK\"/>
                     </form>
                     <div class=\"searchResults\">
                         Search results come here!
                     </div>
-                    <div class=\"#{widget.widgetName}-activeImageContainer\">
-                        <img src=\"\" id=\"#{@options.uuid}-#{widget.widgetName}-activeImage_search\" class=\"#{widget.widgetName}-activeImage\" />
+                    <div id=\"#{@options.uuid}-#{widget.widgetName}-search-activeImageContainer\" class=\"#{widget.widgetName}-search-activeImageContainer #{widget.widgetName}-activeImageContainer\">
+                        <div class=\"#{widget.widgetName}-activeImageAligner\">
+                            <img src=\"\" id=\"#{@options.uuid}-#{widget.widgetName}-search-activeImageBg\" class=\"#{widget.widgetName}-activeImage #{widget.widgetName}-activeImageBg\" />
+                            <img src=\"\" id=\"#{@options.uuid}-#{widget.widgetName}-search-activeImage\" class=\"#{widget.widgetName}-activeImage\" />
+                        </div>
                     </div>
                 </div>
                 <div id=\"#{@options.uuid}-tab-upload-content\" class=\"#{widget.widgetName}-tab #{widget.widgetName}-tab-upload\">UPLOAD</div>
@@ -78,14 +81,18 @@
                     success: (response) ->
                         items = Array()
                         $.each response.assets, (key, val) ->
-                            items.push("<img src=\"#{val.url}\" class=\"search_result_image #{widget.widgetName}-imageThumbnail\" />");
+                            items.push("<img src=\"#{val.url}\" class=\"search_result_image #{widget.widgetName}-imageThumbnail #{widget.widgetName}-search-imageThumbnail\" /> ");
                         jQuery(that).parents().contents().find('.searchResults').html(items.join(''))
 
                         # Add action to image thumbnails
-                        jQuery(".#{widget.widgetName}-imageThumbnail").live "click", (event) ->
-                            jQuery(".#{widget.widgetName}-imageThumbnail").removeClass "#{widget.widgetName}-imageThumbnailActive"
-                            jQuery(this).addClass "#{widget.widgetName}-imageThumbnailActive"
-                            jQuery("##{widget.options.uuid}-#{widget.widgetName}-activeImage_search").attr "src", jQuery(this).attr "src"
+
+                        jQuery("##{widget.options.uuid}-#{widget.widgetName}-search-activeImageContainer").show()
+                        firstimage = jQuery(".#{widget.widgetName}-search-imageThumbnail").first()
+                        firstimage.addClass "#{widget.widgetName}-imageThumbnailActive"
+                        jQuery("##{widget.options.uuid}-#{widget.widgetName}-search-activeImage, ##{widget.options.uuid}-#{widget.widgetName}-search-activeImageBg").attr "src",
+                        firstimage.attr "src"
+
+
                 })
                 event.preventDefault()
 
@@ -99,7 +106,7 @@
                 catch error
                     widget.options.editable.restoreSelection(widget.lastSelection)
 
-                document.execCommand "insertImage", null, $(".halloimage-activeImage").attr('src')
+                document.execCommand "insertImage", null, $(this).attr('src')
                 img = document.getSelection().anchorNode.firstChild
                 jQuery(img).attr "alt", jQuery(".caption").value
 
@@ -137,12 +144,11 @@
 
             # Add action to image thumbnails
             jQuery(".#{widget.widgetName}-imageThumbnail").live "click", (event) ->
-                jQuery(".#{widget.widgetName}-imageThumbnail").removeClass "#{widget.widgetName}-imageThumbnailActive"
+                scope = jQuery(this).closest(".#{widget.widgetName}-tab")
+                jQuery(".#{widget.widgetName}-imageThumbnail", scope).removeClass "#{widget.widgetName}-imageThumbnailActive"
                 jQuery(this).addClass "#{widget.widgetName}-imageThumbnailActive"
 
-                jQuery(".#{widget.widgetName}-activeImage").attr "src", jQuery(this).attr "src"
-
-
+                jQuery(".#{widget.widgetName}-activeImage", scope).attr "src", jQuery(this).attr "src"
 
             buttonset.buttonset()
             @options.toolbar.append buttonset
@@ -154,7 +160,7 @@
             jQuery('.image_button').addClass('ui-state-clicked')
 
             # Update active Image
-            jQuery(".#{@widgetName}-activeImage").attr "src", jQuery(".#{@widgetName}-imageThumbnailActive").first().attr "src"
+            jQuery("##{@options.uuid}-#{@widgetName}-sugg-activeImage").attr "src", jQuery(".#{@widgetName}-imageThumbnailActive").first().attr "src"
 
             # Save current caret point
             @lastSelection = @options.editable.getSelection()

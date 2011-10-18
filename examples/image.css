@@ -104,6 +104,10 @@
     padding-top: 20px;
 }
 
+.halloimage-search-activeImageContainer {
+    display: none;
+}
+
 .halloimage-activeImageAligner {
     display: table;
     margin-left: auto;
@@ -152,23 +156,24 @@
     background-color: #01add2;
 }
 
-.ui-dialog input.searchInput{
-    height: 28px;
+.ui-dialog input#searchInput{
+    height: 29px;
     width: 178px;
-    border: none !important;
+    border: 1px solid gray
     box-shadow: none !important;
-    background: url('/bundles/liipvie/img/search_input.png')
+    padding: 0;
+    border-radius: 3px 0 0 3px;
 }
 
-.ui-dialog input.searchButton{
-    background: url('/bundles/liipvie/img/ok_button.png') repeat scroll 0 0 transparent;
-    text-indent: 1000px;
-    overflow: hidden;
-    border: none;
+.ui-dialog input#searchButton{
+    border: 1px solid #01add2;
     width: 56px;
-    height: 34px;
+    height: 30px;
     position: relative;
-    top: 1px;
+    background-color: #01add2;
+    color: white;
+    border-radius: 0 3px 3px 0;
+    box-shadow: none;
 }
 
 .ui-dialog .searchResults{
