@@ -31,7 +31,7 @@
                     widget.options.currentEditable = jQuery(event.target)
                     widget.showOverlay()
 
-                # abort editing when pressing ESCAPE --- This should be covered in hallo core, it's just not working yet
+                # abort editing when pressing ESCAPE --- This should be covered in hallo core, it is just not working yet
                 widget.options.editable.element.keydown (event, data) ->
                     if event.keyCode == 27
                         widget.options.editable.restoreOriginalContent()
@@ -54,7 +54,8 @@
             @options.overlay.show()
 
             @options.originalBgColor = @options.currentEditable.css "background-color"
-            @options.currentEditable.css 'background-color', @_findBackgroundColor(jQuery(@options.currentEditable))
+            # We have to set the background color to the first parent having one
+            @options.currentEditable.css 'background-color', @_findBackgroundColor @options.currentEditable
             if not @options.originalZIndex
                 @options.originalZIndex = @options.currentEditable.css "z-index"
             @options.currentEditable.css 'z-index', '350'
@@ -68,14 +69,15 @@
 
             @options.editable._deactivated {data: @options.editable}
 
+        # Find the closest parent having a background color. If none, returns white.
         _findBackgroundColor: (jQueryfield) ->
-            color = jQueryfield.css("background-color")
+            color = jQueryfield.css "background-color"
             if color isnt 'rgba(0, 0, 0, 0)' and color isnt 'transparent'
                 return color
 
             if jQueryfield.is "body"
                 return "white"
             else
-                return @_findBackgroundColor(jQueryfield.parent())
+                return @_findBackgroundColor jQueryfield.parent()
 
 )(jQuery)
