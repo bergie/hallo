@@ -7,7 +7,7 @@
             editable: null
             toolbar: null
             uuid: ""
-            searchUrl: "app_dev.php/liip/vie/assets/search" #TODO: pass this in, set tdefault to ""
+            searchUrl: "liip/vie/assets/search" #TODO: pass this in, set tdefault to ""
             dialogOpts:
                 autoOpen: false
                 width: 270
@@ -56,7 +56,7 @@
                     </div>
                 </div>
                 <div id=\"#{@options.uuid}-tab-search-content\" class=\"#{widget.widgetName}-tab #{widget.widgetName}-tab-search\">
-                    <form action=\"#{@options.searchUrl}/?page=1&length=4\" tpye=\"post\" id=\"search_form\">
+                    <form action=\"#{widget.options.searchUrl}/?page=1&length=4\" tpye=\"post\" id=\"search_form\">
                         <input type=\"text\" class=\"searchInput\" /><input type=\"submit\" class=\"searchButton\" value=\"OK\"/>
                     </form>
                     <div class=\"searchResults\">
@@ -73,7 +73,7 @@
                 that = @
                 jQuery.ajax({
                     type: "GET",
-                    url: @options.searchUrl,
+                    url: widget.options.searchUrl,
                     data: "page=1&length=4&searchString=2",
                     success: (response) ->
                         items = Array()
