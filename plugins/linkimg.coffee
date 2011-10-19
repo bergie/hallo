@@ -9,6 +9,7 @@
             uuid: ""
             link: true
             image: true
+            defaultUrl: 'http://'
             dialogOpts:
                 autoOpen: false
                 width: 540
@@ -22,14 +23,21 @@
             widget = this
 
             dialogId = "#{@options.uuid}-dialog"
-            dialog = jQuery "<div id=\"#{dialogId}\"><form action=\"#\" method=\"post\" class=\"linkForm\"><input class=\"url\" type=\"text\" name=\"url\" size=\"40\" value=\"http://\" /><input type=\"submit\" value=\"Insert\" /></form></div>"
+            dialog = jQuery "<div id=\"#{dialogId}\"><form action=\"#\" method=\"post\" class=\"linkForm\"><input class=\"url\" type=\"text\" name=\"url\" size=\"40\" value=\"#{@options.defaultUrl}\" /><input type=\"submit\" value=\"Insert\" /></form></div>"
+            urlInput = jQuery('input[name=url]', dialog).focus (e)->
+                this.select()
             dialogSubmitCb = () ->
-                link = $(this).find(".url").val()
+                link = urlInput.val()
                 widget.options.editable.restoreSelection(widget.lastSelection)
-                if widget.lastSelection.startContainer.parentNode.href is undefined
-                    document.execCommand "createLink", null, link
+                if ((new RegExp(/^\s*$/)).test link) or link is widget.options.defaultUrl
+                    # link is empty, remove it
+                    widget.lastSelection.selectNode widget.lastSelection.startContainer
+                    document.execCommand "unlink", null, ""
                 else
-                    widget.lastSelection.startContainer.parentNode.href = link
+                    if widget.lastSelection.startContainer.parentNode.href is undefined
+                        document.execCommand "createLink", null, link
+                    else
+                        widget.lastSelection.startContainer.parentNode.href = link
                 widget.options.editable.removeAllSelections()
                 dialog.dialog('close')
                 return false
@@ -43,10 +51,13 @@
                 button.bind "change", (event) ->
                     # we need to save the current selection because we will lose focus
                     widget.lastSelection = widget.options.editable.getSelection()
-                    if widget.lastSelection.startContainer.parentNode.href is null
-                        jQuery(dialog).children().children(".url").val("http://")
+                    urlInput = jQuery('input[name=url]', dialog);
+                    if widget.lastSelection.startContainer.parentNode.href is undefined
+                        urlInput.val(widget.options.defaultUrl)
                     else
-                        jQuery(dialog).children().children(".url").val(widget.lastSelection.startContainer.parentNode.href)
+                        urlInput.val(jQuery(widget.lastSelection.startContainer.parentNode).attr('href'))
+                        jQuery(urlInput[0].form).find('input[type=submit]').val('update')
+
                     dialog.dialog('open')
 
                 @element.bind "keyup paste change mouseup", (event) ->
