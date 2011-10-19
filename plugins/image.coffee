@@ -56,7 +56,7 @@
                     </div>
                 </div>
                 <div id=\"#{@options.uuid}-tab-search-content\" class=\"#{widget.widgetName}-tab #{widget.widgetName}-tab-search\">
-                    <form action=\"#{widget.options.searchUrl}/?page=1&length=4\" tpye=\"post\" id=\"search_form\">
+                    <form action=\"#{widget.options.searchUrl}/?page=1&length=4\" type=\"post\" id=\"search_form\">
                         <input type=\"text\" class=\"searchInput\" /><input type=\"submit\" class=\"searchButton\" value=\"OK\"/>
                     </form>
                     <div class=\"searchResults\">
