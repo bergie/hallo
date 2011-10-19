@@ -15,6 +15,8 @@
                 height: 120
                 title: "Enter Link"
                 modal: true
+                resizable: false
+                draggable: true
 
         _create: ->
             widget = this
