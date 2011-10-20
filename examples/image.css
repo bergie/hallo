@@ -165,17 +165,6 @@
     border-radius: 3px 0 0 3px;
 }
 
-.ui-dialog input#searchButton{
-    border: 1px solid #01add2;
-    width: 56px;
-    height: 30px;
-    position: relative;
-    background-color: #01add2;
-    color: white;
-    border-radius: 0 3px 3px 0;
-    box-shadow: none;
-}
-
 .ui-dialog .searchResults{
     padding: 15px 0 0 0;
 }
