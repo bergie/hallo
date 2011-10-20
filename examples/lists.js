@@ -15,7 +15,6 @@
           var button, id;
           id = "" + this.options.uuid + "-" + type;
           buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\" class=\"" + type + "_button\">" + label + "</label>").button());
-          buttonset.children("label").unbind('mouseout');
           button = jQuery("#" + id, buttonset);
           button.attr("hallo-command", "insert" + type + "List");
           button.bind("change", function(event) {
@@ -26,9 +25,11 @@
           return this.element.bind("keyup paste change mouseup", function(event) {
             if (document.queryCommandState("insert" + type + "List")) {
               button.attr("checked", true);
+              button.next("label").addClass("ui-state-clicked");
               return button.button("refresh");
             } else {
               button.attr("checked", false);
+              button.next("label").removeClass("ui-state-clicked");
               return button.button("refresh");
             }
           });

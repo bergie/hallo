@@ -17,7 +17,6 @@
           label = format.substr(0, 1).toUpperCase();
           id = "" + this.options.uuid + "-" + format;
           buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\" class=\"" + format + "_button\">" + label + "</label>").button());
-          buttonset.children("label").unbind('mouseout');
           button = jQuery("#" + id, buttonset);
           button.attr("hallo-command", format);
           button.addClass(format);
@@ -28,9 +27,11 @@
           return this.element.bind("keyup paste change mouseup", function(event) {
             if (document.queryCommandState(format)) {
               button.attr("checked", true);
+              button.next("label").addClass("ui-state-clicked");
               return button.button("refresh");
             } else {
               button.attr("checked", false);
+              button.next("label").removeClass("ui-state-clicked");
               return button.button("refresh");
             }
           });

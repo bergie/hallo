@@ -40,7 +40,7 @@
         }
         this.options.overlay.show();
         this.options.originalBgColor = this.options.currentEditable.css("background-color");
-        this.options.currentEditable.css('background-color', this._findBackgroundColor(jQuery(this.options.currentEditable)));
+        this.options.currentEditable.css('background-color', this._findBackgroundColor(this.options.currentEditable));
         if (!this.options.originalZIndex) {
           this.options.originalZIndex = this.options.currentEditable.css("z-index");
         }

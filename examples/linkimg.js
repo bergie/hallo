@@ -8,27 +8,38 @@
         uuid: "",
         link: true,
         image: true,
+        defaultUrl: 'http://',
         dialogOpts: {
           autoOpen: false,
           width: 540,
           height: 120,
           title: "Enter Link",
-          modal: true
+          modal: true,
+          resizable: false,
+          draggable: true
         }
       },
       _create: function() {
-        var buttonize, buttonset, dialog, dialogId, dialogSubmitCb, widget;
+        var buttonize, buttonset, dialog, dialogId, dialogSubmitCb, urlInput, widget;
         widget = this;
         dialogId = "" + this.options.uuid + "-dialog";
-        dialog = jQuery("<div id=\"" + dialogId + "\"><form action=\"#\" method=\"post\" class=\"linkForm\"><input class=\"url\" type=\"text\" name=\"url\" size=\"40\" value=\"http://\" /><input type=\"submit\" value=\"Insert\" /></form></div>");
+        dialog = jQuery("<div id=\"" + dialogId + "\"><form action=\"#\" method=\"post\" class=\"linkForm\"><input class=\"url\" type=\"text\" name=\"url\" size=\"40\" value=\"" + this.options.defaultUrl + "\" /><input type=\"submit\" id=\"addlinkButton\" value=\"Insert\" /></form></div>");
+        urlInput = jQuery('input[name=url]', dialog).focus(function(e) {
+          return this.select();
+        });
         dialogSubmitCb = function() {
           var link;
-          link = $(this).find(".url").val();
+          link = urlInput.val();
           widget.options.editable.restoreSelection(widget.lastSelection);
-          if (widget.lastSelection.startContainer.parentNode.href === void 0) {
-            document.execCommand("createLink", null, link);
+          if (((new RegExp(/^\s*$/)).test(link)) || link === widget.options.defaultUrl) {
+            widget.lastSelection.selectNode(widget.lastSelection.startContainer);
+            document.execCommand("unlink", null, "");
           } else {
-            widget.lastSelection.startContainer.parentNode.href = link;
+            if (widget.lastSelection.startContainer.parentNode.href === void 0) {
+              document.execCommand("createLink", null, link);
+            } else {
+              widget.lastSelection.startContainer.parentNode.href = link;
+            }
           }
           widget.options.editable.removeAllSelections();
           dialog.dialog('close');
@@ -40,25 +51,26 @@
           var button, id;
           id = "" + this.options.uuid + "-" + type;
           buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\" class=\"anchor_button\" >" + type + "</label>").button());
-          buttonset.children("label").unbind('mouseout');
           button = jQuery("#" + id, buttonset);
           button.bind("change", function(event) {
             widget.lastSelection = widget.options.editable.getSelection();
-            if (widget.lastSelection.startContainer.parentNode.href === null) {
-              jQuery(dialog).children().children(".url").val("http://");
+            urlInput = jQuery('input[name=url]', dialog);
+            if (widget.lastSelection.startContainer.parentNode.href === void 0) {
+              urlInput.val(widget.options.defaultUrl);
             } else {
-              jQuery(dialog).children().children(".url").val(widget.lastSelection.startContainer.parentNode.href);
+              urlInput.val(jQuery(widget.lastSelection.startContainer.parentNode).attr('href'));
+              jQuery(urlInput[0].form).find('input[type=submit]').val('update');
             }
             return dialog.dialog('open');
           });
           return this.element.bind("keyup paste change mouseup", function(event) {
             if (jQuery(event.target)[0].nodeName === "A") {
               button.attr("checked", true);
-              button.next().addClass("ui-state-active");
+              button.next().addClass("ui-state-clicked");
               return button.button("refresh");
             } else {
               button.attr("checked", false);
-              button.next().removeClass("ui-state-active");
+              button.next().removeClass("ui-state-clicked");
               return button.button("refresh");
             }
           });
