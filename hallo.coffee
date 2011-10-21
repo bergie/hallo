@@ -241,31 +241,31 @@
             @toolbar.bind "mousedown", (event) ->
                 event.preventDefault()
 
-            if !@options.floating
+            if @options.showAlways
+                # catch activate -> show
                 @element.bind "halloactivated", (event, data) ->
                     that._updateToolbarPosition that._getToolbarPosition()
                     that.toolbar.show()
 
+                # catch deactivate -> hide
                 @element.bind "hallodeactivated", (event, data) ->
                     that.toolbar.hide()
-
-                jQuery(window).resize (event) ->
-                    that._updateToolbarPosition that._getToolbarPosition()
-
             else
+                # catch select -> show (and reposition?)
                 @element.bind "halloselected", (event, data) ->
                     widget = data.editable
                     position = widget._getToolbarPosition data.originalEvent, data.selection
                     if position
                         that._updateToolbarPosition position
                         that.toolbar.show()
+                        # TO CHECK: Am I not showing in some case?
 
+                # catch deselect -> hide
                 @element.bind "hallounselected", (event, data) ->
-                    if not that.options.showAlways
-                        data.editable.toolbar.hide()
+                    data.editable.toolbar.hide()
 
-                jQuery(window).resize (event) ->
-                    that.toolbar.hide()
+            jQuery(window).resize (event) ->
+                    that._updateToolbarPosition that._getToolbarPosition()
 
         _updateToolbarPosition: (position) ->
             this.toolbar.css "top", position.top
