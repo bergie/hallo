@@ -14,7 +14,7 @@
           x: 0,
           y: 0
         },
-        showalways: false,
+        showAlways: false,
         activated: function() {},
         deactivated: function() {},
         selected: function() {},
@@ -51,6 +51,7 @@
         this.element.unbind("focus", this._activated);
         this.element.unbind("blur", this._deactivated);
         this.element.unbind("keyup paste change", this, this._checkModified);
+        this.element.unbind("keyup", this._keys);
         this.element.unbind("keyup mouseup", this, this._checkSelection);
         return this.bound = false;
       },
@@ -59,8 +60,11 @@
         this.element.attr("contentEditable", true);
         if (!this.bound) {
           this.element.bind("focus", this, this._activated);
-          this.element.bind("blur", this, this._deactivated);
+          if (!this.options.showAlways) {
+            this.element.bind("blur", this, this._deactivated);
+          }
           this.element.bind("keyup paste change", this, this._checkModified);
+          this.element.bind("keyup", this, this._keys);
           this.element.bind("keyup mouseup", this, this._checkSelection);
           widget = this;
           return this.bound = true;
@@ -71,7 +75,7 @@
       },
       getSelection: function() {
         var range, userSelection;
-        if ($.browser.msie) {
+        if (jQuery.browser.msie) {
           range = document.selection.createRange();
         } else {
           if (window.getSelection) {
@@ -81,7 +85,7 @@
           } else {
             throw "Your browser does not support selection handling";
           }
-          if (userSelection.getRangeAt) {
+          if (userSelection.rangeCount > 0) {
             range = userSelection.getRangeAt(0);
           } else {
             range = userSelection;
@@ -90,7 +94,7 @@
         return range;
       },
       restoreSelection: function(range) {
-        if ($.browser.msie) {
+        if (jQuery.browser.msie) {
           return range.select();
         } else {
           window.getSelection().removeAllRanges();
@@ -99,7 +103,7 @@
       },
       replaceSelection: function(cb) {
         var newTextNode, r, range, sel, t;
-        if ($.browser.msie) {
+        if (jQuery.browser.msie) {
           t = document.selection.createRange().text;
           r = document.selection.createRange();
           return r.pasteHTML(cb(t));
@@ -114,7 +118,7 @@
         }
       },
       removeAllSelections: function() {
-        if ($.browser.msie) {
+        if (jQuery.browser.msie) {
           return range.empty();
         } else {
           return window.getSelection().removeAllRanges();
@@ -129,6 +133,9 @@
       setUnmodified: function() {
         return this.originalContent = this.getContents();
       },
+      restoreOriginalContent: function() {
+        return this.element.html(this.originalContent);
+      },
       execute: function(command, value) {
         if (document.execCommand(command, false, value)) {
           return this.element.trigger("change");
@@ -142,26 +149,34 @@
         return "" + (S4()) + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + (S4()) + (S4());
       },
       _getToolbarPosition: function(event, selection) {
-        var containerElement, containerPosition, newRange, position, range, tmpSpan;
-        if (event.originalEvent instanceof MouseEvent) {
-          if (this.options.floating) {
-            return [event.pageX, event.pageY];
+        var offset;
+        if (this.options.floating) {
+          if (event.originalEvent instanceof MouseEvent) {
+            return {
+              top: event.pageY,
+              left: event.pageX
+            };
           } else {
-            if ($(event.target).attr('contenteditable') === "true") {
-              containerElement = $(event.target);
-            } else {
-              containerElement = $(event.target).parent('[contenteditable]').first();
-            }
-            containerPosition = containerElement.position();
-            return [containerPosition.left - this.options.offset.x, containerPosition.top - this.options.offset.y];
+            return this._getCaretPosition(selection);
           }
+        } else {
+          offset = parseFloat(this.element.css('outline-width') + parseFloat(this.element.css('outline-offset')));
+          return {
+            top: this.element.offset().top - this.toolbar.outerHeight() - offset,
+            left: this.element.offset().left - offset
+          };
         }
-        range = selection.getRangeAt(0);
+      },
+      _getCaretPosition: function(range) {
+        var newRange, position, tmpSpan;
         tmpSpan = jQuery("<span/>");
         newRange = document.createRange();
-        newRange.setStart(selection.focusNode, range.endOffset);
+        newRange.setStart(range.endContainer, range.endOffset);
         newRange.insertNode(tmpSpan.get(0));
-        position = [tmpSpan.offset().left, tmpSpan.offset().top];
+        position = {
+          top: tmpSpan.offset().top,
+          left: tmpSpan.offset().left
+        };
         tmpSpan.remove();
         return position;
       },
@@ -176,19 +191,36 @@
         this.toolbar.bind("mousedown", function(event) {
           return event.preventDefault();
         });
-        this.element.bind("halloselected", function(event, data) {
-          var position, widget;
-          widget = data.editable;
-          position = widget._getToolbarPosition(data.originalEvent, data.selection);
-          widget.toolbar.css("top", position[1]);
-          widget.toolbar.css("left", position[0]);
-          return widget.toolbar.show();
-        });
-        return this.element.bind("hallounselected", function(event, data) {
-          if (!that.options.showalways) {
+        if (this.options.showAlways) {
+          this.options.floating = false;
+          this.element.bind("halloactivated", function(event, data) {
+            that._updateToolbarPosition(that._getToolbarPosition(event));
+            return that.toolbar.show();
+          });
+          this.element.bind("hallodeactivated", function(event, data) {
+            return that.toolbar.hide();
+          });
+        } else {
+          this.element.bind("halloselected", function(event, data) {
+            var position, widget;
+            widget = data.editable;
+            position = widget._getToolbarPosition(data.originalEvent, data.selection);
+            if (position) {
+              that._updateToolbarPosition(position);
+              return that.toolbar.show();
+            }
+          });
+          this.element.bind("hallounselected", function(event, data) {
             return data.editable.toolbar.hide();
-          }
+          });
+        }
+        return jQuery(window).resize(function(event) {
+          return that._updateToolbarPosition(that._getToolbarPosition());
         });
+      },
+      _updateToolbarPosition: function(position) {
+        this.toolbar.css("top", position.top);
+        return this.toolbar.css("left", position.left);
       },
       _checkModified: function(event) {
         var widget;
@@ -204,17 +236,21 @@
         var widget;
         widget = event.data;
         if (event.keyCode === 27) {
-          return widget.disable();
+          widget.restoreOriginalContent();
+          return widget.turnOff();
         }
       },
       _rangesEqual: function(r1, r2) {
         return r1.startContainer === r2.startContainer && r1.startOffset === r2.startOffset && r1.endContainer === r2.endContainer && r1.endOffset === r2.endOffset;
       },
       _checkSelection: function(event) {
-        var changed, i, range, sel, selectedRanges, widget, _ref;
+        var sel, widget;
+        if (event.keyCode === 27) {
+          return;
+        }
         widget = event.data;
-        sel = window.getSelection();
-        if (sel.type === "Caret") {
+        sel = widget.getSelection();
+        if (sel.collapsed === true) {
           if (widget.selection) {
             widget.selection = null;
             widget._trigger("unselected", null, {
@@ -224,39 +260,46 @@
           }
           return;
         }
-        selectedRanges = [];
-        changed = !widget.section || (sel.rangeCount !== widget.selection.length);
-        for (i = 0, _ref = sel.rangeCount; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
-          range = sel.getRangeAt(i).cloneRange();
-          selectedRanges[i] = range;
-          if (!changed && !widget._rangesEqual(range, widget.selection[i])) {
-            changed = true;
-          }
-          ++i;
-        }
-        widget.selection = selectedRanges;
-        if (changed) {
+        if (!widget.selection || !widget._rangesEqual(sel, widget.selection)) {
+          widget.selection = sel.cloneRange();
           return widget._trigger("selected", null, {
             editable: widget,
-            selection: sel,
-            ranges: selectedRanges,
+            selection: widget.selection,
+            ranges: [widget.selection],
             originalEvent: event
           });
         }
       },
-      _activated: function(event) {
-        var widget;
-        widget = event.data;
-        if (widget.toolbar.html() !== "") {
-          widget.toolbar.css("top", widget.element.offset().top - widget.toolbar.height() + 10);
+      turnOn: function() {
+        var el, widthToAdd;
+        jQuery(this.element).addClass('inEditMode');
+        if (!this.options.floating) {
+          el = jQuery(this.element);
+          widthToAdd = parseFloat(el.css('padding-left'));
+          widthToAdd += parseFloat(el.css('padding-right'));
+          widthToAdd += parseFloat(el.css('border-left-width'));
+          widthToAdd += parseFloat(el.css('border-right-width'));
+          widthToAdd += (parseFloat(el.css('outline-width'))) * 2;
+          widthToAdd += (parseFloat(el.css('outline-offset'))) * 2;
+          jQuery(this.toolbar).css("width", el.width() + widthToAdd);
+        } else {
+          this.toolbar.css("width", "auto");
         }
-        return widget._trigger("activated", event);
+        return this._trigger("activated", this);
+      },
+      turnOff: function() {
+        this.toolbar.hide();
+        jQuery(this.element).removeClass('inEditMode');
+        if (this.options.showAlways) {
+          this.element.blur();
+        }
+        return this._trigger("deactivated", this);
+      },
+      _activated: function(event) {
+        return event.data.turnOn();
       },
       _deactivated: function(event) {
-        var widget;
-        widget = event.data;
-        widget.toolbar.hide();
-        return widget._trigger("deactivated", event);
+        return event.data.turnOff();
       }
     });
   })(jQuery);

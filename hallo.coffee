@@ -37,10 +37,10 @@
     # element is focused:
     #
     #    jQuery('selector').hallo({
-    #       showalways: true
+    #       showAlways: true
     #    });
     #
-    # showalways is false by default
+    # showAlways is false by default
     #
     # ## Events
     #
@@ -86,7 +86,7 @@
             plugins: {}
             floating: true
             offset: {x:0,y:0}
-            showalways: false
+            showAlways: false
             activated: ->
             deactivated: ->
             selected: ->
@@ -117,6 +117,7 @@
             @element.unbind "focus", @_activated
             @element.unbind "blur", @_deactivated
             @element.unbind "keyup paste change", this, @_checkModified
+            @element.unbind "keyup", @_keys
             @element.unbind "keyup mouseup", this, @_checkSelection
             @bound = false
 
@@ -126,8 +127,10 @@
 
             if not @bound
                 @element.bind "focus", this, @_activated
-                @element.bind "blur", this, @_deactivated
+                if not @options.showAlways
+                    @element.bind "blur", this, @_deactivated
                 @element.bind "keyup paste change", this, @_checkModified
+                @element.bind "keyup", this, @_keys
                 @element.bind "keyup mouseup", this, @_checkSelection
                 widget = this
                 @bound = true
@@ -138,17 +141,17 @@
 
         # Only supports one range for now (i.e. no multiselection)
         getSelection: ->
-            if ( $.browser.msie )
+            if jQuery.browser.msie
                 range = document.selection.createRange()
             else
-                if ( window.getSelection )
+                if window.getSelection
                     userSelection = window.getSelection()
                 else if (document.selection) #opera
                     userSelection = document.selection.createRange()
                 else
                     throw "Your browser does not support selection handling"
 
-                if ( userSelection.getRangeAt )
+                if userSelection.rangeCount > 0
                     range = userSelection.getRangeAt(0)
                 else
                     range = userSelection
@@ -156,28 +159,28 @@
             return range
 
         restoreSelection: (range) ->
-            if ( $.browser.msie )
+            if jQuery.browser.msie
                 range.select()
             else
                 window.getSelection().removeAllRanges()
                 window.getSelection().addRange(range)
 
         replaceSelection: (cb) ->
-            if ( $.browser.msie )
-                t = document.selection.createRange().text;
+            if jQuery.browser.msie
+                t = document.selection.createRange().text
                 r = document.selection.createRange()
-                r.pasteHTML(cb(t));
+                r.pasteHTML(cb(t))
             else
-                sel = window.getSelection();
-                range = sel.getRangeAt(0);
-                newTextNode = document.createTextNode(cb(range.extractContents()));
-                range.insertNode(newTextNode);
-                range.setStartAfter(newTextNode);
-                sel.removeAllRanges();
-                sel.addRange(range);
+                sel = window.getSelection()
+                range = sel.getRangeAt(0)
+                newTextNode = document.createTextNode(cb(range.extractContents()))
+                range.insertNode(newTextNode)
+                range.setStartAfter(newTextNode)
+                sel.removeAllRanges()
+                sel.addRange(range)
 
         removeAllSelections: () ->
-            if ( $.browser.msie )
+            if jQuery.browser.msie
                 range.empty()
             else
                 window.getSelection().removeAllRanges()
@@ -194,6 +197,10 @@
         setUnmodified: ->
            @originalContent = @getContents()
 
+        # Restore the original content
+        restoreOriginalContent: ->
+            @element.html(@originalContent)
+
         # Execute a contentEditable command
         execute: (command, value) ->
             if document.execCommand command, false, value
@@ -205,27 +212,25 @@
             "#{S4()}#{S4()}-#{S4()}-#{S4()}-#{S4()}-#{S4()}#{S4()}#{S4()}"
 
         _getToolbarPosition: (event, selection) ->
-            if event.originalEvent instanceof MouseEvent
-                if @options.floating
-                    return [event.pageX, event.pageY]
+            if @options.floating
+                if event.originalEvent instanceof MouseEvent
+                    return { top: event.pageY, left: event.pageX }
                 else
-                    if $(event.target).attr('contenteditable') == "true"
-                        containerElement = $(event.target)
-                    else
-                        containerElement = $(event.target).parent('[contenteditable]').first()
+                    return this._getCaretPosition(selection)
+            else
+                offset = parseFloat @element.css('outline-width') + parseFloat @element.css('outline-offset')
+                top: @element.offset().top - this.toolbar.outerHeight() - offset
+                left: @element.offset().left - offset
 
-                    containerPosition = containerElement.position()
-                    return [containerPosition.left - @options.offset.x, containerPosition.top - @options.offset.y]
-
-            range = selection.getRangeAt 0
+        _getCaretPosition: (range) ->
             tmpSpan = jQuery "<span/>"
             newRange = document.createRange()
-            newRange.setStart selection.focusNode, range.endOffset
+            newRange.setStart range.endContainer, range.endOffset
             newRange.insertNode tmpSpan.get 0
 
-            position = [tmpSpan.offset().left, tmpSpan.offset().top]
+            position = {top: tmpSpan.offset().top, left: tmpSpan.offset().left}
             tmpSpan.remove()
-            position
+            return position
 
         _prepareToolbar: ->
             that = @
@@ -237,16 +242,36 @@
             @toolbar.bind "mousedown", (event) ->
                 event.preventDefault()
 
-            @element.bind "halloselected", (event, data) ->
-                widget = data.editable
-                position = widget._getToolbarPosition data.originalEvent, data.selection
-                widget.toolbar.css "top", position[1]
-                widget.toolbar.css "left", position[0]
-                widget.toolbar.show()
+            if @options.showAlways
+                @options.floating = false
+                # catch activate -> show
+                @element.bind "halloactivated", (event, data) ->
+                    that._updateToolbarPosition(that._getToolbarPosition(event))
+                    that.toolbar.show()
 
-            @element.bind "hallounselected", (event, data) ->
-                if not that.options.showalways
+                # catch deactivate -> hide
+                @element.bind "hallodeactivated", (event, data) ->
+                    that.toolbar.hide()
+            else
+                # catch select -> show (and reposition?)
+                @element.bind "halloselected", (event, data) ->
+                    widget = data.editable
+                    position = widget._getToolbarPosition data.originalEvent, data.selection
+                    if position
+                        that._updateToolbarPosition position
+                        that.toolbar.show()
+                        # TO CHECK: Am I not showing in some case?
+
+                # catch deselect -> hide
+                @element.bind "hallounselected", (event, data) ->
                     data.editable.toolbar.hide()
+
+            jQuery(window).resize (event) ->
+                    that._updateToolbarPosition that._getToolbarPosition()
+
+        _updateToolbarPosition: (position) ->
+            this.toolbar.css "top", position.top
+            this.toolbar.css "left", position.left
 
         _checkModified: (event) ->
             widget = event.data
@@ -258,15 +283,19 @@
         _keys: (event) ->
             widget = event.data
             if event.keyCode == 27
-                do widget.disable
+                widget.restoreOriginalContent()
+                widget.turnOff()
 
         _rangesEqual: (r1, r2) ->
             r1.startContainer is r2.startContainer and r1.startOffset is r2.startOffset and r1.endContainer is r2.endContainer and r1.endOffset is r2.endOffset
 
         _checkSelection: (event) ->
+            if event.keyCode == 27
+                return
+
             widget = event.data
-            sel = window.getSelection()
-            if sel.type is "Caret"
+            sel = widget.getSelection()
+            if sel.collapsed is true
                 if widget.selection
                     widget.selection = null
                     widget._trigger "unselected", null,
@@ -274,33 +303,42 @@
                         originalEvent: event
                 return
 
-            selectedRanges = []
-            changed = not widget.section or (sel.rangeCount != widget.selection.length)
-
-            for i in [0..sel.rangeCount]
-                range = sel.getRangeAt(i).cloneRange()
-                selectedRanges[i] = range
-
-                changed = true if not changed and not widget._rangesEqual(range, widget.selection[i])
-                ++i
-
-            widget.selection = selectedRanges
-            if changed
+            if !widget.selection or not widget._rangesEqual sel, widget.selection
+                widget.selection = sel.cloneRange()
                 widget._trigger "selected", null,
                     editable: widget
-                    selection: sel
-                    ranges: selectedRanges
+                    selection: widget.selection
+                    ranges: [widget.selection]
                     originalEvent: event
 
-        _activated: (event) ->
-            widget = event.data
-            if widget.toolbar.html() isnt ""
-                widget.toolbar.css "top", widget.element.offset().top - widget.toolbar.height() + 10
+        turnOn: () ->
+            jQuery(@element).addClass 'inEditMode'
+            #make sure the toolbar has not got the full width of the editable element when floating is set to true
+            if !@options.floating
+                el = jQuery(@element)
+                widthToAdd = parseFloat el.css('padding-left')
+                widthToAdd += parseFloat el.css('padding-right')
+                widthToAdd += parseFloat el.css('border-left-width')
+                widthToAdd += parseFloat el.css('border-right-width')
+                widthToAdd += (parseFloat el.css('outline-width')) * 2
+                widthToAdd += (parseFloat el.css('outline-offset')) * 2
+                jQuery(@toolbar).css "width", el.width()+widthToAdd
+            else
+                @toolbar.css "width", "auto"
+            @_trigger "activated", @
 
-            widget._trigger "activated", event
+        turnOff: () ->
+            @toolbar.hide()
+            jQuery(@element).removeClass 'inEditMode'
+            if (@options.showAlways)
+                @element.blur()
+            @_trigger "deactivated", @
+
+        _activated: (event) ->
+            event.data.turnOn()
 
         _deactivated: (event) ->
-            widget = event.data
-            widget.toolbar.hide()
-            widget._trigger "deactivated", event
+            event.data.turnOff()
+
+
 )(jQuery)
