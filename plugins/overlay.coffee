@@ -29,13 +29,12 @@
                 @options.bound = true
                 widget.options.editable.element.bind "halloactivated", (event, data) ->
                     widget.options.currentEditable = jQuery(event.target)
-                    widget.showOverlay()
+                    if !widget.options.visible
+                        widget.showOverlay()
 
-                # abort editing when pressing ESCAPE --- This should be covered in hallo core, it is just not working yet
-                widget.options.editable.element.keydown (event, data) ->
-                    if event.keyCode == 27
-                        widget.options.editable.restoreOriginalContent()
-                        widget.options.editable.element.blur()
+                widget.options.editable.element.bind "hallodeactivated", (event, data) ->
+                    widget.options.currentEditable = jQuery(event.target)
+                    if widget.options.visible
                         widget.hideOverlay()
 
         _init: ->
@@ -45,11 +44,11 @@
             if @options.overlay is null
                 if jQuery("#halloOverlay").length > 0
                     @options.overlay = jQuery("#halloOverlay")
-                    @options.overlay.bind 'click', jQuery.proxy @hideOverlay, @
                 else
                     @options.overlay = jQuery('<div id="halloOverlay" class="halloOverlay">')
                     jQuery(document.body).append @options.overlay
-                    @options.overlay.bind 'click', jQuery.proxy @hideOverlay, @
+
+                @options.overlay.bind 'click', jQuery.proxy(@options.editable.turnOff, @options.editable)
 
             @options.overlay.show()
 
@@ -66,8 +65,6 @@
 
             @options.currentEditable.css 'background-color', @options.originalBgColor
             @options.currentEditable.css 'z-index', @options.originalZIndex
-
-            @options.editable._deactivated {data: @options.editable}
 
         # Find the closest parent having a background color. If none, returns white.
         _findBackgroundColor: (jQueryfield) ->
