@@ -37,10 +37,10 @@
     # element is focused:
     #
     #    jQuery('selector').hallo({
-    #       showalways: true
+    #       showAlways: true
     #    });
     #
-    # showalways is false by default
+    # showAlways is false by default
     #
     # ## Events
     #
@@ -86,7 +86,7 @@
             plugins: {}
             floating: true
             offset: {x:0,y:0}
-            showalways: false
+            showAlways: false
             activated: ->
             deactivated: ->
             selected: ->
@@ -138,17 +138,17 @@
 
         # Only supports one range for now (i.e. no multiselection)
         getSelection: ->
-            if ( $.browser.msie )
+            if jQuery.browser.msie
                 range = document.selection.createRange()
             else
-                if ( window.getSelection )
+                if window.getSelection
                     userSelection = window.getSelection()
                 else if (document.selection) #opera
                     userSelection = document.selection.createRange()
                 else
                     throw "Your browser does not support selection handling"
 
-                if ( userSelection.getRangeAt )
+                if userSelection.rangeCount > 0
                     range = userSelection.getRangeAt(0)
                 else
                     range = userSelection
@@ -156,28 +156,28 @@
             return range
 
         restoreSelection: (range) ->
-            if ( $.browser.msie )
+            if jQuery.browser.msie
                 range.select()
             else
                 window.getSelection().removeAllRanges()
                 window.getSelection().addRange(range)
 
         replaceSelection: (cb) ->
-            if ( $.browser.msie )
-                t = document.selection.createRange().text;
+            if jQuery.browser.msie
+                t = document.selection.createRange().text
                 r = document.selection.createRange()
-                r.pasteHTML(cb(t));
+                r.pasteHTML(cb(t))
             else
-                sel = window.getSelection();
-                range = sel.getRangeAt(0);
-                newTextNode = document.createTextNode(cb(range.extractContents()));
-                range.insertNode(newTextNode);
-                range.setStartAfter(newTextNode);
-                sel.removeAllRanges();
-                sel.addRange(range);
+                sel = window.getSelection()
+                range = sel.getRangeAt(0)
+                newTextNode = document.createTextNode(cb(range.extractContents()))
+                range.insertNode(newTextNode)
+                range.setStartAfter(newTextNode)
+                sel.removeAllRanges()
+                sel.addRange(range)
 
         removeAllSelections: () ->
-            if ( $.browser.msie )
+            if jQuery.browser.msie
                 range.empty()
             else
                 window.getSelection().removeAllRanges()
