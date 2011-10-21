@@ -10,8 +10,13 @@
     overflow: visible;
 }
 
-.ui-dialog .ui-dialog-content { padding: 0; }
+.ui-dialog .ui-dialog-content {
+    padding: 0;
+}
 
+.halloimage-dialog button {
+    cursor: pointer;
+}
 
 /* Title bar */
 .ui-dialog .ui-dialog-titlebar {
@@ -28,25 +33,22 @@
 
 
 /* Nav/Tabs */
-.ui-dialog .halloimage-dialognav {
+.halloimage-dialog .nav {
     height: 35px;
     width: 100%;
 }
 
-.ui-dialog .halloimage-tabs {
+.halloimage-dialog .tabs {
     text-transform: uppercase;
     font-size: 10px;
     color: white;
     height: 30px;
     line-height: 30px;
-}
-
-.ui-dialog .halloimage-tabs {
     display: table;
     width: 100%;
 }
 
-.ui-dialog .halloimage-tabs li {
+.halloimage-dialog .tabs li {
     display: table-cell;
     padding: 0 5px;
     cursor: pointer;
@@ -54,96 +56,136 @@
     padding: 3px 6px 0 5px;
     text-align: center;
 }
-.ui-dialog .halloimage-tabs li:hover {
+
+.halloimage-dialog .tabs li:hover {
     background-color: #2EA0BE;
 }
 
-.ui-dialog .halloimage-tabs li:last-of-type {
+.halloimage-dialog .tabs li img {
+    position: relative;
+    top: 2px;
+    margin-right: 1px;
+}
+
+.halloimage-dialog .tabs li:last-of-type {
     background-image: none;
 }
 
-.halloimage-tab-search, .halloimage-tab-upload {
+.halloimage-dialog .tab-search,
+.halloimage-dialog .tab-upload {
     display: none;
 }
 
-.ui-dialog .halloimage-tab-activeIndicator {
+.halloimage-dialog .tab-activeIndicator {
     vertical-align: top;
     margin-left: 50px;
 }
 
 
 /* Content */
-.halloimage-dialogcontent {
+.halloimage-dialog .dialogcontent {
     text-align: center;
     padding: 15px;
 }
 
-.halloimage-activeImage, .halloimage-activeImageBg {
-    -moz-transform: rotate(-3deg);
-    -webkit-transform: rotate(-3deg);
-    padding: 3px;
-    box-shadow: 4px 4px 7px #888;
-    max-width: 200px;
-    max-height: 150px;
-    /* cursor: move; */
+.halloimage-dialog .ui-dialog-content {
+    overflow: visible;
 }
 
-.halloimage-activeImageBg {
-    opacity: 0.2;
-    position: absolute;
-}
 
-.halloimage-activeImage:hover {
-    position: relative;
-    left: -20px;
-    -moz-transform: rotate(-6deg);
-    -webkit-transform: rotate(-6deg);
-}
-
-.halloimage-activeImageContainer {
-    padding-top: 20px;
-}
-
-.halloimage-search-activeImageContainer {
+.halloimage-dialog .search-activeImageContainer {
     display: none;
 }
 
-.halloimage-activeImageAligner {
-    display: table;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.halloimage-imageThumbnail {
+/* Thumbnails */
+.halloimage-dialog .imageThumbnail {
     max-width: 45px;
     max-height: 45px;
     padding: 2px;
     border: 1px solid #E1E1E1;
-    box-shadow: 2px 2px 4px #888;
+    box-shadow: 2px 2px 3px #888;
+    cursor: pointer;
 }
 
-.halloimage-imageThumbnail:hover {
+.halloimage-dialog .imageThumbnail:hover {
     border: 1px solid #01add2;
 }
 
-.halloimage-imageThumbnailActive, .halloimage-imageThumbnailActive:hover {
+.halloimage-dialog .imageThumbnailActive,
+.halloimage-dialog .imageThumbnailActive:hover {
     padding: 0px;
-    border: 3px solid black;
-    box-shadow: 2px 2px 4px #888;
-    outline: 1px solid black;
+    border: 2px solid black;
+    box-shadow: 2px 2px 3px #888;
 }
 
-.halloimage-metadata {
+/* Active image */
+.halloimage-dialog .activeImageContainer {
+    position: relative;
+    margin: auto;
+    margin-top: 30px;
+}
+
+.halloimage-dialog .rotationWrapper {
+    -moz-transform: rotate(-3deg);
+    -webkit-transform: rotate(-3deg);
+    -moz-transition-duration: 0.3s;
+    -webkit-transition-duration: 0.3s;
+    max-width: 200px;
+    max-height: 150px;
+    position: relative;
+    display: inline-block;
+    z-index: 3;
+}
+
+.halloimage-dialog .rotationWrapper img,
+.halloimage-dialog .activeImageBg {
+    max-height: 150px;
+    box-shadow: 4px 4px 7px #888;
+}
+
+.halloimage-dialog .rotationWrapper:hover {
+    -moz-transition-duration: 0.3s;
+    -webkit-transition-duration: 0.3s;
+    -moz-transform: translateX(-20px) rotate(-6deg);
+    -webkit-transform: translateX(-20px) rotate(-6deg);
+    cursor: move;
+}
+
+.halloimage-dialog .rotationWrapper .hintArrow {
+    background: transparent url('/bundles/liipvie/img/drop_left.png') no-repeat -2px -2px;
+    height: 44px;
+    width: 44px;
+    position: absolute;
+    top: -5px;
+    left: -30px;
+}
+
+.halloimage-dialog .rotationWrapper:hover .hintArrow{
+    background-position: -2px -50px;
+}
+
+.halloimage-dialog .activeImageBg {
+    -moz-transform: rotate(-3deg);
+    -webkit-transform: rotate(-3deg);
+    opacity: 0.2;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 2;
+    display: none;
+}
+
+.halloimage-dialog .metadata {
     margin-top: 20px;
     text-align: left;
 }
 
-.halloimage-metadata label {
+.halloimage-dialog .metadata label {
     color: #A1A1A1;
     font-size: 14px;
 }
 
-.halloimage-metadata button {
+.halloimage-dialog .metadata button {
     color: white;
     background-color: #646464;
     padding: 5px;
@@ -152,19 +194,61 @@
     margin-top: 10px;
 }
 
-.halloimage-metadata button:hover {
+.halloimage-dialog .metadata button:hover {
     background-color: #01add2;
 }
 
-.ui-dialog input#searchInput{
+.halloimage-dialog .pager-prev,
+.halloimage-dialog .pager-next {
+    width: 11px;
+    height: 21px;
+    background-color: #FFF;
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+}
+
+.halloimage-dialog .pager-prev {
+    background: url('/bundles/liipvie/img/pager_arrows.png') no-repeat -5px 0;
+    left: 0;
+}
+
+.halloimage-dialog .pager-next {
+    background: url('/bundles/liipvie/img/pager_arrows.png') no-repeat -21px 0;
+    right: 0;
+}
+.halloimage-dialog .pager-prev:hover { background-position: -5px -22px; }
+.halloimage-dialog .pager-next:hover { background-position: -21px -22px; }
+
+.halloimage-dialog .tab-search input.searchInput {
+/*
     height: 29px;
     width: 178px;
     border: 1px solid gray
     box-shadow: none !important;
     padding: 0;
     border-radius: 3px 0 0 3px;
+*/
+    width: 175px;
+    height: 22px;
+    border-radius: 2px 0 0 2px;
 }
 
-.ui-dialog .searchResults{
-    padding: 15px 0 0 0;
+.halloimage-dialog .tab-search input.searchButton {
+    border: 1px solid #01add2;
+    width: 56px;
+    height: 30px;
+    position: relative;
+    background-color: #01add2;
+    color: white;
+    border-radius: 0 3px 3px 0;
+    box-shadow: none;
+    position: relative;
+    top: 1px;
+    cursor: pointer;
+}
+
+.halloimage-dialog .tab-search .searchResults {
+    margin: 15px 0 0 0;
+    position: relative;
 }
