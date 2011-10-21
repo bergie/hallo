@@ -329,7 +329,7 @@
                 jQuery(@toolbar).css "width", el.width()+widthToAdd
             else
                 @toolbar.css "width", "auto"
-            @_trigger "activated", event
+            @_trigger "activated", @
 
         turnOff: () ->
             @toolbar.hide()
