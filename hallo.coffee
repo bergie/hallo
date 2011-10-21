@@ -244,9 +244,10 @@
                 event.preventDefault()
 
             if @options.showAlways
+                @options.floating = false
                 # catch activate -> show
                 @element.bind "halloactivated", (event, data) ->
-                    that._updateToolbarPosition that._getToolbarPosition()
+                    that._updateToolbarPosition(that._getToolbarPosition(event))
                     that.toolbar.show()
 
                 # catch deactivate -> hide
