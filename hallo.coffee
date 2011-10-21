@@ -117,6 +117,7 @@
             @element.unbind "focus", @_activated
             @element.unbind "blur", @_deactivated
             @element.unbind "keyup paste change", this, @_checkModified
+            @element.unbind "keyup", @_keys
             @element.unbind "keyup mouseup", this, @_checkSelection
             @bound = false
 
@@ -126,8 +127,10 @@
 
             if not @bound
                 @element.bind "focus", this, @_activated
-                @element.bind "blur", this, @_deactivated
+                if not @options.showAlways
+                    @element.bind "blur", this, @_deactivated
                 @element.bind "keyup paste change", this, @_checkModified
+                @element.bind "keyup", this, @_keys
                 @element.bind "keyup mouseup", this, @_checkSelection
                 widget = this
                 @bound = true
@@ -260,12 +263,16 @@
         _keys: (event) ->
             widget = event.data
             if event.keyCode == 27
-                do widget.disable
+                widget.restoreOriginalContent()
+                widget.turnOff()
 
         _rangesEqual: (r1, r2) ->
             r1.startContainer is r2.startContainer and r1.startOffset is r2.startOffset and r1.endContainer is r2.endContainer and r1.endOffset is r2.endOffset
 
         _checkSelection: (event) ->
+            if event.keyCode == 27
+                return
+
             widget = event.data
             sel = widget.getSelection()
             if sel.collapsed is true
