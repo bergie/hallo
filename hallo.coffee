@@ -209,27 +209,25 @@
             "#{S4()}#{S4()}-#{S4()}-#{S4()}-#{S4()}-#{S4()}#{S4()}#{S4()}"
 
         _getToolbarPosition: (event, selection) ->
-            if event.originalEvent instanceof MouseEvent
-                if @options.floating
-                    return [event.pageX, event.pageY]
+            if @options.floating
+                if event.originalEvent instanceof MouseEvent
+                    return { top: event.pageY, left: event.pageX }
                 else
-                    if $(event.target).attr('contenteditable') == "true"
-                        containerElement = $(event.target)
-                    else
-                        containerElement = $(event.target).parent('[contenteditable]').first()
+                    return this._getCaretPosition(selection)
+            else
+                offset = parseFloat @element.css('outline-width') + parseFloat @element.css('outline-offset')
+                top: @element.offset().top - this.toolbar.outerHeight() - offset
+                left: @element.offset().left - offset
 
-                    containerPosition = containerElement.position()
-                    return [containerPosition.left - @options.offset.x, containerPosition.top - @options.offset.y]
-
-            range = selection.getRangeAt 0
+        _getCaretPosition: (range) ->
             tmpSpan = jQuery "<span/>"
             newRange = document.createRange()
-            newRange.setStart selection.focusNode, range.endOffset
+            newRange.setStart range.endContainer, range.endOffset
             newRange.insertNode tmpSpan.get 0
 
-            position = [tmpSpan.offset().left, tmpSpan.offset().top]
+            position = {top: tmpSpan.offset().top, left: tmpSpan.offset().left}
             tmpSpan.remove()
-            position
+            return position
 
         _prepareToolbar: ->
             that = @
@@ -244,8 +242,8 @@
             @element.bind "halloselected", (event, data) ->
                 widget = data.editable
                 position = widget._getToolbarPosition data.originalEvent, data.selection
-                widget.toolbar.css "top", position[1]
-                widget.toolbar.css "left", position[0]
+                widget.toolbar.css "top", position.top
+                widget.toolbar.css "left", position.left
                 widget.toolbar.show()
 
             @element.bind "hallounselected", (event, data) ->
@@ -269,8 +267,8 @@
 
         _checkSelection: (event) ->
             widget = event.data
-            sel = window.getSelection()
-            if sel.type is "Caret"
+            sel = widget.getSelection()
+            if sel.collapsed is true
                 if widget.selection
                     widget.selection = null
                     widget._trigger "unselected", null,
@@ -278,22 +276,12 @@
                         originalEvent: event
                 return
 
-            selectedRanges = []
-            changed = not widget.section or (sel.rangeCount != widget.selection.length)
-
-            for i in [0..sel.rangeCount]
-                range = sel.getRangeAt(i).cloneRange()
-                selectedRanges[i] = range
-
-                changed = true if not changed and not widget._rangesEqual(range, widget.selection[i])
-                ++i
-
-            widget.selection = selectedRanges
-            if changed
+            if !widget.selection or not widget._rangesEqual sel, widget.selection
+                widget.selection = sel.cloneRange()
                 widget._trigger "selected", null,
                     editable: widget
-                    selection: sel
-                    ranges: selectedRanges
+                    selection: widget.selection
+                    ranges: [widget.selection]
                     originalEvent: event
 
         _activated: (event) ->
