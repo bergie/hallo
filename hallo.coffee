@@ -284,15 +284,34 @@
                     ranges: [widget.selection]
                     originalEvent: event
 
-        _activated: (event) ->
-            widget = event.data
-            if widget.toolbar.html() isnt ""
-                widget.toolbar.css "top", widget.element.offset().top - widget.toolbar.height() + 10
+        turnOn: () ->
+            jQuery(@element).addClass 'inEditMode'
+            #make sure the toolbar has not got the full width of the editable element when floating is set to true
+            if !@options.floating
+                el = jQuery(@element)
+                widthToAdd = parseFloat el.css('padding-left')
+                widthToAdd += parseFloat el.css('padding-right')
+                widthToAdd += parseFloat el.css('border-left-width')
+                widthToAdd += parseFloat el.css('border-right-width')
+                widthToAdd += (parseFloat el.css('outline-width')) * 2
+                widthToAdd += (parseFloat el.css('outline-offset')) * 2
+                jQuery(@toolbar).css "width", el.width()+widthToAdd
+            else
+                @toolbar.css "width", "auto"
+            @_trigger "activated", @
 
-            widget._trigger "activated", event
+        turnOff: () ->
+            @toolbar.hide()
+            jQuery(@element).removeClass 'inEditMode'
+            if (@options.showAlways)
+                @element.blur()
+            @_trigger "deactivated", @
+
+        _activated: (event) ->
+            event.data.turnOn()
 
         _deactivated: (event) ->
-            widget = event.data
-            widget.toolbar.hide()
-            widget._trigger "deactivated", event
+            event.data.turnOff()
+
+
 )(jQuery)
