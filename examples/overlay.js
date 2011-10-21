@@ -14,12 +14,13 @@
           this.options.bound = true;
           widget.options.editable.element.bind("halloactivated", function(event, data) {
             widget.options.currentEditable = jQuery(event.target);
-            return widget.showOverlay();
+            if (!widget.options.visible) {
+              return widget.showOverlay();
+            }
           });
-          return widget.options.editable.element.keydown(function(event, data) {
-            if (event.keyCode === 27) {
-              widget.options.editable.restoreOriginalContent();
-              widget.options.editable.element.blur();
+          return widget.options.editable.element.bind("hallodeactivated", function(event, data) {
+            widget.options.currentEditable = jQuery(event.target);
+            if (widget.options.visible) {
               return widget.hideOverlay();
             }
           });
@@ -31,12 +32,11 @@
         if (this.options.overlay === null) {
           if (jQuery("#halloOverlay").length > 0) {
             this.options.overlay = jQuery("#halloOverlay");
-            this.options.overlay.bind('click', jQuery.proxy(this.hideOverlay, this));
           } else {
             this.options.overlay = jQuery('<div id="halloOverlay" class="halloOverlay">');
             jQuery(document.body).append(this.options.overlay);
-            this.options.overlay.bind('click', jQuery.proxy(this.hideOverlay, this));
           }
+          this.options.overlay.bind('click', jQuery.proxy(this.options.editable.turnOff, this.options.editable));
         }
         this.options.overlay.show();
         this.options.originalBgColor = this.options.currentEditable.css("background-color");
@@ -50,10 +50,7 @@
         this.options.visible = false;
         this.options.overlay.hide();
         this.options.currentEditable.css('background-color', this.options.originalBgColor);
-        this.options.currentEditable.css('z-index', this.options.originalZIndex);
-        return this.options.editable._deactivated({
-          data: this.options.editable
-        });
+        return this.options.currentEditable.css('z-index', this.options.originalZIndex);
       },
       _findBackgroundColor: function(jQueryfield) {
         var color;

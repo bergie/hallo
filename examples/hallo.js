@@ -51,6 +51,7 @@
         this.element.unbind("focus", this._activated);
         this.element.unbind("blur", this._deactivated);
         this.element.unbind("keyup paste change", this, this._checkModified);
+        this.element.unbind("keyup", this._keys);
         this.element.unbind("keyup mouseup", this, this._checkSelection);
         return this.bound = false;
       },
@@ -63,6 +64,7 @@
             this.element.bind("blur", this, this._deactivated);
           }
           this.element.bind("keyup paste change", this, this._checkModified);
+          this.element.bind("keyup", this, this._keys);
           this.element.bind("keyup mouseup", this, this._checkSelection);
           widget = this;
           return this.bound = true;
@@ -83,7 +85,7 @@
           } else {
             throw "Your browser does not support selection handling";
           }
-          if (userSelection.getRangeAt) {
+          if (userSelection.rangeCount > 0) {
             range = userSelection.getRangeAt(0);
           } else {
             range = userSelection;
@@ -189,16 +191,13 @@
         this.toolbar.bind("mousedown", function(event) {
           return event.preventDefault();
         });
-        if (!this.options.floating) {
+        if (this.options.showAlways) {
           this.element.bind("halloactivated", function(event, data) {
             that._updateToolbarPosition(that._getToolbarPosition());
             return that.toolbar.show();
           });
           this.element.bind("hallodeactivated", function(event, data) {
             return that.toolbar.hide();
-          });
-          return jQuery(window).resize(function(event) {
-            return that._updateToolbarPosition(that._getToolbarPosition());
           });
         } else {
           this.element.bind("halloselected", function(event, data) {
@@ -211,14 +210,12 @@
             }
           });
           this.element.bind("hallounselected", function(event, data) {
-            if (!that.options.showAlways) {
-              return data.editable.toolbar.hide();
-            }
-          });
-          return jQuery(window).resize(function(event) {
-            return that.toolbar.hide();
+            return data.editable.toolbar.hide();
           });
         }
+        return jQuery(window).resize(function(event) {
+          return that._updateToolbarPosition(that._getToolbarPosition());
+        });
       },
       _updateToolbarPosition: function(position) {
         this.toolbar.css("top", position.top);
@@ -238,7 +235,8 @@
         var widget;
         widget = event.data;
         if (event.keyCode === 27) {
-          return widget.disable();
+          widget.restoreOriginalContent();
+          return widget.turnOff();
         }
       },
       _rangesEqual: function(r1, r2) {
@@ -246,6 +244,9 @@
       },
       _checkSelection: function(event) {
         var sel, widget;
+        if (event.keyCode === 27) {
+          return;
+        }
         widget = event.data;
         sel = widget.getSelection();
         if (sel.collapsed === true) {
@@ -268,30 +269,36 @@
           });
         }
       },
-      _activated: function(event) {
-        var el, widget, widthToAdd;
-        widget = event.data;
-        jQuery(this).addClass('inEditMode');
-        if (widget.options.floating === false) {
-          el = jQuery(this);
+      turnOn: function() {
+        var el, widthToAdd;
+        jQuery(this.element).addClass('inEditMode');
+        if (!this.options.floating) {
+          el = jQuery(this.element);
           widthToAdd = parseFloat(el.css('padding-left'));
           widthToAdd += parseFloat(el.css('padding-right'));
           widthToAdd += parseFloat(el.css('border-left-width'));
           widthToAdd += parseFloat(el.css('border-right-width'));
           widthToAdd += (parseFloat(el.css('outline-width'))) * 2;
           widthToAdd += (parseFloat(el.css('outline-offset'))) * 2;
-          widget.toolbar.css("width", jQuery(this).width() + widthToAdd);
+          jQuery(this.toolbar).css("width", el.width() + widthToAdd);
         } else {
-          widget.toolbar.css("width", "auto");
+          this.toolbar.css("width", "auto");
         }
-        return widget._trigger("activated", event);
+        return this._trigger("activated", event);
+      },
+      turnOff: function() {
+        this.toolbar.hide();
+        jQuery(this.element).removeClass('inEditMode');
+        if (this.options.showAlways) {
+          this.element.blur();
+        }
+        return this._trigger("deactivated", this);
+      },
+      _activated: function(event) {
+        return event.data.turnOn();
       },
       _deactivated: function(event) {
-        var widget;
-        widget = event.data;
-        widget.toolbar.hide();
-        jQuery(widget.element).removeClass('inEditMode');
-        return widget._trigger("deactivated", event);
+        return event.data.turnOff();
       }
     });
   })(jQuery);
