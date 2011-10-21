@@ -117,6 +117,7 @@
             @element.unbind "focus", @_activated
             @element.unbind "blur", @_deactivated
             @element.unbind "keyup paste change", this, @_checkModified
+            @element.unbind "keyup", @_keys
             @element.unbind "keyup mouseup", this, @_checkSelection
             @bound = false
 
@@ -130,6 +131,7 @@
                 if not @options.showAlways
                     @element.bind "blur", this, @_deactivated
                 @element.bind "keyup paste change", this, @_checkModified
+                @element.bind "keyup", this, @_keys
                 @element.bind "keyup mouseup", this, @_checkSelection
                 widget = this
                 @bound = true
@@ -281,7 +283,8 @@
         _keys: (event) ->
             widget = event.data
             if event.keyCode == 27
-                do widget.disable
+                widget.restoreOriginalContent()
+                widget.turnOff()
 
         _rangesEqual: (r1, r2) ->
             r1.startContainer is r2.startContainer and r1.startOffset is r2.startOffset and r1.endContainer is r2.endContainer and r1.endOffset is r2.endOffset
@@ -289,6 +292,9 @@
         # Check if some text is selected, and if this selection has changed. If it changed,
         # trigger the "halloselected" event
         _checkSelection: (event) ->
+            if event.keyCode == 27
+                return
+
             widget = event.data
             sel = widget.getSelection()
 
@@ -308,28 +314,34 @@
                     ranges: [widget.selection]
                     originalEvent: event
 
-        _activated: (event) ->
-            widget = event.data
-
-            jQuery(@).addClass 'inEditMode'
+        turnOn: () ->
+            jQuery(@element).addClass 'inEditMode'
             #make sure the toolbar has not got the full width of the editable element when floating is set to true
-            if widget.options.floating is false
-                el = jQuery @
+            if !@options.floating
+                el = jQuery(@element)
                 widthToAdd = parseFloat el.css('padding-left')
                 widthToAdd += parseFloat el.css('padding-right')
                 widthToAdd += parseFloat el.css('border-left-width')
                 widthToAdd += parseFloat el.css('border-right-width')
                 widthToAdd += (parseFloat el.css('outline-width')) * 2
                 widthToAdd += (parseFloat el.css('outline-offset')) * 2
-                widget.toolbar.css "width", jQuery(@).width()+widthToAdd
+                jQuery(@toolbar).css "width", el.width()+widthToAdd
             else
-                widget.toolbar.css "width", "auto"
-            widget._trigger "activated", event
+                @toolbar.css "width", "auto"
+            @_trigger "activated", event
+
+        turnOff: () ->
+            @toolbar.hide()
+            jQuery(@element).removeClass 'inEditMode'
+            if (@options.showAlways)
+                @element.blur()
+            @_trigger "deactivated", @
+
+        _activated: (event) ->
+            event.data.turnOn()
 
         _deactivated: (event) ->
-            widget = event.data
-            widget.toolbar.hide()
-            jQuery(widget.element).removeClass 'inEditMode'
-            widget._trigger "deactivated", event
+            event.data.turnOff()
+
 
 )(jQuery)
