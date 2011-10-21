@@ -140,17 +140,17 @@
 
         # Only supports one range for now (i.e. no multiselection)
         getSelection: ->
-            if ( jQuery.browser.msie )
+            if jQuery.browser.msie
                 range = document.selection.createRange()
             else
-                if ( window.getSelection )
+                if window.getSelection
                     userSelection = window.getSelection()
                 else if (document.selection) #opera
                     userSelection = document.selection.createRange()
                 else
                     throw "Your browser does not support selection handling"
 
-                if ( userSelection.getRangeAt )
+                if userSelection.rangeCount > 0
                     range = userSelection.getRangeAt(0)
                 else
                     range = userSelection
