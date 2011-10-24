@@ -1,36 +1,14 @@
 /****************/
 /* Image Dialog */
 /****************/
-.ui-dialog {
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-    box-shadow: none;
-    border: 3px solid black;
-    border-radius: 5px;
-    overflow: visible;
-}
 
-.ui-dialog .ui-dialog-content {
+.halloimage-dialog .ui-dialog-content {
     padding: 0;
 }
 
 .halloimage-dialog button {
     cursor: pointer;
 }
-
-/* Title bar */
-.ui-dialog .ui-dialog-titlebar {
-    background: #000000;
-    color: white;
-    padding: 5px 10px;
-    border: none;
-}
-
-.ui-dialog .ui-dialog-title {
-    font-weight: normal;
-    text-shadow: none;
-}
-
 
 /* Nav/Tabs */
 .halloimage-dialog .nav {
@@ -50,7 +28,6 @@
 
 .halloimage-dialog .tabs li {
     display: table-cell;
-    padding: 0 5px;
     cursor: pointer;
     background: #01add2 url('/bundles/liipvie/img/divider.png') no-repeat right;
     padding: 3px 6px 0 5px;
@@ -113,7 +90,7 @@
 
 .halloimage-dialog .imageThumbnailActive,
 .halloimage-dialog .imageThumbnailActive:hover {
-    padding: 0px;
+    padding: 0;
     border: 2px solid black;
     box-shadow: 2px 2px 3px #888;
 }
@@ -128,6 +105,7 @@
 .halloimage-dialog .rotationWrapper {
     -moz-transform: rotate(-3deg);
     -webkit-transform: rotate(-3deg);
+    transform: rotate(-3deg);
     -moz-transition-duration: 0.3s;
     -webkit-transition-duration: 0.3s;
     max-width: 200px;
@@ -148,6 +126,7 @@
     -webkit-transition-duration: 0.3s;
     -moz-transform: translateX(-20px) rotate(-6deg);
     -webkit-transform: translateX(-20px) rotate(-6deg);
+    transform: translateX(-20px) rotate(-6deg);
     cursor: move;
 }
 
@@ -167,6 +146,7 @@
 .halloimage-dialog .activeImageBg {
     -moz-transform: rotate(-3deg);
     -webkit-transform: rotate(-3deg);
+    transform: rotate(-3deg);
     opacity: 0.2;
     position: absolute;
     left: 0;
@@ -220,30 +200,14 @@
 .halloimage-dialog .pager-prev:hover { background-position: -5px -22px; }
 .halloimage-dialog .pager-next:hover { background-position: -21px -22px; }
 
-.halloimage-dialog .tab-search input.searchInput {
-/*
-    height: 29px;
-    width: 178px;
-    border: 1px solid gray
-    box-shadow: none !important;
-    padding: 0;
-    border-radius: 3px 0 0 3px;
-*/
+.halloimage-dialog .tab-search .searchInput {
     width: 175px;
     height: 22px;
     border-radius: 2px 0 0 2px;
 }
 
-.halloimage-dialog .tab-search input.searchButton {
-    border: 1px solid #01add2;
+.halloimage-dialog .tab-search .searchButton {
     width: 56px;
-    height: 30px;
-    position: relative;
-    background-color: #01add2;
-    color: white;
-    border-radius: 0 3px 3px 0;
-    box-shadow: none;
-    position: relative;
     top: 1px;
     cursor: pointer;
 }
