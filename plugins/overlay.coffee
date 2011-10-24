@@ -15,7 +15,7 @@
 #
 
 ((jQuery) ->
-    jQuery.widget "IKS.hallooverlay",
+    jQuery.widget "Liip.hallooverlay",
         options:
             editable: null
             toolbar: null

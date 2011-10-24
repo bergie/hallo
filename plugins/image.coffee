@@ -2,7 +2,7 @@
 #     (c) 2011 Henri Bergius, IKS Consortium
 #     Hallo may be freely distributed under the MIT license
 ((jQuery) ->
-    jQuery.widget "IKS.halloimage",
+    jQuery.widget "Liip.halloimage",
         options:
             editable: null
             toolbar: null
