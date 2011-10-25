@@ -370,9 +370,6 @@
                     console.log(event.currentTarget)
                     $('<div>').css({
                         backgroundImage: "url(" + $(event.currentTarget).attr('src') + ")"
-                        width: '100px'
-                        height: '100px'
-                        zIndex: '1005'
                     }).addClass('customHelper').appendTo('body');
 
 
