@@ -333,7 +333,7 @@
                      # add draggable functionality to the image after it has been dropped
                     imageInsert.draggable
                         cursor: "move"
-                        helper: "clone"
+                        helper: dnd.createHelper
                         drag: dnd.handleDragEvent
                         stop: dnd.handleStopEvent
 
