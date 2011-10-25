@@ -321,10 +321,9 @@
                     imageInsert = helper.createInsertElement(ui, false)
                     if position is "middle"
                         imageInsert.css('display', 'block')
-                        # todo: fix positioning of images dropped in the middle
                         imageInsert.css(helper.insertConfig[position]).css
                           position: "relative"
-                          left: ((editable.width() - imageInsert.width()) / 2
+                          left: ((editable.width() + parseFloat(editable.css('paddingLeft')) + parseFloat(editable.css('paddingRight'))) - imageInsert.width()) / 2
                         imageInsert.insertBefore $(event.target)
                     else
                         imageInsert.css(helper.insertConfig[position]).css "display", "block"
