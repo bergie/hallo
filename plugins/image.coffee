@@ -216,7 +216,7 @@
                         "left"
                     else "right"  if ui.offset.left > (offset.left + third * 2)
 
-                # Insertion Configuration Object
+                # Insertion Configuration Object / TODO: could be handled with classes
                 insertConfig:
                     left:
                         left: 0
@@ -341,12 +341,13 @@
                         stop: dnd.handleStopEvent
 
                 handleOverEvent: (event, ui) ->
+                  # todo: handle with a class
+                  $(ui.helper).css "border", "3px solid white"
 
                   editable.append overlay.big
                   editable.append overlay.left
                   editable.append overlay.right
 
-                  $(ui.helper).css "backgroundColor", "green"
                   helper.removeTmpNodes()
                   position = helper.calcPosition(ui, offset)
 
@@ -361,7 +362,7 @@
                   helper.delayAction createTmp, 100
 
                 handleLeaveEvent: (event, ui) ->
-                    $(ui.helper).css "backgroundColor", "red"
+                    $(ui.helper).css "border", "3px solid red" # todo: move this to a css class
                     $('.bigBlueOverlay, .smallDottedOverlay').remove()
                     helper.removeTmpNodes()
 
