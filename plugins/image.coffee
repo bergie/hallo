@@ -190,9 +190,211 @@
             xposition = jQuery(@options.editable.element).offset().left + jQuery(@options.editable.element).outerWidth() - 3 # 3 is the border width of the contenteditable border
             yposition = jQuery(@options.toolbar).offset().top - jQuery(document).scrollTop() - 29
             @options.dialog.dialog("option", "position", [xposition, yposition])
+
+            # Add DragnDrop
+            @_addDragnDrop()
+
+            # Show Dialog
             @options.dialog.dialog("open")
 
         _closeDialog: ->
             @options.dialog.dialog("close")
 
+        _addDragnDrop: ->
+            helper =
+                # Delay the execution of a function
+                delayAction: (functionToCall, delay) ->
+                    timer = clearTimeout(timer)
+                    timer = setTimeout(functionToCall, delay)  unless timer
+
+                # Calculate position on an initial drag
+                calcPosition: (ui, offset) ->
+                    position = offset.left + third
+                    if ui.offset.left >= position and ui.offset.left <= (offset.left + third * 2)
+                        "middle"
+                    else if ui.offset.left < position
+                        "left"
+                    else "right"  if ui.offset.left > (offset.left + third * 2)
+
+                # Insertion Configuration Object
+                insertConfig:
+                    left:
+                        left: 0
+                        float: "left"
+                        padding: "0 10px 0 0"
+
+                    right:
+                        left: 0
+                        float: "right"
+                        padding: "0 0 0 10px"
+
+                    middle:
+                        padding: "0 0 10px 0"
+                        float: "none"
+
+                # removes all temporary nodes created before
+                removeTmpNodes: ->
+                    $(".tmp, .tmpBig", editable).remove()  if $(".tmp", editable)
+
+                # create image to be inserted
+                createInsertElement: (ui, tmp) ->
+                    image = ui.draggable[0]
+                    src = image.src
+                    width = image.width
+                    height = image.height
+                    altText = image.alt
+                    imageInsert = $("<img>").attr(
+                        src: src
+                        width: width
+                        height: height
+                        alt: altText
+                        class: (if tmp then "tmp" else "")
+                    ).css("display", "none")
+                    imageInsert
+
+                createHelperElement: ->
+                    $("<div/>").addClass "tmp tmpBig"
+
+                showOverlay: (position) ->
+                
+                    eHeight = editable.height() + parseFloat(editable.css('paddingTop')) + parseFloat(editable.css('paddingBottom'))
+
+                    overlay.big.css height: eHeight
+                    overlay.left.css height: eHeight
+                    overlay.right.css height: eHeight
+
+                    switch position
+                        when "left"
+                            overlay.big.addClass("blueOverlayLeft").removeClass("blueOverlayRight").css(left: third).show()
+                            overlay.left.hide()
+                            overlay.right.hide()
+                        when "middle"
+                            overlay.big.removeClass "blueOverlayLeft blueOverlayRight"
+                            overlay.big.hide()
+                            overlay.left.show()
+                            overlay.right.show()
+                        when "right"
+                            overlay.big.addClass("blueOverlayRight").removeClass("blueOverlayLeft").css(left: 0).show()
+                            overlay.left.hide()
+                            overlay.right.hide()
+                        else
+
+                # check if the element was dragged into or within a contenteditable
+                checkOrigin: (event) ->
+                    unless $(event.srcElement).parents("[contenteditable]").length is 0
+                        true
+                    else
+                        false
+
+            dnd =
+                handleDragEvent: (event, ui) ->
+                    tmpObject = $(".tmp", editable)
+                    internalDrop = helper.checkOrigin(event)
+                    position = helper.calcPosition(ui, offset)
+                    $(event.target).remove()  if internalDrop
+                    helper.showOverlay position
+                    if position is "middle"
+                        if tmpObject.parent("div").length is 0
+                            tmpObject.wrap $("<div/>")
+                            tmpObject.css "display", "none"
+                        tmpObject.parent("div").css(helper.insertConfig[position]).addClass "tmpBig"
+                    else
+                        $(".tmpBig").replaceWith $(".tmp, editable")  if $(".tmpBig")
+                        tmpObject.css(helper.insertConfig[position]).css "display", "block"
+
+                handleStopEvent: (event, ui) ->
+                    internalDrop = helper.checkOrigin(event)
+                    $(event.target).remove()  if internalDrop
+
+                    overlay.big.hide()
+                    overlay.left.hide()
+                    overlay.right.hide()
+
+                handleDropEvent: (event, ui) ->
+                    # check whether it's an internal drop or not
+                    internalDrop = helper.checkOrigin(event)
+                    helper.removeTmpNodes()
+                    position = helper.calcPosition(ui, offset, internalDrop)
+                    imageInsert = helper.createInsertElement(ui, false)
+                    if position is "middle"
+                        imageInsert.css(helper.insertConfig[position]).css
+                          position: "relative"
+                          left: (editable.width() - $(ui.helper).width()) / 2
+                          display: "block"
+
+                        imageInsert.insertBefore $(event.target)
+                    else
+                        imageInsert.css(helper.insertConfig[position]).css "display", "block"
+                        $(event.target).prepend imageInsert
+
+                    overlay.big.hide()
+                    overlay.left.hide()
+                    overlay.right.hide()
+                     # add draggable functionality to the image after it has been dropped
+                    imageInsert.draggable
+                        cursor: "move"
+                        helper: "clone"
+                        drag: dnd.handleDragEvent
+                        stop: dnd.handleStopEvent
+
+                handleOverEvent: (event, ui) ->
+
+                  editable.append overlay.big
+                  editable.append overlay.left
+                  editable.append overlay.right
+
+                  $(ui.helper).css "backgroundColor", "green"
+                  helper.removeTmpNodes()
+                  position = helper.calcPosition(ui, offset)
+
+                  createTmp = ->
+                      if position is "middle"
+                          helperInsert = helper.createHelperElement()
+                      else
+                          helperInsert = helper.createInsertElement(ui, true)
+                      $(event.target).prepend helperInsert
+                      helper.showOverlay position
+                      
+                  helper.delayAction createTmp, 100
+
+                handleLeaveEvent: (event, ui) ->
+                    $(ui.helper).css "backgroundColor", "red"
+                    $('.bigBlueOverlay, .smallDottedOverlay').remove()
+                    helper.removeTmpNodes()
+
+                createHelper: (event) ->
+                    console.log(event.currentTarget)
+                    $('<div>').css({
+                        backgroundImage: "url(" + $(event.currentTarget).attr('src') + ")"
+                        width: '100px'
+                        height: '100px'
+                    }).addClass('customHelper');
+
+
+            editable = $(@options.editable.element)
+            offset = editable.offset()
+            third = parseFloat(editable.width() / 3)
+            overlayMiddleConfig =
+                width: third
+                height: editable.height()
+
+            overlay =
+                big: $("<div/>").addClass("bigBlueOverlay").css(
+                  width: third * 2
+                  height: editable.height()
+                )
+                left: $("<div/>").addClass("smallDottedOverlay smallDottedOverlayLeft").css(overlayMiddleConfig)
+                right: $("<div/>").addClass("smallDottedOverlay smallDottedOverlayRight").css(overlayMiddleConfig).css("left", third * 2)
+
+            $(".rotationWrapper img").draggable
+                cursor: "move"
+                helper: dnd.createHelper
+                drag: dnd.handleDragEvent
+                stop: dnd.handleStopEvent
+
+            $(@options.editable.element).children('p').droppable
+                tolerance: "pointer"
+                drop: dnd.handleDropEvent
+                over: dnd.handleOverEvent
+                out: dnd.handleLeaveEvent
 )(jQuery)
