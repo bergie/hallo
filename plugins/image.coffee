@@ -291,16 +291,19 @@
                     tmpObject = $(".tmp", editable)
                     internalDrop = helper.checkOrigin(event)
                     position = helper.calcPosition(ui, offset)
-                    $(event.target).remove()  if internalDrop
-                    helper.showOverlay position
-                    if position is "middle"
-                        if tmpObject.parent("div").length is 0
-                            tmpObject.wrap $("<div/>")
-                            tmpObject.css "display", "none"
-                        tmpObject.parent("div").css(helper.insertConfig[position]).addClass "tmpBig"
-                    else
-                        $(".tmpBig").replaceWith $(".tmp, editable")  if $(".tmpBig")
-                        tmpObject.css(helper.insertConfig[position]).css "display", "block"
+                    $(event.target).remove() if internalDrop
+
+                    createTmpObject = ->
+                        if position is "middle"
+                            if tmpObject.parent("div").length is 0
+                                tmpObject.wrap $("<div/>")
+                                tmpObject.css "display", "none"
+                            tmpObject.parent("div").css(helper.insertConfig[position]).addClass "tmpBig"
+                        else
+                            $(".tmpBig").replaceWith $(".tmp, editable")  if $(".tmpBig")
+                            tmpObject.css(helper.insertConfig[position]).css "display", "block"
+                        helper.showOverlay position
+                    helper.delayAction createTmpObject, 300
 
                 handleStopEvent: (event, ui) ->
                     internalDrop = helper.checkOrigin(event)
@@ -317,11 +320,11 @@
                     position = helper.calcPosition(ui, offset, internalDrop)
                     imageInsert = helper.createInsertElement(ui, false)
                     if position is "middle"
+                        imageInsert.css('display', 'block')
+                        # todo: fix positioning of images dropped in the middle
                         imageInsert.css(helper.insertConfig[position]).css
                           position: "relative"
-                          left: (editable.width() - $(ui.helper).width()) / 2
-                          display: "block"
-
+                          left: ((editable.width() - imageInsert.width()) / 2
                         imageInsert.insertBefore $(event.target)
                     else
                         imageInsert.css(helper.insertConfig[position]).css "display", "block"
@@ -368,7 +371,8 @@
                         backgroundImage: "url(" + $(event.currentTarget).attr('src') + ")"
                         width: '100px'
                         height: '100px'
-                    }).addClass('customHelper');
+                        zIndex: '1005'
+                    }).addClass('customHelper').appendTo('body');
 
 
             editable = $(@options.editable.element)
