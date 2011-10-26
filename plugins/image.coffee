@@ -330,26 +330,31 @@
 
                 handleOverEvent: (event, ui) ->
                   # todo: handle with a class
-                  $(ui.helper).css "border", "3px solid white"
+                  # temorary fix to avoid "handleOverEvent" to be fired before "handleLeaveEvent"
+                  delay = ->
+                    $(ui.helper).css "border", "3px solid white"
+                    $(ui.helper).find('.trashcan').remove()
 
-                  editable.append overlay.big
-                  editable.append overlay.left
-                  editable.append overlay.right
+                    editable.append overlay.big
+                    editable.append overlay.left
+                    editable.append overlay.right
 
-                  helper.removeTmpNodes()
-                  position = helper.calcPosition(ui, offset)
+                    helper.removeTmpNodes()
+                    position = helper.calcPosition(ui, offset)
 
-                  createTmp = ->
-                      if position is "middle"
-                          helperInsert = helper.createHelperElement()
-                      else
-                          helperInsert = helper.createInsertElement(ui, true)
-                      $(event.target).prepend helperInsert
-                      helper.showOverlay position
+                    createTmp = ->
+                        if position is "middle"
+                            helperInsert = helper.createHelperElement()
+                        else
+                            helperInsert = helper.createInsertElement(ui, true)
+                        $(event.target).prepend helperInsert
+                        helper.showOverlay position
 
-                  helper.delayAction createTmp, 100
+                    helper.delayAction createTmp, 100
+                  helper.delayAction delay, 5
 
                 handleLeaveEvent: (event, ui) ->
+                    $(ui.helper).append($('<div class="trashcan"></div>'))
                     $('.bigBlueOverlay, .smallDottedOverlay').remove()
                     helper.removeTmpNodes()
 
