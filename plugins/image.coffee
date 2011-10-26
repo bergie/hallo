@@ -284,7 +284,7 @@
                             tmpObject.parent("div").addClass "tmpBig inlineImage-" + position
                         else
                             $(".tmpBig").replaceWith $(".tmp, editable")  if $(".tmpBig")
-                            tmpObject.addClass("inlineImage-" + position).css "display", "block"
+                            tmpObject.removeClass("inlineImage-middle inlineImage-left inlineImage-right").addClass("inlineImage-" + position).css "display", "block"
                         helper.showOverlay position
                     helper.delayAction createTmpObject, 300
 
@@ -310,14 +310,15 @@
                     helper.removeTmpNodes()
                     position = helper.calcPosition(ui, offset)
                     imageInsert = helper.createInsertElement(ui, false)
+
                     if position is "middle"
                         imageInsert.css('display', 'block')
-                        imageInsert.addClass("inlineImage-" + position).css
+                        imageInsert.removeClass("inlineImage-middle inlineImage-left inlineImage-right").addClass("inlineImage-" + position).css
                           position: "relative"
                           left: ((editable.width() + parseFloat(editable.css('paddingLeft')) + parseFloat(editable.css('paddingRight'))) - imageInsert.attr('width')) / 2
                         imageInsert.insertBefore $(event.target)
                     else
-                        imageInsert.addClass("inlineImage-" + position).css "display", "block"
+                        imageInsert.removeClass("inlineImage-middle inlineImage-left inlineImage-right").addClass("inlineImage-" + position).css "display", "block"
                         $(event.target).prepend imageInsert
 
                     overlay.big.hide()
