@@ -230,7 +230,7 @@
                         src: tmpImg.src
                         width: tmpImg.width
                         height: tmpImg.height
-                        alt: altText
+                        alt: jQuery('#caption').val()
                         class: (if tmp then "tmp" else "")
                     ).css("display", "none")
                     imageInsert
