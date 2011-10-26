@@ -255,7 +255,7 @@
                     $("<div/>").addClass "tmp tmpBig"
 
                 showOverlay: (position) ->
-                
+
                     eHeight = editable.height() + parseFloat(editable.css('paddingTop')) + parseFloat(editable.css('paddingBottom'))
 
                     overlay.big.css height: eHeight
@@ -304,6 +304,9 @@
                         helper.showOverlay position
                     helper.delayAction createTmpObject, 300
 
+                handleStartEvent: (event, ui) ->
+                    $(document).trigger('startPreventSave');
+
                 handleStopEvent: (event, ui) ->
                     internalDrop = helper.checkOrigin(event)
                     $(event.target).remove()  if internalDrop
@@ -311,6 +314,8 @@
                     overlay.big.hide()
                     overlay.left.hide()
                     overlay.right.hide()
+
+                    $(document).trigger('stopPreventSave');
 
                 handleDropEvent: (event, ui) ->
                     # check whether it's an internal drop or not
@@ -356,7 +361,7 @@
                           helperInsert = helper.createInsertElement(ui, true)
                       $(event.target).prepend helperInsert
                       helper.showOverlay position
-                      
+
                   helper.delayAction createTmp, 100
 
                 handleLeaveEvent: (event, ui) ->
@@ -390,6 +395,7 @@
                 cursor: "move"
                 helper: dnd.createHelper
                 drag: dnd.handleDragEvent
+                start: dnd.handleStartEvent
                 stop: dnd.handleStopEvent
 
             $(@options.editable.element).children('p').droppable
