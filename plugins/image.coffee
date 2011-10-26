@@ -216,22 +216,6 @@
                         "left"
                     else "right"  if ui.offset.left > (offset.left + third * 2)
 
-                # Insertion Configuration Object / TODO: could be handled with classes
-                insertConfig:
-                    left:
-                        left: 0
-                        float: "left"
-                        padding: "0 10px 0 0"
-
-                    right:
-                        left: 0
-                        float: "right"
-                        padding: "0 0 0 10px"
-
-                    middle:
-                        padding: "0 0 10px 0"
-                        float: "none"
-
                 # removes all temporary nodes created before
                 removeTmpNodes: ->
                     $(".tmp, .tmpBig", editable).remove()  if $(".tmp", editable)
@@ -297,10 +281,10 @@
                             if tmpObject.parent("div").length is 0
                                 tmpObject.wrap $("<div/>")
                                 tmpObject.css "display", "none"
-                            tmpObject.parent("div").css(helper.insertConfig[position]).addClass "tmpBig"
+                            tmpObject.parent("div").addClass "tmpBig inlineImage-" + position
                         else
                             $(".tmpBig").replaceWith $(".tmp, editable")  if $(".tmpBig")
-                            tmpObject.css(helper.insertConfig[position]).css "display", "block"
+                            tmpObject.addClass("inlineImage-" + position).css "display", "block"
                         helper.showOverlay position
                     helper.delayAction createTmpObject, 300
 
@@ -328,12 +312,12 @@
                     imageInsert = helper.createInsertElement(ui, false)
                     if position is "middle"
                         imageInsert.css('display', 'block')
-                        imageInsert.css(helper.insertConfig[position]).css
+                        imageInsert.addClass("inlineImage-" + position).css
                           position: "relative"
                           left: ((editable.width() + parseFloat(editable.css('paddingLeft')) + parseFloat(editable.css('paddingRight'))) - imageInsert.attr('width')) / 2
                         imageInsert.insertBefore $(event.target)
                     else
-                        imageInsert.css(helper.insertConfig[position]).css "display", "block"
+                        imageInsert.addClass("inlineImage-" + position).css "display", "block"
                         $(event.target).prepend imageInsert
 
                     overlay.big.hide()
@@ -365,7 +349,6 @@
                   helper.delayAction createTmp, 100
 
                 handleLeaveEvent: (event, ui) ->
-                    $(ui.helper).css "border", "3px solid red" # todo: move this to a css class
                     $('.bigBlueOverlay, .smallDottedOverlay').remove()
                     helper.removeTmpNodes()
 

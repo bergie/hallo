@@ -216,3 +216,18 @@
     margin: 15px 0 0 0;
     position: relative;
 }
+
+
+.inlineImage-left, .inlineImage-right, .inlineImage-middle {
+    margin: 5px;
+    left: 0;
+}
+.inlineImage-left {
+    float: left;
+}
+.inlineImage-right {
+    float: right;
+}
+.inlineImage-middle {
+    float: none;
+}
