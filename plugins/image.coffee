@@ -389,6 +389,7 @@
                                 start: dnd.handleStartEvent
                                 stop: dnd.handleStopEvent
                                 disabled: not editable.hasClass('inEditMode')
+                                cursorAt: {top: 50, left: 50}
                         draggables.push elem
 
                     $(".rotationWrapper img", widgetOptions.dialog).each (index, elem) ->
