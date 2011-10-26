@@ -173,6 +173,9 @@
             @options.toolbar.append buttonset
             @options.dialog.dialog(@options.dialogOpts)
 
+            # Add DragnDrop
+            @_addDragnDrop()
+
         _init: ->
 
         _openDialog: ->
@@ -190,9 +193,6 @@
             xposition = jQuery(@options.editable.element).offset().left + jQuery(@options.editable.element).outerWidth() - 3 # 3 is the border width of the contenteditable border
             yposition = jQuery(@options.toolbar).offset().top - jQuery(document).scrollTop() - 29
             @options.dialog.dialog("option", "position", [xposition, yposition])
-
-            # Add DragnDrop
-            @_addDragnDrop()
 
             # Show Dialog
             @options.dialog.dialog("open")
@@ -309,7 +309,10 @@
 
                 handleStopEvent: (event, ui) ->
                     internalDrop = helper.checkOrigin(event)
-                    $(event.target).remove()  if internalDrop
+                    if internalDrop
+                        $(event.target).remove()
+                    else
+                        editable.trigger('change')
 
                     overlay.big.hide()
                     overlay.left.hide()
@@ -318,10 +321,10 @@
                     $(document).trigger('stopPreventSave');
 
                 handleDropEvent: (event, ui) ->
-                    # check whether it's an internal drop or not
+                    # check whether it is an internal drop or not
                     internalDrop = helper.checkOrigin(event)
                     helper.removeTmpNodes()
-                    position = helper.calcPosition(ui, offset, internalDrop)
+                    position = helper.calcPosition(ui, offset)
                     imageInsert = helper.createInsertElement(ui, false)
                     if position is "middle"
                         imageInsert.css('display', 'block')
@@ -336,12 +339,9 @@
                     overlay.big.hide()
                     overlay.left.hide()
                     overlay.right.hide()
-                     # add draggable functionality to the image after it has been dropped
-                    imageInsert.draggable
-                        cursor: "move"
-                        helper: dnd.createHelper
-                        drag: dnd.handleDragEvent
-                        stop: dnd.handleStopEvent
+                    # Let the editor know we did a change
+                    editable.trigger('change')
+                    dnd.init(editable)
 
                 handleOverEvent: (event, ui) ->
                   # todo: handle with a class
@@ -370,13 +370,55 @@
                     helper.removeTmpNodes()
 
                 createHelper: (event) ->
-                    console.log(event.currentTarget)
                     $('<div>').css({
                         backgroundImage: "url(" + $(event.currentTarget).attr('src') + ")"
                     }).addClass('customHelper').appendTo('body');
 
+                # initialize draggable and droppable elements in the page
+                # Safe to be called multiple times
+                init: () ->
+                    draggable = []
 
+                    initDraggable = (elem) ->
+                        if not elem.jquery_draggable_initialized
+                            elem.jquery_draggable_initialized = true
+                            $(elem).draggable
+                                cursor: "move"
+                                helper: dnd.createHelper
+                                drag: dnd.handleDragEvent
+                                start: dnd.handleStartEvent
+                                stop: dnd.handleStopEvent
+                                disabled: not editable.hasClass('inEditMode')
+                        draggables.push elem
+
+                    $(".rotationWrapper img", widgetOptions.dialog).each (index, elem) ->
+                        initDraggable(elem) if not elem.jquery_draggable_initialized
+
+                    $("img", editable).each (index, elem) ->
+                        elem.contentEditable = false
+                        initDraggable(elem) if not elem.jquery_draggable_initialized
+
+                    $("p", editable).each (index, elem) ->
+                        if not elem.jquery_droppable_initialized
+                            elem.jquery_droppable_initialized = true
+                            $('p', editable).droppable
+                                tolerance: "pointer"
+                                drop: dnd.handleDropEvent
+                                over: dnd.handleOverEvent
+                                out: dnd.handleLeaveEvent
+
+                enableDragging: () ->
+                    jQuery.each draggables, (index, d) ->
+                        jQuery(d).draggable('option', 'disabled', false)
+
+                disableDragging: () ->
+                    jQuery.each draggables, (index, d) ->
+                        jQuery(d).draggable('option', 'disabled', true)
+
+            draggables = []
             editable = $(@options.editable.element)
+            # keep a reference of options for context changes
+            widgetOptions = @options
             offset = editable.offset()
             third = parseFloat(editable.width() / 3)
             overlayMiddleConfig =
@@ -391,16 +433,8 @@
                 left: $("<div/>").addClass("smallDottedOverlay smallDottedOverlayLeft").css(overlayMiddleConfig)
                 right: $("<div/>").addClass("smallDottedOverlay smallDottedOverlayRight").css(overlayMiddleConfig).css("left", third * 2)
 
-            $(".rotationWrapper img").draggable
-                cursor: "move"
-                helper: dnd.createHelper
-                drag: dnd.handleDragEvent
-                start: dnd.handleStartEvent
-                stop: dnd.handleStopEvent
+            dnd.init()
 
-            $(@options.editable.element).children('p').droppable
-                tolerance: "pointer"
-                drop: dnd.handleDropEvent
-                over: dnd.handleOverEvent
-                out: dnd.handleLeaveEvent
+            editable.bind 'halloactivated', dnd.enableDragging
+            editable.bind 'hallodeactivated', dnd.disableDragging
 )(jQuery)
