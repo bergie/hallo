@@ -7,7 +7,7 @@
             editable: null
             toolbar: null
             uuid: ""
-            searchUrl: "liip/vie/assets/search/" # TODO: pass this in, set default to ""
+            searchUrl: ""
             dialogOpts:
                 autoOpen: false
                 width: 270
