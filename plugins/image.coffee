@@ -323,7 +323,7 @@
                         imageInsert.css('display', 'block')
                         imageInsert.css(helper.insertConfig[position]).css
                           position: "relative"
-                          left: ((editable.width() + parseFloat(editable.css('paddingLeft')) + parseFloat(editable.css('paddingRight'))) - imageInsert.width()) / 2
+                          left: ((editable.width() + parseFloat(editable.css('paddingLeft')) + parseFloat(editable.css('paddingRight'))) - imageInsert.attr('width')) / 2
                         imageInsert.insertBefore $(event.target)
                     else
                         imageInsert.css(helper.insertConfig[position]).css "display", "block"
