@@ -37,8 +37,7 @@
 
             @element.bind "keyup paste change mouseup", (event) ->
                 format = document.queryCommandValue("formatBlock").toUpperCase()
-
-                if format == ''
+                if format == '' or format == 'X'
                     labelParent = jQuery(buttonset)
                     labelParent.children("input").attr "checked", false
                     labelParent.children("label").removeClass "ui-state-clicked"
