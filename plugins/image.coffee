@@ -239,14 +239,13 @@
                 # create image to be inserted
                 createInsertElement: (ui, tmp) ->
                     image = ui.draggable[0]
-                    src = image.src
-                    width = image.width
-                    height = image.height
+                    tmpImg = new Image()
+                    tmpImg.src = image.src
                     altText = image.alt
                     imageInsert = $("<img>").attr(
-                        src: src
-                        width: width
-                        height: height
+                        src: tmpImg.src
+                        width: tmpImg.width
+                        height: tmpImg.height
                         alt: altText
                         class: (if tmp then "tmp" else "")
                     ).css("display", "none")
