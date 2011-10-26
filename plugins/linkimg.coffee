@@ -39,8 +39,10 @@
                     else
                         widget.lastSelection.startContainer.parentNode.href = link
                 widget.options.editable.removeAllSelections()
+                widget.options.editable.element.trigger('change')
                 dialog.dialog('close')
                 return false
+
             dialog.find("form").submit dialogSubmitCb
 
             buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
