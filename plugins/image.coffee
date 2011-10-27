@@ -54,8 +54,8 @@
                         <img src=\"\" id=\"#{@options.uuid}-sugg-activeImageBg\" class=\"activeImage activeImageBg\" />
                     </div>
                     <div class=\"metadata\">
-                        <label for=\"caption\">Caption</label><input type=\"text\" id=\"caption\" />
-                        <button id=\"#{@options.uuid}-#{widget.widgetName}-addimage\">Add Image</button>
+                        <label for=\"caption-sugg\">Caption</label><input type=\"text\" id=\"caption-sugg\" />
+                        <!--<button id=\"#{@options.uuid}-#{widget.widgetName}-addimage\">Add Image</button>-->
                     </div>
                 </div>
                 <div id=\"#{@options.uuid}-tab-search-content\" class=\"#{widget.widgetName}-tab tab-search\">
@@ -69,6 +69,10 @@
                             <img src=\"\" id=\"#{@options.uuid}-search-activeImageBg\" class=\"activeImage\" />
                         </div>
                         <img src=\"\" id=\"#{@options.uuid}-search-activeImage\" class=\"activeImage activeImageBg\" />
+                    </div>
+                    <div class=\"metadata\" id=\"metadata-search\" style=\"display: none;\">
+                        <label for=\"caption-search\">Caption</label><input type=\"text\" id=\"caption-search\" />
+                        <!--<button id=\"#{@options.uuid}-#{widget.widgetName}-addimage\">Add Image</button>-->
                     </div>
                 </div>
                 <div id=\"#{@options.uuid}-tab-upload-content\" class=\"#{widget.widgetName}-tab tab-upload\">UPLOAD</div>
@@ -103,6 +107,8 @@
                     jQuery("##{widget.options.uuid}-search-activeImageContainer").show()
                     firstimage = jQuery(".#{widget.widgetName}-search-imageThumbnail").first().addClass "imageThumbnailActive"
                     jQuery("##{widget.options.uuid}-search-activeImage, ##{widget.options.uuid}-search-activeImageBg").attr "src", firstimage.attr "src"
+
+                    jQuery("#metadata-search").show()
 
                 search = (page) ->
                     page = page || 1
@@ -225,12 +231,19 @@
                     image = ui.draggable[0]
                     tmpImg = new Image()
                     tmpImg.src = image.src
-                    altText = image.alt
+                    if not tmp
+                        if @startPlace.parents(".tab-suggestions").length > 0
+                            altText = jQuery("#caption-sugg").val()
+                        else if @startPlace.parents(".tab-search").length > 0
+                            altText = jQuery("#caption-search").val()
+                        else
+                            altText = jQuery(image).attr("alt")
+
                     imageInsert = $("<img>").attr(
                         src: tmpImg.src
                         width: tmpImg.width
                         height: tmpImg.height
-                        alt: jQuery('#caption').val()
+                        alt: altText
                         class: (if tmp then "tmp" else "")
                     ).css("display", "none")
                     imageInsert
@@ -269,6 +282,8 @@
                     else
                         false
 
+                startPlace: ""
+
             dnd =
                 handleDragEvent: (event, ui) ->
                     tmpObject = $(".tmp", editable)
@@ -291,9 +306,11 @@
                     $.ui.ddmanager.prepareOffsets(
                         $(event.target).data('draggable'), event
                     )
-                    
+
                     $(event.target).remove() if internalDrop
-                    $(document).trigger('startPreventSave');
+
+                    jQuery(document).trigger('startPreventSave')
+                    helper.startPlace = jQuery(event.target)
 
                 handleStopEvent: (event, ui) ->
                     internalDrop = helper.checkOrigin(event)
@@ -416,6 +433,7 @@
             editable = $(@options.editable.element)
             # keep a reference of options for context changes
             widgetOptions = @options
+
             offset = editable.offset()
             third = parseFloat(editable.width() / 3)
             overlayMiddleConfig =
