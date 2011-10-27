@@ -286,7 +286,7 @@
                             $(".tmpBig").replaceWith $(".tmp, editable")  if $(".tmpBig")
                             tmpObject.removeClass("inlineImage-middle inlineImage-left inlineImage-right").addClass("inlineImage-" + position).css "display", "block"
                         helper.showOverlay position
-                    helper.delayAction createTmpObject, 300
+                    helper.delayAction createTmpObject, 150
 
                 handleStartEvent: (event, ui) ->
                     $(document).trigger('startPreventSave');
@@ -329,33 +329,36 @@
                     dnd.init(editable)
 
                 handleOverEvent: (event, ui) ->
-                  # todo: handle with a class
-                  # temorary fix to avoid "handleOverEvent" to be fired before "handleLeaveEvent"
-                  delay = ->
-                    $(ui.helper).css "border", "3px solid white"
-                    $(ui.helper).find('.trashcan').remove()
+                    # temorary fix to avoid "handleOverEvent" to be fired before "handleLeaveEvent"
+                    delay = ->
+                        window.timeoutTrash = clearTimeout(window.timeoutTrash)  if window.timeoutTrash
+                        # todo: handle with a class
+                        $(ui.helper).css "border", "3px solid white"
+                        $(ui.helper).find('.trashcan').remove()
 
-                    editable.append overlay.big
-                    editable.append overlay.left
-                    editable.append overlay.right
+                        editable.append overlay.big
+                        editable.append overlay.left
+                        editable.append overlay.right
 
-                    helper.removeTmpNodes()
-                    position = helper.calcPosition(ui, offset)
+                        helper.removeTmpNodes()
+                        position = helper.calcPosition(ui, offset)
 
-                    createTmp = ->
-                        if position is "middle"
-                            helperInsert = helper.createHelperElement()
-                        else
-                            helperInsert = helper.createInsertElement(ui, true)
-                        $(event.target).prepend helperInsert
-                        helper.showOverlay position
+                        createTmp = ->
+                            if position is "middle"
+                                helperInsert = helper.createHelperElement()
+                            else
+                                helperInsert = helper.createInsertElement(ui, true)
+                            $(event.target).prepend helperInsert
+                            helper.showOverlay position
 
-                    helper.delayAction createTmp, 100
-                  helper.delayAction delay, 5
+                        helper.delayAction createTmp, 100
+                    helper.delayAction delay, 5
 
                 handleLeaveEvent: (event, ui) ->
-                    $(ui.helper).append($('<div class="trashcan"></div>'))
-                    $('.bigBlueOverlay, .smallDottedOverlay').remove()
+                    func = ->
+                        $(ui.helper).append($('<div class="trashcan"></div>'))
+                        $('.bigBlueOverlay, .smallDottedOverlay').remove()
+                    window.timeoutTrash = setTimeout(func , 300)
                     helper.removeTmpNodes()
 
                 createHelper: (event) ->
