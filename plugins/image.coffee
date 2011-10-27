@@ -248,16 +248,16 @@
 
                     switch position
                         when "left"
-                            overlay.big.addClass("blueOverlayLeft").removeClass("blueOverlayRight").css(left: third).show()
+                            overlay.big.addClass("bigOverlayLeft").removeClass("bigOverlayRight").css(left: third).show()
                             overlay.left.hide()
                             overlay.right.hide()
                         when "middle"
-                            overlay.big.removeClass "blueOverlayLeft blueOverlayRight"
+                            overlay.big.removeClass "bigOverlayLeft bigOverlayRight"
                             overlay.big.hide()
                             overlay.left.show()
                             overlay.right.show()
                         when "right"
-                            overlay.big.addClass("blueOverlayRight").removeClass("blueOverlayLeft").css(left: 0).show()
+                            overlay.big.addClass("bigOverlayRight").removeClass("bigOverlayLeft").css(left: 0).show()
                             overlay.left.hide()
                             overlay.right.hide()
                         else
@@ -357,7 +357,7 @@
                 handleLeaveEvent: (event, ui) ->
                     func = ->
                         $(ui.helper).append($('<div class="trashcan"></div>'))
-                        $('.bigBlueOverlay, .smallDottedOverlay').remove()
+                        $('.bigOverlay, .smallOverlay').remove()
                     window.timeoutTrash = setTimeout(func , 300)
                     helper.removeTmpNodes()
 
@@ -419,12 +419,12 @@
                 height: editable.height()
 
             overlay =
-                big: $("<div/>").addClass("bigBlueOverlay").css(
+                big: $("<div/>").addClass("bigOverlay").css(
                   width: third * 2
                   height: editable.height()
                 )
-                left: $("<div/>").addClass("smallDottedOverlay smallDottedOverlayLeft").css(overlayMiddleConfig)
-                right: $("<div/>").addClass("smallDottedOverlay smallDottedOverlayRight").css(overlayMiddleConfig).css("left", third * 2)
+                left: $("<div/>").addClass("smallOverlay smallOverlayLeft").css(overlayMiddleConfig)
+                right: $("<div/>").addClass("smallOverlay smallOverlayRight").css(overlayMiddleConfig).css("left", third * 2)
 
             dnd.init()
 
