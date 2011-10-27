@@ -36,7 +36,7 @@
             </div>
             <div class=\"dialogcontent\">
                 <div id=\"#{@options.uuid}-tab-suggestions-content\" class=\"#{widget.widgetName}-tab tab-suggestions\">
-                    <div>
+                    <div class=\"imageThumbnailContainer\">
                         <img src=\"http://imagesus.homeaway.com/mda01/badf2e69babf2f6a0e4b680fc373c041c705b891\" class=\"imageThumbnail imageThumbnailActive\" />
                         <img src=\"http://www.ngkhai.net/cebupics/albums/userpics/10185/thumb_P1010613.JPG\" class=\"imageThumbnail\" />
                         <img src=\"http://idiotduck.com/wp-content/uploads/2011/03/amazing-nature-photography-waterfall-hdr-1024-768-14-150x200.jpg\" class=\"imageThumbnail\" />
@@ -59,10 +59,10 @@
                     </div>
                 </div>
                 <div id=\"#{@options.uuid}-tab-search-content\" class=\"#{widget.widgetName}-tab tab-search\">
-                    <form action=\"#{widget.options.searchUrl}/?page=1&length=4\" type=\"get\" id=\"#{@options.uuid}-#{widget.widgetName}-searchForm\">
+                    <form action=\"#{widget.options.searchUrl}/?page=1&length=8\" type=\"get\" id=\"#{@options.uuid}-#{widget.widgetName}-searchForm\">
                         <input type=\"text\" class=\"searchInput\" /><input type=\"submit\" id=\"#{@options.uuid}-#{widget.widgetName}-searchButton\" class=\"button searchButton\" value=\"OK\"/>
                     </form>
-                    <div class=\"searchResults\"></div>
+                    <div class=\"searchResults imageThumbnailContainer\"></div>
                     <div id=\"#{@options.uuid}-search-activeImageContainer\" class=\"search-activeImageContainer activeImageContainer\">
                         <div class=\"rotationWrapper\">
                             <div class=\"hintArrow\"></div>
@@ -115,7 +115,7 @@
                     jQuery.ajax({
                         type: "GET",
                         url: widget.options.searchUrl,
-                        data: "page=#{page}&length=4",
+                        data: "page=#{page}&length=8",
                         success: showResults
                     })
 

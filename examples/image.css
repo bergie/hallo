@@ -185,7 +185,7 @@
     background-color: #FFF;
     cursor: pointer;
     position: absolute;
-    top: 20px;
+    top: 45px;
 }
 
 .halloimage-dialog .pager-prev {
@@ -215,6 +215,10 @@
 .halloimage-dialog .tab-search .searchResults {
     margin: 15px 0 0 0;
     position: relative;
+}
+
+.halloimage-dialog .imageThumbnailContainer {
+    min-height: 110px;
 }
 
 
