@@ -65,7 +65,9 @@
 
 
                 @element.bind "keyup paste change mouseup", (event) ->
-                    if jQuery(event.target)[0].nodeName is "A"
+                    start = jQuery(widget.options.editable.getSelection().startContainer)
+                    nodeName = if start.prop('nodeName') then start.prop('nodeName') else start.parent().prop('nodeName')
+                    if nodeName.toUpperCase() is "A"
                         button.attr "checked", true
                         button.next().addClass "ui-state-clicked"
                         button.button "refresh"
