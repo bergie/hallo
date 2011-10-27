@@ -208,13 +208,13 @@
                     timer = setTimeout(functionToCall, delay)  unless timer
 
                 # Calculate position on an initial drag
-                calcPosition: (ui, offset) ->
+                calcPosition: (ui, offset, event) ->
                     position = offset.left + third
-                    if ui.offset.left >= position and ui.offset.left <= (offset.left + third * 2)
+                    if event.pageX >= position and event.pageX <= (offset.left + third * 2)
                         "middle"
-                    else if ui.offset.left < position
+                    else if event.pageX < position
                         "left"
-                    else "right"  if ui.offset.left > (offset.left + third * 2)
+                    else "right"  if event.pageX > (offset.left + third * 2)
 
                 # removes all temporary nodes created before
                 removeTmpNodes: ->
@@ -272,9 +272,7 @@
             dnd =
                 handleDragEvent: (event, ui) ->
                     tmpObject = $(".tmp", editable)
-                    internalDrop = helper.checkOrigin(event)
-                    position = helper.calcPosition(ui, offset)
-                    $(event.target).remove() if internalDrop
+                    position = helper.calcPosition(ui, offset, event)
 
                     if position is "middle"
                         if tmpObject.parent("div").length is 0
@@ -287,6 +285,14 @@
                     helper.showOverlay position
 
                 handleStartEvent: (event, ui) ->
+                    internalDrop = helper.checkOrigin(event)
+                    $(event.target).css('display','none') if internalDrop
+
+                    $.ui.ddmanager.prepareOffsets(
+                        $(event.target).data('draggable'), event
+                    )
+                    
+                    $(event.target).remove() if internalDrop
                     $(document).trigger('startPreventSave');
 
                 handleStopEvent: (event, ui) ->
@@ -306,7 +312,7 @@
                     # check whether it is an internal drop or not
                     internalDrop = helper.checkOrigin(event)
                     helper.removeTmpNodes()
-                    position = helper.calcPosition(ui, offset)
+                    position = helper.calcPosition(ui, offset, event)
                     imageInsert = helper.createInsertElement(ui, false)
 
                     if position is "middle"
@@ -339,7 +345,7 @@
                         editable.append overlay.right
 
                         helper.removeTmpNodes()
-                        position = helper.calcPosition(ui, offset)
+                        position = helper.calcPosition(ui, offset, event)
 
                         createTmp = ->
                             if position is "middle"
