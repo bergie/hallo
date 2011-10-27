@@ -276,17 +276,15 @@
                     position = helper.calcPosition(ui, offset)
                     $(event.target).remove() if internalDrop
 
-                    createTmpObject = ->
-                        if position is "middle"
-                            if tmpObject.parent("div").length is 0
-                                tmpObject.wrap $("<div/>")
-                                tmpObject.css "display", "none"
-                            tmpObject.parent("div").addClass "tmpBig inlineImage-" + position
-                        else
-                            $(".tmpBig").replaceWith $(".tmp, editable")  if $(".tmpBig")
-                            tmpObject.removeClass("inlineImage-middle inlineImage-left inlineImage-right").addClass("inlineImage-" + position).css "display", "block"
-                        helper.showOverlay position
-                    helper.delayAction createTmpObject, 150
+                    if position is "middle"
+                        if tmpObject.parent("div").length is 0
+                            tmpObject.wrap $("<div/>")
+                            tmpObject.css "display", "none"
+                        tmpObject.parent("div").addClass "tmpBig inlineImage-" + position
+                    else
+                        $(".tmpBig").replaceWith $(".tmp, editable")  if $(".tmpBig")
+                        tmpObject.removeClass("inlineImage-middle inlineImage-left inlineImage-right").addClass("inlineImage-" + position).css "display", "block"
+                    helper.showOverlay position
 
                 handleStartEvent: (event, ui) ->
                     $(document).trigger('startPreventSave');
