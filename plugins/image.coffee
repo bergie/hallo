@@ -354,7 +354,6 @@
                     delay = ->
                         window.timeoutTrash = clearTimeout(window.timeoutTrash)  if window.timeoutTrash
                         # todo: handle with a class
-                        $(ui.helper).css "border", "3px solid white"
                         $(ui.helper).find('.trashcan').remove()
 
                         editable.append overlay.big
