@@ -30,15 +30,17 @@
                 link = urlInput.val()
                 widget.options.editable.restoreSelection(widget.lastSelection)
                 if ((new RegExp(/^\s*$/)).test link) or link is widget.options.defaultUrl
-                    # link is empty, remove it
-                    widget.lastSelection.selectNode widget.lastSelection.startContainer
+                    # link is empty, remove it. Make sure the link is selected
+                    if widget.lastSelection.collapsed
+                        widget.lastSelection.setStartBefore(widget.lastSelection.startContainer)
+                        widget.lastSelection.setEndAfter(widget.lastSelection.startContainer)
+                        window.getSelection().addRange(widget.lastSelection);
                     document.execCommand "unlink", null, ""
                 else
                     if widget.lastSelection.startContainer.parentNode.href is undefined
                         document.execCommand "createLink", null, link
                     else
                         widget.lastSelection.startContainer.parentNode.href = link
-                widget.options.editable.removeAllSelections()
                 widget.options.editable.element.trigger('change')
                 dialog.dialog('close')
                 return false
@@ -59,8 +61,8 @@
                     else
                         urlInput.val(jQuery(widget.lastSelection.startContainer.parentNode).attr('href'))
                         jQuery(urlInput[0].form).find('input[type=submit]').val('update')
-
                     dialog.dialog('open')
+
 
                 @element.bind "keyup paste change mouseup", (event) ->
                     if jQuery(event.target)[0].nodeName is "A"
