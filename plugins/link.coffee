@@ -13,17 +13,18 @@
             dialogOpts:
                 autoOpen: false
                 width: 540
-                height: 120
+                height: 95
                 title: "Enter Link"
                 modal: true
                 resizable: false
-                draggable: true
+                draggable: false
+                dialogClass: 'hallolink-dialog'
 
         _create: ->
             widget = this
 
             dialogId = "#{@options.uuid}-dialog"
-            dialog = jQuery "<div id=\"#{dialogId}\"><form action=\"#\" method=\"post\" class=\"linkForm\"><input class=\"url\" type=\"text\" name=\"url\" size=\"40\" value=\"#{@options.defaultUrl}\" /><input type=\"submit\" id=\"addlinkButton\" value=\"Insert\" /></form></div>"
+            dialog = jQuery "<div id=\"#{dialogId}\"><form action=\"#\" method=\"post\" class=\"linkForm\"><input class=\"url\" type=\"text\" name=\"url\" value=\"#{@options.defaultUrl}\" /><input type=\"submit\" id=\"addlinkButton\" value=\"Insert\" /></form></div>"
             urlInput = jQuery('input[name=url]', dialog).focus (e)->
                 this.select()
             dialogSubmitCb = () ->
