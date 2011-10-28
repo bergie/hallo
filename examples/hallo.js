@@ -192,8 +192,9 @@
           return event.preventDefault();
         });
         if (this.options.showAlways) {
+          this.options.floating = false;
           this.element.bind("halloactivated", function(event, data) {
-            that._updateToolbarPosition(that._getToolbarPosition());
+            that._updateToolbarPosition(that._getToolbarPosition(event));
             return that.toolbar.show();
           });
           this.element.bind("hallodeactivated", function(event, data) {
@@ -284,7 +285,7 @@
         } else {
           this.toolbar.css("width", "auto");
         }
-        return this._trigger("activated", event);
+        return this._trigger("activated", this);
       },
       turnOff: function() {
         this.toolbar.hide();

@@ -1,6 +1,6 @@
 (function() {
   (function(jQuery) {
-    return jQuery.widget("IKS.hallooverlay", {
+    return jQuery.widget("Liip.hallooverlay", {
       options: {
         editable: null,
         toolbar: null,

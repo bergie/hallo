@@ -1,6 +1,6 @@
 (function() {
   (function(jQuery) {
-    return jQuery.widget("IKS.hallotoolbarlinebreak", {
+    return jQuery.widget("Liip.hallotoolbarlinebreak", {
       options: {
         editable: null,
         toolbar: null,

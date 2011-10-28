@@ -42,8 +42,12 @@
         buttonset.buttonset();
         this.element.bind("keyup paste change mouseup", function(event) {
           var format, formatNumber, labelParent, selectedButton;
-          format = document.queryCommandValue("formatBlock").toUpperCase();
-          if (format === '') {
+          try {
+            format = document.queryCommandValue("formatBlock").toUpperCase();
+          } catch (e) {
+            format = '';
+          }
+          if (format === '' || format === 'X') {
             labelParent = jQuery(buttonset);
             labelParent.children("input").attr("checked", false);
             labelParent.children("label").removeClass("ui-state-clicked");
