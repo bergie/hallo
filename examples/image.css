@@ -228,9 +228,11 @@
 }
 .inlineImage-left {
     float: left;
+    margin-right: 10px;
 }
 .inlineImage-right {
     float: right;
+    margin-left: 10px;
 }
 .inlineImage-middle {
     float: none;
