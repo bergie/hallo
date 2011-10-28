@@ -214,7 +214,7 @@
                     timer = setTimeout(functionToCall, delay)  unless timer
 
                 # Calculate position on an initial drag
-                calcPosition: (ui, offset, event) ->
+                calcPosition: (offset, event) ->
                     position = offset.left + third
                     if event.pageX >= position and event.pageX <= (offset.left + third * 2)
                         "middle"
@@ -222,13 +222,8 @@
                         "left"
                     else "right"  if event.pageX > (offset.left + third * 2)
 
-                # removes all temporary nodes created before
-                removeTmpNodes: ->
-                    $(".tmp, .tmpBig", editable).remove()  if $(".tmp", editable)
-
                 # create image to be inserted
-                createInsertElement: (ui, tmp) ->
-                    image = ui.draggable[0]
+                createInsertElement: (image, tmp) ->
                     tmpImg = new Image()
                     tmpImg.src = image.src
                     if not tmp
@@ -245,14 +240,16 @@
                         height: tmpImg.height
                         alt: altText
                         class: (if tmp then "tmp" else "")
-                    ).css("display", "none")
+                    ).show()
                     imageInsert
 
-                createHelperElement: ->
-                    $("<div/>").addClass "tmp tmpBig"
+                createLineFeedbackElement: ->
+                    $("<div/>").addClass "tmpLine"
+
+                removeFeedbackElements: ->
+                    $('.tmp, .tmpLine', editable).remove()
 
                 showOverlay: (position) ->
-
                     eHeight = editable.height() + parseFloat(editable.css('paddingTop')) + parseFloat(editable.css('paddingBottom'))
 
                     overlay.big.css height: eHeight
@@ -285,29 +282,66 @@
                 startPlace: ""
 
             dnd =
+                createTmpFeedback: (image, position)->
+                    if position is 'middle'
+                        return helper.createLineFeedbackElement()
+                    else
+                        el = helper.createInsertElement(image, true)
+                        el.addClass("inlineImage-" + position)
+
+                handleOverEvent: (event, ui) ->
+                    position = helper.calcPosition(offset, event)
+
+                    $('.trashcan', ui.helper).remove()
+
+                    editable.append overlay.big
+                    editable.append overlay.left
+                    editable.append overlay.right
+
+                    helper.showOverlay position
+
+                    helper.removeFeedbackElements()
+                    $(event.target).prepend(dnd.createTmpFeedback ui.draggable[0], position)
+
+                    # already create the other feedback elements here, because we have a reference to the droppable
+                    if position is "middle"
+                        $(event.target).prepend(dnd.createTmpFeedback ui.draggable[0], 'right')
+                        $('.tmp', $(event.target)).hide()
+                    else
+                        $(event.target).prepend(dnd.createTmpFeedback ui.draggable[0], 'middle')
+                        $('.tmpLine', $(event.target)).hide()
+
                 handleDragEvent: (event, ui) ->
-                    tmpObject = $(".tmp", editable)
-                    position = helper.calcPosition(ui, offset, event)
+                    position = helper.calcPosition(offset, event)
+
+                    # help perfs
+                    if position == dnd.lastPositionDrag
+                        return
+
+                    dnd.lastPositionDrag = position
+
+                    helper.showOverlay position
+
+                    tmpFeedbackLR = $('.tmp', editable)
+                    tmpFeedbackMiddle = $('.tmpLine', editable)
 
                     if position is "middle"
-                        if tmpObject.parent("div").length is 0
-                            tmpObject.wrap $("<div/>")
-                            tmpObject.css "display", "none"
-                        tmpObject.parent("div").addClass "tmpBig inlineImage-" + position
+                        tmpFeedbackMiddle.show()
+                        tmpFeedbackLR.hide()
                     else
-                        $(".tmpBig").replaceWith $(".tmp, editable")  if $(".tmpBig")
-                        tmpObject.removeClass("inlineImage-middle inlineImage-left inlineImage-right").addClass("inlineImage-" + position).css "display", "block"
-                    helper.showOverlay position
+                        tmpFeedbackMiddle.hide()
+                        tmpFeedbackLR.removeClass("inlineImage-left inlineImage-right").addClass("inlineImage-" + position).show()
+
+                handleLeaveEvent: (event, ui) ->
+                    if not $('div.trashcan', ui.helper).length
+                        $(ui.helper).append($('<div class="trashcan"></div>'))
+                    $('.bigOverlay, .smallOverlay').remove()
+                    helper.removeFeedbackElements()
 
                 handleStartEvent: (event, ui) ->
                     internalDrop = helper.checkOrigin(event)
-                    $(event.target).css('display','none') if internalDrop
-
-                    $.ui.ddmanager.prepareOffsets(
-                        $(event.target).data('draggable'), event
-                    )
-
-                    $(event.target).remove() if internalDrop
+                    if internalDrop
+                        $(event.target).remove()
 
                     jQuery(document).trigger('startPreventSave')
                     helper.startPlace = jQuery(event.target)
@@ -328,12 +362,12 @@
                 handleDropEvent: (event, ui) ->
                     # check whether it is an internal drop or not
                     internalDrop = helper.checkOrigin(event)
-                    helper.removeTmpNodes()
-                    position = helper.calcPosition(ui, offset, event)
-                    imageInsert = helper.createInsertElement(ui, false)
+                    position = helper.calcPosition(offset, event)
+                    helper.removeFeedbackElements()
+                    imageInsert = helper.createInsertElement(ui.draggable[0], false)
 
                     if position is "middle"
-                        imageInsert.css('display', 'block')
+                        imageInsert.show()
                         imageInsert.removeClass("inlineImage-middle inlineImage-left inlineImage-right").addClass("inlineImage-" + position).css
                           position: "relative"
                           left: ((editable.width() + parseFloat(editable.css('paddingLeft')) + parseFloat(editable.css('paddingRight'))) - imageInsert.attr('width')) / 2
@@ -347,39 +381,8 @@
                     overlay.right.hide()
                     # Let the editor know we did a change
                     editable.trigger('change')
+                    # init the new image in the content
                     dnd.init(editable)
-
-                handleOverEvent: (event, ui) ->
-                    # temorary fix to avoid "handleOverEvent" to be fired before "handleLeaveEvent"
-                    delay = ->
-                        window.timeoutTrash = clearTimeout(window.timeoutTrash)  if window.timeoutTrash
-                        # todo: handle with a class
-                        $(ui.helper).find('.trashcan').remove()
-
-                        editable.append overlay.big
-                        editable.append overlay.left
-                        editable.append overlay.right
-
-                        helper.removeTmpNodes()
-                        position = helper.calcPosition(ui, offset, event)
-
-                        createTmp = ->
-                            if position is "middle"
-                                helperInsert = helper.createHelperElement()
-                            else
-                                helperInsert = helper.createInsertElement(ui, true)
-                            $(event.target).prepend helperInsert
-                            helper.showOverlay position
-
-                        helper.delayAction createTmp, 100
-                    helper.delayAction delay, 5
-
-                handleLeaveEvent: (event, ui) ->
-                    func = ->
-                        $(ui.helper).append($('<div class="trashcan"></div>'))
-                        $('.bigOverlay, .smallOverlay').remove()
-                    window.timeoutTrash = setTimeout(func , 300)
-                    helper.removeTmpNodes()
 
                 createHelper: (event) ->
                     $('<div>').css({
