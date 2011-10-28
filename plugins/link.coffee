@@ -2,7 +2,7 @@
 #     (c) 2011 Henri Bergius, IKS Consortium
 #     Hallo may be freely distributed under the MIT license
 ((jQuery) ->
-    jQuery.widget "IKS.hallolinkimg",
+    jQuery.widget "IKS.hallolink",
         options:
             editable: null
             toolbar: null
@@ -62,7 +62,6 @@
                         urlInput.val(jQuery(widget.lastSelection.startContainer.parentNode).attr('href'))
                         jQuery(urlInput[0].form).find('input[type=submit]').val('update')
                     dialog.dialog('open')
-
 
                 @element.bind "keyup paste change mouseup", (event) ->
                     start = jQuery(widget.options.editable.getSelection().startContainer)

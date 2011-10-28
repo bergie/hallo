@@ -9,7 +9,7 @@ The widget has been written as a simple and liberally licensed editor. It doesn'
 
 You need jQuery and jQuery UI loaded. An easy way to do this is to use Google's JS service:
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script> 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js"></script>
 
 The editor toolbar is using jQuery UI theming, so you'll probably also want to [grab a theme](http://jqueryui.com/themeroller/) that fits your needs.
@@ -47,7 +47,7 @@ Hallo has got more options you set when instantiating. See the hallo.coffee file
 * hallojustify - Adds align left, center, right support
 * hallolists - Adds support for ordered and unordered lists
 * halloreundo - Adds support for undo and redo
-* hallolinkimg - Adds support to add links to a selection (currently not working)
+* hallolink - Adds support to add links to a selection (currently not working)
 
 ## Licensing
 
