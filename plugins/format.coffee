@@ -11,7 +11,7 @@
 
         _create: ->
             widget = this
-            buttonset = jQuery "<span></span>"
+            buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
             buttonize = (format) =>
                 label = format.substr(0, 1).toUpperCase()
                 id = "#{@options.uuid}-#{format}"

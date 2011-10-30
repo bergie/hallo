@@ -215,7 +215,13 @@
                         containerElement = $(event.target).parent('[contenteditable]').first()
 
                     containerPosition = containerElement.position()
-                    return [containerPosition.left - @options.offset.x, containerPosition.top - @options.offset.y]
+                    switch @options.offset.y
+                        when "top" then offsety = containerPosition.top - @toolbar.outerHeight()
+                        #TODO: "bottom" may break style
+                        when "bottom" then offsety = containerPosition.top + containerElement.outerHeight()
+                        else offsety = containerPosition.top - @options.offset.y;
+
+                    return [containerPosition.left - @options.offset.x, offsety]
 
             range = selection.getRangeAt 0
             tmpSpan = jQuery "<span/>"
