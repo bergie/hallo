@@ -251,7 +251,7 @@
                 widget.toolbar.show()
 
             @element.bind "hallounselected", (event, data) ->
-                if not that.options.showalways
+                unless that.options.showalways
                     data.editable.toolbar.hide()
 
         _checkModified: (event) ->
@@ -272,7 +272,7 @@
         _checkSelection: (event) ->
             widget = event.data
             sel = window.getSelection()
-            if sel.type is "Caret"
+            if sel.type is "Caret" or sel.isCollapsed
                 if widget.selection
                     widget.selection = null
                     widget._trigger "unselected", null,
