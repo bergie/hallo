@@ -142,7 +142,7 @@
         return "" + (S4()) + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + (S4()) + (S4());
       },
       _getToolbarPosition: function(event, selection) {
-        var containerElement, containerPosition, newRange, position, range, tmpSpan;
+        var containerElement, containerPosition, newRange, offsety, position, range, tmpSpan;
         if (event.originalEvent instanceof MouseEvent) {
           if (this.options.floating) {
             return [event.pageX, event.pageY];
@@ -153,7 +153,17 @@
               containerElement = $(event.target).parent('[contenteditable]').first();
             }
             containerPosition = containerElement.position();
-            return [containerPosition.left - this.options.offset.x, containerPosition.top - this.options.offset.y];
+            switch (this.options.offset.y) {
+              case "top":
+                offsety = containerPosition.top - this.toolbar.outerHeight();
+                break;
+              case "bottom":
+                offsety = containerPosition.top + containerElement.outerHeight();
+                break;
+              default:
+                offsety = containerPosition.top - this.options.offset.y;
+            }
+            return [containerPosition.left - this.options.offset.x, offsety];
           }
         }
         range = selection.getRangeAt(0);
@@ -182,6 +192,7 @@
           position = widget._getToolbarPosition(data.originalEvent, data.selection);
           widget.toolbar.css("top", position[1]);
           widget.toolbar.css("left", position[0]);
+          console.log(widget.selection);
           return widget.toolbar.show();
         });
         return this.element.bind("hallounselected", function(event, data) {
@@ -214,7 +225,7 @@
         var changed, i, range, sel, selectedRanges, widget, _ref;
         widget = event.data;
         sel = window.getSelection();
-        if (sel.type === "Caret") {
+        if (sel.type === "Caret" || sel.isCollapsed) {
           if (widget.selection) {
             widget.selection = null;
             widget._trigger("unselected", null, {
