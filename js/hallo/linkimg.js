@@ -24,21 +24,21 @@
         dialogSubmitCb = function() {
           var link;
           link = $(this).find(".url").val();
-          widget.options.editable.replaceSelection(function(text) {
-            var html;
-            return html = '<a href="' + link + '">' + text + '</a>';
-          });
+          widget.options.editable.restoreSelection(widget.lastSelection);
+          document.execCommand("createLink", null, link);
+          widget.options.editable.removeAllSelections();
           dialog.dialog('close');
           return false;
         };
         dialog.find("form").submit(dialogSubmitCb);
-        buttonset = jQuery("<span></span>");
+        buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         buttonize = __bind(function(type) {
           var button, id;
           id = "" + this.options.uuid + "-" + type;
           buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\">" + type + "</label>").button());
           button = jQuery("#" + id, buttonset);
           return button.bind("change", function(event) {
+            widget.lastSelection = widget.options.editable.getSelection();
             return dialog.dialog('open');
           });
         }, this);
