@@ -192,7 +192,6 @@
           position = widget._getToolbarPosition(data.originalEvent, data.selection);
           widget.toolbar.css("top", position[1]);
           widget.toolbar.css("left", position[0]);
-          console.log(widget.selection);
           return widget.toolbar.show();
         });
         return this.element.bind("hallounselected", function(event, data) {
