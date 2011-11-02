@@ -1,4 +1,4 @@
-[contenteditable] {
+div[contenteditable] {
     position: relative;
 }
 

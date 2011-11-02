@@ -274,7 +274,7 @@
 
                 # check if the element was dragged into or within a contenteditable
                 checkOrigin: (event) ->
-                    unless $(event.target).parents("[contenteditable]").length is 0
+                    unless $(event.target).parents("div[contenteditable]").length is 0
                         true
                     else
                         false
