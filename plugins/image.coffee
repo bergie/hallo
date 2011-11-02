@@ -298,8 +298,6 @@
                     editable.append overlay.left
                     editable.append overlay.right
 
-                    helper.showOverlay position
-
                     helper.removeFeedbackElements()
                     $(event.target).prepend(dnd.createTmpFeedback ui.draggable[0], position)
 
@@ -311,6 +309,8 @@
                         $(event.target).prepend(dnd.createTmpFeedback ui.draggable[0], 'middle')
                         $('.tmpLine', $(event.target)).hide()
 
+                    helper.showOverlay position
+
                 handleDragEvent: (event, ui) ->
                     position = helper.calcPosition(offset, event)
 
@@ -319,8 +319,6 @@
                         return
 
                     dnd.lastPositionDrag = position
-
-                    helper.showOverlay position
 
                     tmpFeedbackLR = $('.tmp', editable)
                     tmpFeedbackMiddle = $('.tmpLine', editable)
@@ -331,6 +329,8 @@
                     else
                         tmpFeedbackMiddle.hide()
                         tmpFeedbackLR.removeClass("inlineImage-left inlineImage-right").addClass("inlineImage-" + position).show()
+
+                    helper.showOverlay position
 
                 handleLeaveEvent: (event, ui) ->
                     if not $('div.trashcan', ui.helper).length
