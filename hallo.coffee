@@ -91,6 +91,8 @@
             deactivated: ->
             selected: ->
             unselected: ->
+            enabled: ->
+            disabled: ->
             placeholder: ''
 
         _create: ->
@@ -117,9 +119,10 @@
             @element.attr "contentEditable", false
             @element.unbind "focus", @_activated
             @element.unbind "blur", @_deactivated
-            @element.unbind "keyup paste change", this, @_checkModified
-            @element.unbind "keyup mouseup", this, @_checkSelection
+            @element.unbind "keyup paste change", @_checkModified
+            @element.unbind "keyup mouseup", @_checkSelection
             @bound = false
+            @_trigger "disabled", null
 
         # Enable an editable
         enable: ->
@@ -135,6 +138,8 @@
                 @element.bind "keyup mouseup", this, @_checkSelection
                 widget = this
                 @bound = true
+
+            @_trigger "enabled", null
 
         # Activate an editable for editing
         activate: ->

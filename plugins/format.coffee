@@ -21,7 +21,8 @@
                 button.bind "change", (event) ->
                     format = jQuery(this).attr "hallo-command"
                     widget.options.editable.execute format
-                @element.bind "keyup paste change mouseup", (event) ->
+
+                queryState = (event) ->
                     if document.queryCommandState format
                         button.attr "checked", true
                         button.button "refresh"
@@ -29,6 +30,11 @@
                         button.attr "checked", false
                         button.button "refresh"
 
+                element = @element
+                @element.bind "halloenabled", ->
+                    element.bind "keyup paste change mouseup", queryState
+                @element.bind "hallodisabled", ->
+                    element.unbind "keyup paste change mouseup", queryState
             buttonize format for format in @options.formattings
 
             buttonset.buttonset()
