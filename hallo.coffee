@@ -91,6 +91,7 @@
             deactivated: ->
             selected: ->
             unselected: ->
+            placeholder: ''
 
         _create: ->
             @originalContent = @getContents()
@@ -123,6 +124,9 @@
         # Enable an editable
         enable: ->
             @element.attr "contentEditable", true
+
+            unless @element.html()
+                @element.html this.options.placeholder
 
             if not @bound
                 @element.bind "focus", this, @_activated
@@ -185,6 +189,10 @@
         # Get contents of an editable as HTML string
         getContents: ->
            @element.html()
+
+        # Set the contents of an editable
+        setContents: (contents) ->
+            @element.html contents
 
         # Check whether the editable has been modified
         isModified: ->
@@ -300,13 +308,21 @@
 
         _activated: (event) ->
             widget = event.data
-            if widget.toolbar.html() isnt ""
+
+            if widget.getContents() is widget.options.placeholder
+                widget.setContents ''
+
+            if widget.toolbar.html() isnt ''
                 widget.toolbar.css "top", widget.element.offset().top - widget.toolbar.height() + 10
 
             widget._trigger "activated", event
 
         _deactivated: (event) ->
             widget = event.data
+
+            unless widget.getContents()
+                widget.setContents widget.options.placeholder
+
             widget.toolbar.hide()
             widget._trigger "deactivated", event
 )(jQuery)
