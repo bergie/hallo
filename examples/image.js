@@ -249,16 +249,16 @@
             editable.append(overlay.big);
             editable.append(overlay.left);
             editable.append(overlay.right);
-            helper.showOverlay(position);
             helper.removeFeedbackElements();
             $(event.target).prepend(dnd.createTmpFeedback(ui.draggable[0], position));
             if (position === "middle") {
               $(event.target).prepend(dnd.createTmpFeedback(ui.draggable[0], 'right'));
-              return $('.tmp', $(event.target)).hide();
+              $('.tmp', $(event.target)).hide();
             } else {
               $(event.target).prepend(dnd.createTmpFeedback(ui.draggable[0], 'middle'));
-              return $('.tmpLine', $(event.target)).hide();
+              $('.tmpLine', $(event.target)).hide();
             }
+            return helper.showOverlay(position);
           },
           handleDragEvent: function(event, ui) {
             var position, tmpFeedbackLR, tmpFeedbackMiddle;
@@ -267,16 +267,16 @@
               return;
             }
             dnd.lastPositionDrag = position;
-            helper.showOverlay(position);
             tmpFeedbackLR = $('.tmp', editable);
             tmpFeedbackMiddle = $('.tmpLine', editable);
             if (position === "middle") {
               tmpFeedbackMiddle.show();
-              return tmpFeedbackLR.hide();
+              tmpFeedbackLR.hide();
             } else {
               tmpFeedbackMiddle.hide();
-              return tmpFeedbackLR.removeClass("inlineImage-left inlineImage-right").addClass("inlineImage-" + position).show();
+              tmpFeedbackLR.removeClass("inlineImage-left inlineImage-right").addClass("inlineImage-" + position).show();
             }
+            return helper.showOverlay(position);
           },
           handleLeaveEvent: function(event, ui) {
             if (!$('div.trashcan', ui.helper).length) {
