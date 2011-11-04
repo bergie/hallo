@@ -243,22 +243,27 @@
             }
           },
           handleOverEvent: function(event, ui) {
-            var position;
-            position = helper.calcPosition(offset, event);
-            $('.trashcan', ui.helper).remove();
-            editable.append(overlay.big);
-            editable.append(overlay.left);
-            editable.append(overlay.right);
-            helper.removeFeedbackElements();
-            $(event.target).prepend(dnd.createTmpFeedback(ui.draggable[0], position));
-            if (position === "middle") {
-              $(event.target).prepend(dnd.createTmpFeedback(ui.draggable[0], 'right'));
-              $('.tmp', $(event.target)).hide();
-            } else {
-              $(event.target).prepend(dnd.createTmpFeedback(ui.draggable[0], 'middle'));
-              $('.tmpLine', $(event.target)).hide();
-            }
-            return helper.showOverlay(position);
+            var postPone;
+            postPone = function() {
+              var position;
+              window.waitWithTrash = clearTimeout(window.waitWithTrash);
+              position = helper.calcPosition(offset, event);
+              $('.trashcan', ui.helper).remove();
+              editable.append(overlay.big);
+              editable.append(overlay.left);
+              editable.append(overlay.right);
+              helper.removeFeedbackElements();
+              $(event.target).prepend(dnd.createTmpFeedback(ui.draggable[0], position));
+              if (position === "middle") {
+                $(event.target).prepend(dnd.createTmpFeedback(ui.draggable[0], 'right'));
+                $('.tmp', $(event.target)).hide();
+              } else {
+                $(event.target).prepend(dnd.createTmpFeedback(ui.draggable[0], 'middle'));
+                $('.tmpLine', $(event.target)).hide();
+              }
+              return helper.showOverlay(position);
+            };
+            return setTimeout(postPone, 5);
           },
           handleDragEvent: function(event, ui) {
             var position, tmpFeedbackLR, tmpFeedbackMiddle;
@@ -279,10 +284,14 @@
             return helper.showOverlay(position);
           },
           handleLeaveEvent: function(event, ui) {
-            if (!$('div.trashcan', ui.helper).length) {
-              $(ui.helper).append($('<div class="trashcan"></div>'));
-            }
-            $('.bigOverlay, .smallOverlay').remove();
+            var func;
+            func = function() {
+              if (!$('div.trashcan', ui.helper).length) {
+                $(ui.helper).append($('<div class="trashcan"></div>'));
+              }
+              return $('.bigOverlay, .smallOverlay').remove();
+            };
+            window.waitWithTrash = setTimeout(func, 200);
             return helper.removeFeedbackElements();
           },
           handleStartEvent: function(event, ui) {
