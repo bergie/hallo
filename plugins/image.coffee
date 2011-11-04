@@ -290,26 +290,31 @@
                         el.addClass("inlineImage-" + position)
 
                 handleOverEvent: (event, ui) ->
-                    position = helper.calcPosition(offset, event)
+                    postPone = ->
+                        window.waitWithTrash = clearTimeout(window.waitWithTrash)
+                        position = helper.calcPosition(offset, event)
 
-                    $('.trashcan', ui.helper).remove()
+                        $('.trashcan', ui.helper).remove()
 
-                    editable.append overlay.big
-                    editable.append overlay.left
-                    editable.append overlay.right
+                        editable.append overlay.big
+                        editable.append overlay.left
+                        editable.append overlay.right
 
-                    helper.removeFeedbackElements()
-                    $(event.target).prepend(dnd.createTmpFeedback ui.draggable[0], position)
+                        helper.removeFeedbackElements()
+                        $(event.target).prepend(dnd.createTmpFeedback ui.draggable[0], position)
 
-                    # already create the other feedback elements here, because we have a reference to the droppable
-                    if position is "middle"
-                        $(event.target).prepend(dnd.createTmpFeedback ui.draggable[0], 'right')
-                        $('.tmp', $(event.target)).hide()
-                    else
-                        $(event.target).prepend(dnd.createTmpFeedback ui.draggable[0], 'middle')
-                        $('.tmpLine', $(event.target)).hide()
+                        # already create the other feedback elements here, because we have a reference to the droppable
+                        if position is "middle"
+                            $(event.target).prepend(dnd.createTmpFeedback ui.draggable[0], 'right')
+                            $('.tmp', $(event.target)).hide()
+                        else
+                            $(event.target).prepend(dnd.createTmpFeedback ui.draggable[0], 'middle')
+                            $('.tmpLine', $(event.target)).hide()
 
-                    helper.showOverlay position
+                        helper.showOverlay position
+                    # we need to postpone the handleOverEvent execution of the function for a tiny bit to avoid
+                    # the handleLeaveEvent to be fired after the handleOverEvent. Removing this timeout will break things
+                    setTimeout(postPone, 5)
 
                 handleDragEvent: (event, ui) ->
                     position = helper.calcPosition(offset, event)
@@ -333,9 +338,12 @@
                     helper.showOverlay position
 
                 handleLeaveEvent: (event, ui) ->
-                    if not $('div.trashcan', ui.helper).length
-                        $(ui.helper).append($('<div class="trashcan"></div>'))
-                    $('.bigOverlay, .smallOverlay').remove()
+                    func = ->
+                        if not $('div.trashcan', ui.helper).length
+                            $(ui.helper).append($('<div class="trashcan"></div>'))
+                        $('.bigOverlay, .smallOverlay').remove()
+                    # only remove the trash after being outside of an editable more than X milliseconds
+                    window.waitWithTrash = setTimeout(func, 200)
                     helper.removeFeedbackElements()
 
                 handleStartEvent: (event, ui) ->
