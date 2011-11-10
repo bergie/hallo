@@ -91,6 +91,9 @@
             deactivated: ->
             selected: ->
             unselected: ->
+            enabled: ->
+            disabled: ->
+            placeholder: ''
 
         _create: ->
             @originalContent = @getContents()
@@ -116,14 +119,18 @@
             @element.attr "contentEditable", false
             @element.unbind "focus", @_activated
             @element.unbind "blur", @_deactivated
-            @element.unbind "keyup paste change", this, @_checkModified
+            @element.unbind "keyup paste change", @_checkModified
             @element.unbind "keyup", @_keys
-            @element.unbind "keyup mouseup", this, @_checkSelection
+            @element.unbind "keyup mouseup", @_checkSelection
             @bound = false
+            @_trigger "disabled", null
 
         # Enable an editable
         enable: ->
             @element.attr "contentEditable", true
+
+            unless @element.html()
+                @element.html this.options.placeholder
 
             if not @bound
                 @element.bind "focus", this, @_activated
@@ -135,6 +142,8 @@
                 @element.bind "keyup mouseup", this, @_checkSelection
                 widget = this
                 @bound = true
+
+            @_trigger "enabled", null
 
         # Activate an editable for editing
         activate: ->
@@ -190,6 +199,10 @@
         getContents: ->
            @element.html()
 
+        # Set the contents of an editable
+        setContents: (contents) ->
+            @element.html contents
+
         # Check whether the editable has been modified
         isModified: ->
            @originalContent isnt @getContents()
@@ -217,11 +230,25 @@
                 if event.originalEvent instanceof MouseEvent
                     return { top: event.pageY, left: event.pageX }
                 else
-                    return this._getCaretPosition(selection)
+                    if $(event.target).attr('contenteditable') == "true"
+                        containerElement = $(event.target)
+                    else
+                        containerElement = $(event.target).parent('[contenteditable]').first()
+
+                    containerPosition = containerElement.position()
+                    switch @options.offset.y
+                        when "top" then offsety = containerPosition.top - @toolbar.outerHeight()
+                        #TODO: "bottom" may break style
+                        when "bottom" then offsety = containerPosition.top + containerElement.outerHeight()
+                        else offsety = containerPosition.top - @options.offset.y
+
+                    return { "top": containerPosition.left - @options.offset.x, "left": offsety }
             else
                 offset = parseFloat @element.css('outline-width') + parseFloat @element.css('outline-offset')
                 top: @element.offset().top - this.toolbar.outerHeight() - offset
                 left: @element.offset().left - offset
+
+                return { "top": top, "left": left }
 
         _getCaretPosition: (range) ->
             tmpSpan = jQuery "<span/>"
@@ -297,9 +324,9 @@
                 return
 
             widget = event.data
-            sel = widget.getSelection()
 
-            if sel.collapsed is true
+            sel = widget.getSelection()
+            if widget._isEmptySelection(sel) or widget._isEmptyRange(sel)
                 if widget.selection
                     widget.selection = null
                     widget._trigger "unselected", null,
@@ -314,6 +341,29 @@
                     selection: widget.selection
                     ranges: [widget.selection]
                     originalEvent: event
+
+        _isEmptySelection: (selection) ->
+            if sel.type is "Caret"
+                return true
+
+            return false
+
+        _isEmptyRange: (range) ->
+            if sel.collapsed
+                return true
+            if sel.isCollapsed
+                return sel.isCollapsed()
+
+            return false
+
+        _activated: (event) ->
+            widget = event.data
+
+            if widget.getContents() is widget.options.placeholder
+                widget.setContents ''
+
+            if widget.toolbar.html() isnt ''
+                widget.toolbar.css "top", widget.element.offset().top - widget.toolbar.height() + 10
 
         turnOn: () ->
             jQuery(@element).addClass 'inEditMode'
@@ -337,6 +387,9 @@
             if (@options.showAlways)
                 @element.blur()
             @_trigger "deactivated", @
+
+            unless widget.getContents()
+                widget.setContents widget.options.placeholder
 
         _activated: (event) ->
             event.data.turnOn()

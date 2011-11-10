@@ -18,7 +18,10 @@
         activated: function() {},
         deactivated: function() {},
         selected: function() {},
-        unselected: function() {}
+        unselected: function() {},
+        enabled: function() {},
+        disabled: function() {},
+        placeholder: ''
       },
       _create: function() {
         var options, plugin, _ref, _results;
@@ -50,14 +53,18 @@
         this.element.attr("contentEditable", false);
         this.element.unbind("focus", this._activated);
         this.element.unbind("blur", this._deactivated);
-        this.element.unbind("keyup paste change", this, this._checkModified);
+        this.element.unbind("keyup paste change", this._checkModified);
         this.element.unbind("keyup", this._keys);
-        this.element.unbind("keyup mouseup", this, this._checkSelection);
-        return this.bound = false;
+        this.element.unbind("keyup mouseup", this._checkSelection);
+        this.bound = false;
+        return this._trigger("disabled", null);
       },
       enable: function() {
         var widget;
         this.element.attr("contentEditable", true);
+        if (!this.element.html()) {
+          this.element.html(this.options.placeholder);
+        }
         if (!this.bound) {
           this.element.bind("focus", this, this._activated);
           if (!this.options.showAlways) {
@@ -67,8 +74,9 @@
           this.element.bind("keyup", this, this._keys);
           this.element.bind("keyup mouseup", this, this._checkSelection);
           widget = this;
-          return this.bound = true;
+          this.bound = true;
         }
+        return this._trigger("enabled", null);
       },
       activate: function() {
         return this.element.focus();
@@ -127,6 +135,9 @@
       getContents: function() {
         return this.element.html();
       },
+      setContents: function(contents) {
+        return this.element.html(contents);
+      },
       isModified: function() {
         return this.originalContent !== this.getContents();
       },
@@ -149,7 +160,7 @@
         return "" + (S4()) + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + (S4()) + (S4());
       },
       _getToolbarPosition: function(event, selection) {
-        var offset;
+        var containerElement, containerPosition, offset, offsety;
         if (this.options.floating) {
           if (event.originalEvent instanceof MouseEvent) {
             return {
@@ -157,13 +168,36 @@
               left: event.pageX
             };
           } else {
-            return this._getCaretPosition(selection);
+            if ($(event.target).attr('contenteditable') === "true") {
+              containerElement = $(event.target);
+            } else {
+              containerElement = $(event.target).parent('[contenteditable]').first();
+            }
+            containerPosition = containerElement.position();
+            switch (this.options.offset.y) {
+              case "top":
+                offsety = containerPosition.top - this.toolbar.outerHeight();
+                break;
+              case "bottom":
+                offsety = containerPosition.top + containerElement.outerHeight();
+                break;
+              default:
+                offsety = containerPosition.top - this.options.offset.y;
+            }
+            return {
+              "top": containerPosition.left - this.options.offset.x,
+              "left": offsety
+            };
           }
         } else {
           offset = parseFloat(this.element.css('outline-width') + parseFloat(this.element.css('outline-offset')));
-          return {
+          ({
             top: this.element.offset().top - this.toolbar.outerHeight() - offset,
             left: this.element.offset().left - offset
+          });
+          return {
+            "top": top,
+            "left": left
           };
         }
       },
@@ -250,7 +284,7 @@
         }
         widget = event.data;
         sel = widget.getSelection();
-        if (sel.collapsed === true) {
+        if (widget._isEmptySelection(sel) || widget._isEmptyRange(sel)) {
           if (widget.selection) {
             widget.selection = null;
             widget._trigger("unselected", null, {
@@ -268,6 +302,31 @@
             ranges: [widget.selection],
             originalEvent: event
           });
+        }
+      },
+      _isEmptySelection: function(selection) {
+        if (sel.type === "Caret") {
+          return true;
+        }
+        return false;
+      },
+      _isEmptyRange: function(range) {
+        if (sel.collapsed) {
+          return true;
+        }
+        if (sel.isCollapsed) {
+          return sel.isCollapsed();
+        }
+        return false;
+      },
+      _activated: function(event) {
+        var widget;
+        widget = event.data;
+        if (widget.getContents() === widget.options.placeholder) {
+          widget.setContents('');
+        }
+        if (widget.toolbar.html() !== '') {
+          return widget.toolbar.css("top", widget.element.offset().top - widget.toolbar.height() + 10);
         }
       },
       turnOn: function() {
@@ -293,7 +352,10 @@
         if (this.options.showAlways) {
           this.element.blur();
         }
-        return this._trigger("deactivated", this);
+        this._trigger("deactivated", this);
+        if (!widget.getContents()) {
+          return widget.setContents(widget.options.placeholder);
+        }
       },
       _activated: function(event) {
         return event.data.turnOn();

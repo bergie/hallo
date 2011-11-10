@@ -47,6 +47,7 @@
             }
           }
           widget.options.editable.element.trigger('change');
+          widget.options.editable.removeAllSelections();
           dialog.dialog('close');
           return false;
         };

@@ -43,6 +43,7 @@
                     else
                         widget.lastSelection.startContainer.parentNode.href = link
                 widget.options.editable.element.trigger('change')
+                widget.options.editable.removeAllSelections()
                 dialog.dialog('close')
                 return false
 
