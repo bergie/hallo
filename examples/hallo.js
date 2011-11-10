@@ -305,17 +305,17 @@
         }
       },
       _isEmptySelection: function(selection) {
-        if (sel.type === "Caret") {
+        if (selection.type === "Caret") {
           return true;
         }
         return false;
       },
       _isEmptyRange: function(range) {
-        if (sel.collapsed) {
+        if (range.collapsed) {
           return true;
         }
-        if (sel.isCollapsed) {
-          return sel.isCollapsed();
+        if (range.isCollapsed) {
+          return range.isCollapsed();
         }
         return false;
       },
@@ -353,8 +353,8 @@
           this.element.blur();
         }
         this._trigger("deactivated", this);
-        if (!widget.getContents()) {
-          return widget.setContents(widget.options.placeholder);
+        if (!this.getContents()) {
+          return this.setContents(this.options.placeholder);
         }
       },
       _activated: function(event) {

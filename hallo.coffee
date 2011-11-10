@@ -343,16 +343,16 @@
                     originalEvent: event
 
         _isEmptySelection: (selection) ->
-            if sel.type is "Caret"
+            if selection.type is "Caret"
                 return true
 
             return false
 
         _isEmptyRange: (range) ->
-            if sel.collapsed
+            if range.collapsed
                 return true
-            if sel.isCollapsed
-                return sel.isCollapsed()
+            if range.isCollapsed
+                return range.isCollapsed()
 
             return false
 
@@ -388,8 +388,8 @@
                 @element.blur()
             @_trigger "deactivated", @
 
-            unless widget.getContents()
-                widget.setContents widget.options.placeholder
+            unless @getContents()
+                @setContents @options.placeholder
 
         _activated: (event) ->
             event.data.turnOn()
