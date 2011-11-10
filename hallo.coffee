@@ -248,8 +248,6 @@
                 top: @element.offset().top - this.toolbar.outerHeight() - offset
                 left: @element.offset().left - offset
 
-                return { "top": top, "left": left }
-
         _getCaretPosition: (range) ->
             tmpSpan = jQuery "<span/>"
             newRange = document.createRange()
