@@ -161,7 +161,6 @@
       },
       _getToolbarPosition: function(event, selection) {
         var containerElement, containerPosition, offset, offsety;
-        console.log(event, selection);
         if (!event) {
           return;
         }
@@ -172,10 +171,10 @@
               left: event.pageX
             };
           } else {
-            if ($(event.target).attr('contenteditable') === "true") {
-              containerElement = $(event.target);
+            if (jQuery(event.target).attr('contenteditable') === "true") {
+              containerElement = jQuery(event.target);
             } else {
-              containerElement = $(event.target).parent('[contenteditable]').first();
+              containerElement = jQuery(event.target).parent('[contenteditable]').first();
             }
             containerPosition = containerElement.position();
             switch (this.options.offset.y) {
