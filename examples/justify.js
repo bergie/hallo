@@ -12,7 +12,7 @@
         widget = this;
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         buttonize = __bind(function(alignment) {
-          var button, id;
+          var button, element, id, queryState;
           id = "" + this.options.uuid + "-" + alignment;
           buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\" class=\"" + alignment + "_button\" >" + alignment + "</label>").button());
           button = jQuery("#" + id, buttonset);
@@ -22,7 +22,7 @@
             justify = jQuery(this).attr("hallo-command");
             return widget.options.editable.execute(justify);
           });
-          return this.element.bind("keyup paste change mouseup", function(event) {
+          queryState = function(event) {
             if (document.queryCommandState("justify" + alignment)) {
               button.attr("checked", true);
               button.next("label").addClass("ui-state-clicked");
@@ -32,6 +32,13 @@
               button.next("label").removeClass("ui-state-clicked");
               return button.button("refresh");
             }
+          };
+          element = this.element;
+          element.bind("halloenabled", function() {
+            return element.bind("keyup paste change mouseup", queryState);
+          });
+          return element.bind("hallodisabled", function() {
+            return element.unbind("keyup paste change mouseup", queryState);
           });
         }, this);
         buttonize("Left");

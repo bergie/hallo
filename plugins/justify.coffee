@@ -19,7 +19,8 @@
                 button.bind "change", (event) ->
                     justify = jQuery(this).attr "hallo-command"
                     widget.options.editable.execute justify
-                @element.bind "keyup paste change mouseup", (event) ->
+
+                queryState = (event) ->
                     if document.queryCommandState "justify" + alignment
                         button.attr "checked", true
                         button.next("label").addClass "ui-state-clicked"
@@ -28,6 +29,13 @@
                         button.attr "checked", false
                         button.next("label").removeClass "ui-state-clicked"
                         button.button "refresh"
+
+                element = @element
+                element.bind "halloenabled", ->
+                    element.bind "keyup paste change mouseup", queryState
+                element.bind "hallodisabled", ->
+                    element.unbind "keyup paste change mouseup", queryState
+            
             buttonize "Left"
             buttonize "Center"
             buttonize "Right"

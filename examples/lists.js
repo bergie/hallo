@@ -12,7 +12,7 @@
         widget = this;
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         buttonize = __bind(function(type, label) {
-          var button, id;
+          var button, element, id, queryState;
           id = "" + this.options.uuid + "-" + type;
           buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\" class=\"" + type + "_button\">" + label + "</label>").button());
           button = jQuery("#" + id, buttonset);
@@ -22,7 +22,7 @@
             list = jQuery(this).attr("hallo-command");
             return widget.options.editable.execute(list);
           });
-          return this.element.bind("keyup paste change mouseup", function(event) {
+          queryState = function(event) {
             if (document.queryCommandState("insert" + type + "List")) {
               button.attr("checked", true);
               button.next("label").addClass("ui-state-clicked");
@@ -32,6 +32,13 @@
               button.next("label").removeClass("ui-state-clicked");
               return button.button("refresh");
             }
+          };
+          element = this.element;
+          element.bind("halloenabled", function() {
+            return element.bind("keyup paste change mouseup", queryState);
+          });
+          return element.bind("hallodisabled", function() {
+            return element.unbind("keyup paste change mouseup", queryState);
           });
         }, this);
         buttonize("Unordered", "UL");
