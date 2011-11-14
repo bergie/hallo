@@ -231,10 +231,10 @@
                 if event.originalEvent instanceof MouseEvent
                     return { top: event.pageY, left: event.pageX }
                 else
-                    if $(event.target).attr('contenteditable') == "true"
-                        containerElement = $(event.target)
+                    if jQuery(event.target).attr('contenteditable') == "true"
+                        containerElement = jQuery(event.target)
                     else
-                        containerElement = $(event.target).parent('[contenteditable]').first()
+                        containerElement = jQuery(event.target).parent('[contenteditable]').first()
 
                     containerPosition = containerElement.position()
                     switch @options.offset.y

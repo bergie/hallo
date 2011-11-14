@@ -161,6 +161,7 @@
       },
       _getToolbarPosition: function(event, selection) {
         var containerElement, containerPosition, offset, offsety;
+        console.log(event, selection);
         if (!event) {
           return;
         }
