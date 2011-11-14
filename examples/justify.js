@@ -14,13 +14,24 @@
         buttonize = __bind(function(alignment) {
           var button, id;
           id = "" + this.options.uuid + "-" + alignment;
-          buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\">" + alignment + "</label>").button());
+          buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\" class=\"" + alignment + "_button\" >" + alignment + "</label>").button());
           button = jQuery("#" + id, buttonset);
           button.attr("hallo-command", "justify" + alignment);
-          return button.bind("change", function(event) {
-            var cmd;
-            cmd = jQuery(this).attr("hallo-command");
-            return widget.options.editable.execute(cmd);
+          button.bind("change", function(event) {
+            var justify;
+            justify = jQuery(this).attr("hallo-command");
+            return widget.options.editable.execute(justify);
+          });
+          return this.element.bind("keyup paste change mouseup", function(event) {
+            if (document.queryCommandState("justify" + alignment)) {
+              button.attr("checked", true);
+              button.next("label").addClass("ui-state-clicked");
+              return button.button("refresh");
+            } else {
+              button.attr("checked", false);
+              button.next("label").removeClass("ui-state-clicked");
+              return button.button("refresh");
+            }
           });
         }, this);
         buttonize("Left");
