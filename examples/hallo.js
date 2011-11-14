@@ -161,6 +161,9 @@
       },
       _getToolbarPosition: function(event, selection) {
         var containerElement, containerPosition, offset, offsety;
+        if (!event) {
+          return;
+        }
         if (this.options.floating) {
           if (event.originalEvent instanceof MouseEvent) {
             return {

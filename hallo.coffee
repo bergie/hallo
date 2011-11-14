@@ -226,6 +226,7 @@
             "#{S4()}#{S4()}-#{S4()}-#{S4()}-#{S4()}-#{S4()}#{S4()}#{S4()}"
 
         _getToolbarPosition: (event, selection) ->
+            return unless event
             if @options.floating
                 if event.originalEvent instanceof MouseEvent
                     return { top: event.pageY, left: event.pageX }
