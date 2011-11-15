@@ -228,22 +228,10 @@
         _getToolbarPosition: (event, selection) ->
             return unless event
             if @options.floating
-                if event.originalEvent instanceof MouseEvent
+                if event.originalEvent instanceof KeyboardEvent
+                   return @_getCaretPosition(selection);
+                else if event.originalEvent instanceof MouseEvent
                     return { top: event.pageY, left: event.pageX }
-                else
-                    if jQuery(event.target).attr('contenteditable') == "true"
-                        containerElement = jQuery(event.target)
-                    else
-                        containerElement = jQuery(event.target).parent('[contenteditable]').first()
-
-                    containerPosition = containerElement.position()
-                    switch @options.offset.y
-                        when "top" then offsety = containerPosition.top - @toolbar.outerHeight()
-                        #TODO: "bottom" may break style
-                        when "bottom" then offsety = containerPosition.top + containerElement.outerHeight()
-                        else offsety = containerPosition.top - @options.offset.y
-
-                    return { "top": containerPosition.left - @options.offset.x, "left": offsety }
             else
                 offset = parseFloat @element.css('outline-width') + parseFloat @element.css('outline-offset')
                 top: @element.offset().top - this.toolbar.outerHeight() - offset
