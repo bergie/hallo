@@ -7,6 +7,9 @@
             editable: null
             toolbar: null
             uuid: ""
+            lists: 
+                ordered: true
+                unordered: true
 
         _create: ->
             widget = this
@@ -36,8 +39,8 @@
                 element.bind "hallodisabled", ->
                     element.unbind "keyup paste change mouseup", queryState
 
-            #buttonize "Ordered", "OL"
-            buttonize "Unordered", "UL"
+            buttonize "Ordered", "OL" if @options.lists.ordered
+            buttonize "Unordered", "UL" if @options.lists.unordered
 
             buttonset.buttonset()
             @options.toolbar.append buttonset
