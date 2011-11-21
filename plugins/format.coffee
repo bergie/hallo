@@ -7,7 +7,11 @@
             editable: null
             toolbar: null
             uuid: ""
-            formattings: ["bold", "italic", "underline"]
+            formattings: 
+                bold: true
+                italic: true
+                strikeThrough: true
+                underline: true
 
         _create: ->
             widget = this
@@ -38,7 +42,7 @@
                     element.bind "keyup paste change mouseup", queryState
                 @element.bind "hallodisabled", ->
                     element.unbind "keyup paste change mouseup", queryState
-            buttonize format for format in @options.formattings
+            buttonize format for format, enabled of @options.formattings when enabled
 
             buttonset.buttonset()
             @options.toolbar.append buttonset
