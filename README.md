@@ -42,7 +42,7 @@ Hallo has got more options you set when instantiating. See the hallo.coffee file
 
 ## Plugins
 
-* halloformat - Adds Bold, Italic, StrikeThrough and Underline support to the toolbar. (Pick with options: "formattings": ["bold", "italic", "strikeThough", "underline"])
+* halloformat - Adds Bold, Italic, StrikeThrough and Underline support to the toolbar. (Enable/Disable with options: "formattings": {"bold": true, "italic": true, "strikeThough": true, "underline": false})
 * halloheadings - Adds support for H1, H2, H3. You can pass a headings option key "headers" with an array of header sizes (i.e. headers: [1,2,5,6])
 * hallojustify - Adds align left, center, right support
 * hallolists - Adds support for ordered and unordered lists
