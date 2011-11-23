@@ -1,19 +1,23 @@
-(function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
   (function(jQuery) {
     return jQuery.widget("IKS.hallolists", {
       options: {
         editable: null,
         toolbar: null,
-        uuid: ""
+        uuid: "",
+        lists: {
+          ordered: true,
+          unordered: true
+        }
       },
       _create: function() {
         var buttonize, buttonset, widget;
+        var _this = this;
         widget = this;
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
-        buttonize = __bind(function(type, label) {
+        buttonize = function(type, label) {
           var button, element, id, queryState;
-          id = "" + this.options.uuid + "-" + type;
+          id = "" + _this.options.uuid + "-" + type;
           buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\" class=\"" + type + "_button\">" + label + "</label>").button());
           button = jQuery("#" + id, buttonset);
           button.attr("hallo-command", "insert" + type + "List");
@@ -33,19 +37,19 @@
               return button.button("refresh");
             }
           };
-          element = this.element;
+          element = _this.element;
           element.bind("halloenabled", function() {
             return element.bind("keyup paste change mouseup", queryState);
           });
           return element.bind("hallodisabled", function() {
             return element.unbind("keyup paste change mouseup", queryState);
           });
-        }, this);
-        buttonize("Unordered", "UL");
+        };
+        if (this.options.lists.ordered) buttonize("Ordered", "OL");
+        if (this.options.lists.unordered) buttonize("Unordered", "UL");
         buttonset.buttonset();
         return this.options.toolbar.append(buttonset);
       },
       _init: function() {}
     });
   })(jQuery);
-}).call(this);
