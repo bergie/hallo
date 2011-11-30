@@ -1,5 +1,4 @@
-(function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
   (function(jQuery) {
     return jQuery.widget("IKS.halloheadings", {
       options: {
@@ -10,6 +9,7 @@
       },
       _create: function() {
         var button, buttonize, buttonset, header, id, label, widget, _i, _len, _ref;
+        var _this = this;
         widget = this;
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         id = "" + this.options.uuid + "-paragraph";
@@ -22,9 +22,9 @@
           cmd = jQuery(this).attr("hallo-command");
           return widget.options.editable.execute(cmd, "P");
         });
-        buttonize = __bind(function(headerSize) {
+        buttonize = function(headerSize) {
           label = "H" + headerSize;
-          id = "" + this.options.uuid + "-" + headerSize;
+          id = "" + _this.options.uuid + "-" + headerSize;
           buttonset.append(jQuery("<input id=\"" + id + "\" type=\"radio\" name=\"" + widget.options.uuid + "-headings\"/><label for=\"" + id + "\" class=\"h" + headerSize + "_button\">" + label + "</label>").button());
           button = jQuery("#" + id, buttonset);
           button.attr("hallo-size", "H" + headerSize);
@@ -33,7 +33,7 @@
             size = jQuery(this).attr("hallo-size");
             return widget.options.editable.execute("formatBlock", size);
           });
-        }, this);
+        };
         _ref = this.options.headers;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           header = _ref[_i];
@@ -73,4 +73,3 @@
       _init: function() {}
     });
   })(jQuery);
-}).call(this);

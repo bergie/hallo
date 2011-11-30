@@ -1,4 +1,4 @@
-(function() {
+
   (function(jQuery) {
     return jQuery.widget("IKS.hallo", {
       toolbar: null,
@@ -32,9 +32,7 @@
         _results = [];
         for (plugin in _ref) {
           options = _ref[plugin];
-          if (!jQuery.isPlainObject(options)) {
-            options = {};
-          }
+          if (!jQuery.isPlainObject(options)) options = {};
           options["editable"] = this;
           options["toolbar"] = this.toolbar;
           options["uuid"] = this.id;
@@ -62,9 +60,7 @@
       enable: function() {
         var widget;
         this.element.attr("contentEditable", true);
-        if (!this.element.html()) {
-          this.element.html(this.options.placeholder);
-        }
+        if (!this.element.html()) this.element.html(this.options.placeholder);
         if (!this.bound) {
           this.element.bind("focus", this, this._activated);
           if (!this.options.showAlways) {
@@ -160,36 +156,15 @@
         return "" + (S4()) + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + (S4()) + (S4());
       },
       _getToolbarPosition: function(event, selection) {
-        var containerElement, containerPosition, offset, offsety;
-        if (!event) {
-          return;
-        }
+        var offset;
+        if (!event) return;
         if (this.options.floating) {
-          if (event.originalEvent instanceof MouseEvent) {
+          if (event.originalEvent instanceof KeyboardEvent) {
+            return this._getCaretPosition(selection);
+          } else if (event.originalEvent instanceof MouseEvent) {
             return {
               top: event.pageY,
               left: event.pageX
-            };
-          } else {
-            if (jQuery(event.target).attr('contenteditable') === "true") {
-              containerElement = jQuery(event.target);
-            } else {
-              containerElement = jQuery(event.target).parent('[contenteditable]').first();
-            }
-            containerPosition = containerElement.position();
-            switch (this.options.offset.y) {
-              case "top":
-                offsety = containerPosition.top - this.toolbar.outerHeight();
-                break;
-              case "bottom":
-                offsety = containerPosition.top + containerElement.outerHeight();
-                break;
-              default:
-                offsety = containerPosition.top - this.options.offset.y;
-            }
-            return {
-              "top": containerPosition.left - this.options.offset.x,
-              "left": offsety
             };
           }
         } else {
@@ -278,9 +253,7 @@
       },
       _checkSelection: function(event) {
         var sel, widget;
-        if (event.keyCode === 27) {
-          return;
-        }
+        if (event.keyCode === 27) return;
         widget = event.data;
         sel = widget.getSelection();
         if (widget._isEmptySelection(sel) || widget._isEmptyRange(sel)) {
@@ -304,18 +277,12 @@
         }
       },
       _isEmptySelection: function(selection) {
-        if (selection.type === "Caret") {
-          return true;
-        }
+        if (selection.type === "Caret") return true;
         return false;
       },
       _isEmptyRange: function(range) {
-        if (range.collapsed) {
-          return true;
-        }
-        if (range.isCollapsed) {
-          return range.isCollapsed();
-        }
+        if (range.collapsed) return true;
+        if (range.isCollapsed) return range.isCollapsed();
         return false;
       },
       _activated: function(event) {
@@ -348,13 +315,9 @@
       turnOff: function() {
         this.toolbar.hide();
         jQuery(this.element).removeClass('inEditMode');
-        if (this.options.showAlways) {
-          this.element.blur();
-        }
+        if (this.options.showAlways) this.element.blur();
         this._trigger("deactivated", this);
-        if (!this.getContents()) {
-          return this.setContents(this.options.placeholder);
-        }
+        if (!this.getContents()) return this.setContents(this.options.placeholder);
       },
       _activated: function(event) {
         return event.data.turnOn();
@@ -364,4 +327,3 @@
       }
     });
   })(jQuery);
-}).call(this);

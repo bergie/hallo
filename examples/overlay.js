@@ -1,4 +1,4 @@
-(function() {
+
   (function(jQuery) {
     return jQuery.widget("Liip.hallooverlay", {
       options: {
@@ -14,15 +14,11 @@
           this.options.bound = true;
           widget.options.editable.element.bind("halloactivated", function(event, data) {
             widget.options.currentEditable = jQuery(event.target);
-            if (!widget.options.visible) {
-              return widget.showOverlay();
-            }
+            if (!widget.options.visible) return widget.showOverlay();
           });
           return widget.options.editable.element.bind("hallodeactivated", function(event, data) {
             widget.options.currentEditable = jQuery(event.target);
-            if (widget.options.visible) {
-              return widget.hideOverlay();
-            }
+            if (widget.options.visible) return widget.hideOverlay();
           });
         }
       },
@@ -55,9 +51,7 @@
       _findBackgroundColor: function(jQueryfield) {
         var color;
         color = jQueryfield.css("background-color");
-        if (color !== 'rgba(0, 0, 0, 0)' && color !== 'transparent') {
-          return color;
-        }
+        if (color !== 'rgba(0, 0, 0, 0)' && color !== 'transparent') return color;
         if (jQueryfield.is("body")) {
           return "white";
         } else {
@@ -66,4 +60,3 @@
       }
     });
   })(jQuery);
-}).call(this);

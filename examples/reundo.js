@@ -1,5 +1,4 @@
-(function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
   (function(jQuery) {
     return jQuery.widget("IKS.halloreundo", {
       options: {
@@ -9,11 +8,12 @@
       },
       _create: function() {
         var buttonize, buttonset, widget;
+        var _this = this;
         widget = this;
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
-        buttonize = __bind(function(cmd, label) {
+        buttonize = function(cmd, label) {
           var button, id;
-          id = "" + this.options.uuid + "-" + cmd;
+          id = "" + _this.options.uuid + "-" + cmd;
           buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\">" + label + "</label>").button());
           button = jQuery("#" + id, buttonset);
           button.attr("hallo-command", cmd);
@@ -21,7 +21,7 @@
             cmd = jQuery(this).attr("hallo-command");
             return widget.options.editable.execute(cmd);
           });
-        }, this);
+        };
         buttonize("undo", "Undo");
         buttonize("redo", "Redo");
         buttonset.buttonset();
@@ -30,4 +30,3 @@
       _init: function() {}
     });
   })(jQuery);
-}).call(this);

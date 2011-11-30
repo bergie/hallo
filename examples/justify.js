@@ -1,5 +1,4 @@
-(function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
   (function(jQuery) {
     return jQuery.widget("IKS.hallojustify", {
       options: {
@@ -9,11 +8,12 @@
       },
       _create: function() {
         var buttonize, buttonset, widget;
+        var _this = this;
         widget = this;
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
-        buttonize = __bind(function(alignment) {
+        buttonize = function(alignment) {
           var button, element, id, queryState;
-          id = "" + this.options.uuid + "-" + alignment;
+          id = "" + _this.options.uuid + "-" + alignment;
           buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\" class=\"" + alignment + "_button\" >" + alignment + "</label>").button());
           button = jQuery("#" + id, buttonset);
           button.attr("hallo-command", "justify" + alignment);
@@ -33,14 +33,14 @@
               return button.button("refresh");
             }
           };
-          element = this.element;
+          element = _this.element;
           element.bind("halloenabled", function() {
             return element.bind("keyup paste change mouseup", queryState);
           });
           return element.bind("hallodisabled", function() {
             return element.unbind("keyup paste change mouseup", queryState);
           });
-        }, this);
+        };
         buttonize("Left");
         buttonize("Center");
         buttonize("Right");
@@ -50,4 +50,3 @@
       _init: function() {}
     });
   })(jQuery);
-}).call(this);

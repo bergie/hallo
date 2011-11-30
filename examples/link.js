@@ -1,5 +1,4 @@
-(function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
   (function(jQuery) {
     return jQuery.widget("IKS.hallolink", {
       options: {
@@ -22,6 +21,7 @@
       },
       _create: function() {
         var buttonize, buttonset, dialog, dialogId, dialogSubmitCb, urlInput, widget;
+        var _this = this;
         widget = this;
         dialogId = "" + this.options.uuid + "-dialog";
         dialog = jQuery("<div id=\"" + dialogId + "\"><form action=\"#\" method=\"post\" class=\"linkForm\"><input class=\"url\" type=\"text\" name=\"url\" value=\"" + this.options.defaultUrl + "\" /><input type=\"submit\" id=\"addlinkButton\" value=\"Insert\" /></form></div>");
@@ -53,9 +53,9 @@
         };
         dialog.find("form").submit(dialogSubmitCb);
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
-        buttonize = __bind(function(type) {
+        buttonize = function(type) {
           var button, id;
-          id = "" + this.options.uuid + "-" + type;
+          id = "" + _this.options.uuid + "-" + type;
           buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\" class=\"anchor_button\" >" + type + "</label>").button());
           button = jQuery("#" + id, buttonset);
           button.bind("change", function(event) {
@@ -69,7 +69,7 @@
             }
             return dialog.dialog('open');
           });
-          return this.element.bind("keyup paste change mouseup", function(event) {
+          return _this.element.bind("keyup paste change mouseup", function(event) {
             var nodeName, start;
             start = jQuery(widget.options.editable.getSelection().startContainer);
             nodeName = start.prop('nodeName') ? start.prop('nodeName') : start.parent().prop('nodeName');
@@ -83,10 +83,8 @@
               return button.button("refresh");
             }
           });
-        }, this);
-        if (this.options.link) {
-          buttonize("A");
-        }
+        };
+        if (this.options.link) buttonize("A");
         if (this.options.link) {
           buttonset.buttonset();
           this.options.toolbar.append(buttonset);
@@ -96,4 +94,3 @@
       _init: function() {}
     });
   })(jQuery);
-}).call(this);
