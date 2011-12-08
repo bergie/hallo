@@ -38,17 +38,10 @@
             @element.bind "keyup paste change mouseup", (event) ->
                 try format = document.queryCommandValue("formatBlock").toUpperCase() catch e then format = ''
 
-                if format == '' or format == 'X'
-                    labelParent = jQuery(buttonset)
-                    labelParent.children("input").attr "checked", false
-                    labelParent.children("label").removeClass "ui-state-clicked"
-                    labelParent.children("input").button("widget").button "refresh"
-                    return
-
                 if format is "P"
                     selectedButton = jQuery("##{widget.options.uuid}-paragraph")
-                else
-                    formatNumber = format.match(/\d/)[0]
+                else if matches = format.match(/\d/)
+                    formatNumber = matches[0]
                     selectedButton = jQuery("##{widget.options.uuid}-#{formatNumber}")
 
                 labelParent = jQuery(buttonset)
@@ -56,9 +49,10 @@
                 labelParent.children("label").removeClass "ui-state-clicked"
                 labelParent.children("input").button("widget").button "refresh"
 
-                selectedButton.attr "checked", true
-                selectedButton.next("label").addClass "ui-state-clicked"
-                selectedButton.button "refresh"
+                if selectedButton
+                    selectedButton.attr "checked", true
+                    selectedButton.next("label").addClass "ui-state-clicked"
+                    selectedButton.button "refresh"
 
             @options.toolbar.append buttonset
 
