@@ -223,7 +223,7 @@
           });
         }
         return jQuery(window).resize(function(event) {
-          return that._updateToolbarPosition(that._getToolbarPosition());
+          return that._updateToolbarPosition(that._getToolbarPosition(event));
         });
       },
       _updateToolbarPosition: function(position) {
