@@ -41,32 +41,27 @@
         }
         buttonset.buttonset();
         this.element.bind("keyup paste change mouseup", function(event) {
-          var format, formatNumber, labelParent, selectedButton;
+          var format, formatNumber, labelParent, matches, selectedButton;
           try {
             format = document.queryCommandValue("formatBlock").toUpperCase();
           } catch (e) {
             format = '';
           }
-          if (format === '' || format === 'X') {
-            labelParent = jQuery(buttonset);
-            labelParent.children("input").attr("checked", false);
-            labelParent.children("label").removeClass("ui-state-clicked");
-            labelParent.children("input").button("widget").button("refresh");
-            return;
-          }
           if (format === "P") {
             selectedButton = jQuery("#" + widget.options.uuid + "-paragraph");
-          } else {
-            formatNumber = format.match(/\d/)[0];
+          } else if (matches = format.match(/\d/)) {
+            formatNumber = matches[0];
             selectedButton = jQuery("#" + widget.options.uuid + "-" + formatNumber);
           }
           labelParent = jQuery(buttonset);
           labelParent.children("input").attr("checked", false);
           labelParent.children("label").removeClass("ui-state-clicked");
           labelParent.children("input").button("widget").button("refresh");
-          selectedButton.attr("checked", true);
-          selectedButton.next("label").addClass("ui-state-clicked");
-          return selectedButton.button("refresh");
+          if (selectedButton) {
+            selectedButton.attr("checked", true);
+            selectedButton.next("label").addClass("ui-state-clicked");
+            return selectedButton.button("refresh");
+          }
         });
         return this.options.toolbar.append(buttonset);
       },
