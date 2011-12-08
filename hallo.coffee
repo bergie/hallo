@@ -282,7 +282,7 @@
                     data.editable.toolbar.hide()
 
             jQuery(window).resize (event) ->
-                    that._updateToolbarPosition that._getToolbarPosition()
+                    that._updateToolbarPosition that._getToolbarPosition(event)
 
         _updateToolbarPosition: (position) ->
             this.toolbar.css "top", position.top
