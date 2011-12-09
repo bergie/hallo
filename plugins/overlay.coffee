@@ -21,6 +21,8 @@
             toolbar: null
             uuid: ""
             overlay: null
+            padding: 10
+            background: null
 
         _create: ->
             widget = this
@@ -51,10 +53,21 @@
                 @options.overlay.bind 'click', jQuery.proxy(@options.editable.turnOff, @options.editable)
 
             @options.overlay.show()
+            
+            if @options.background is null
+                if jQuery("#halloBackground").length > 0
+                    @options.background = jQuery("#halloBackground")
+                else
+                    @options.background = jQuery('<div id="halloBackground" class="halloBackground">')
+                    jQuery(document.body).append @options.background
 
-            @options.originalBgColor = @options.currentEditable.css "background-color"
-            # We have to set the background color to the first parent having one
-            @options.currentEditable.css 'background-color', @_findBackgroundColor @options.currentEditable
+
+            offset = @options.currentEditable.offset()
+            @options.background.css {top: offset.top - @options.padding, left: offset.left - @options.padding}
+            @options.background.width(@options.currentEditable.width() + 2 * @options.padding)
+            @options.background.height(@options.currentEditable.height() + 2 * @options.padding)
+            @options.background.show()
+
             if not @options.originalZIndex
                 @options.originalZIndex = @options.currentEditable.css "z-index"
             @options.currentEditable.css 'z-index', '350'
@@ -62,8 +75,8 @@
         hideOverlay: ->
             @options.visible = false
             @options.overlay.hide()
+            @options.background.hide()
 
-            @options.currentEditable.css 'background-color', @options.originalBgColor
             @options.currentEditable.css 'z-index', @options.originalZIndex
 
         # Find the closest parent having a background color. If none, returns white.

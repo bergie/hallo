@@ -12,3 +12,10 @@ div[contenteditable] {
     left: 0;
     z-index: 250;
 }
+
+.halloBackground {
+    position: absolute;
+    background-color: #fff;
+    z-index: 300;
+}
+
