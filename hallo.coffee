@@ -233,7 +233,7 @@
                 else if event.originalEvent instanceof MouseEvent
                     return { top: event.pageY, left: event.pageX }
             else
-                offset = parseFloat @element.css('outline-width') + parseFloat @element.css('outline-offset')
+                offset = parseFloat(@element.css('outline-width')) + parseFloat(@element.css('outline-offset'))
                 top: @element.offset().top - this.toolbar.outerHeight() - offset
                 left: @element.offset().left - offset
 

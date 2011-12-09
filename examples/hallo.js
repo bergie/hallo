@@ -168,7 +168,7 @@
             };
           }
         } else {
-          offset = parseFloat(this.element.css('outline-width') + parseFloat(this.element.css('outline-offset')));
+          offset = parseFloat(this.element.css('outline-width')) + parseFloat(this.element.css('outline-offset'));
           return {
             top: this.element.offset().top - this.toolbar.outerHeight() - offset,
             left: this.element.offset().left - offset
