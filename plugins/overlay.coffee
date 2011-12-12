@@ -34,6 +34,11 @@
                     if !widget.options.visible
                         widget.showOverlay()
 
+                widget.options.editable.element.bind "hallomodified", (event, data) ->
+                    widget.options.currentEditable = jQuery(event.target)
+                    if widget.options.visible
+                        widget.resizeOverlay()
+
                 widget.options.editable.element.bind "hallodeactivated", (event, data) ->
                     widget.options.currentEditable = jQuery(event.target)
                     if widget.options.visible
@@ -62,15 +67,18 @@
                     jQuery(document.body).append @options.background
 
 
-            offset = @options.currentEditable.offset()
-            @options.background.css {top: offset.top - @options.padding, left: offset.left - @options.padding}
-            @options.background.width(@options.currentEditable.width() + 2 * @options.padding)
-            @options.background.height(@options.currentEditable.height() + 2 * @options.padding)
+            @resizeOverlay()
             @options.background.show()
 
             if not @options.originalZIndex
                 @options.originalZIndex = @options.currentEditable.css "z-index"
             @options.currentEditable.css 'z-index', '350'
+
+        resizeOverlay: ->
+            offset = @options.currentEditable.offset()
+            @options.background.css {top: offset.top - @options.padding, left: offset.left - @options.padding}
+            @options.background.width(@options.currentEditable.width() + 2 * @options.padding)
+            @options.background.height(@options.currentEditable.height() + 2 * @options.padding)
 
         hideOverlay: ->
             @options.visible = false

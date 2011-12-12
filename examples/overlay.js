@@ -18,6 +18,10 @@
             widget.options.currentEditable = jQuery(event.target);
             if (!widget.options.visible) return widget.showOverlay();
           });
+          widget.options.editable.element.bind("hallomodified", function(event, data) {
+            widget.options.currentEditable = jQuery(event.target);
+            if (widget.options.visible) return widget.resizeOverlay();
+          });
           return widget.options.editable.element.bind("hallodeactivated", function(event, data) {
             widget.options.currentEditable = jQuery(event.target);
             if (widget.options.visible) return widget.hideOverlay();
@@ -26,7 +30,6 @@
       },
       _init: function() {},
       showOverlay: function() {
-        var offset;
         this.options.visible = true;
         if (this.options.overlay === null) {
           if (jQuery("#halloOverlay").length > 0) {
@@ -46,18 +49,22 @@
             jQuery(document.body).append(this.options.background);
           }
         }
+        this.resizeOverlay();
+        this.options.background.show();
+        if (!this.options.originalZIndex) {
+          this.options.originalZIndex = this.options.currentEditable.css("z-index");
+        }
+        return this.options.currentEditable.css('z-index', '350');
+      },
+      resizeOverlay: function() {
+        var offset;
         offset = this.options.currentEditable.offset();
         this.options.background.css({
           top: offset.top - this.options.padding,
           left: offset.left - this.options.padding
         });
         this.options.background.width(this.options.currentEditable.width() + 2 * this.options.padding);
-        this.options.background.height(this.options.currentEditable.height() + 2 * this.options.padding);
-        this.options.background.show();
-        if (!this.options.originalZIndex) {
-          this.options.originalZIndex = this.options.currentEditable.css("z-index");
-        }
-        return this.options.currentEditable.css('z-index', '350');
+        return this.options.background.height(this.options.currentEditable.height() + 2 * this.options.padding);
       },
       hideOverlay: function() {
         this.options.visible = false;
