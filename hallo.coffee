@@ -312,22 +312,26 @@
 
             widget = event.data
 
-            sel = widget.getSelection()
-            if widget._isEmptySelection(sel) or widget._isEmptyRange(sel)
-                if widget.selection
-                    widget.selection = null
-                    widget._trigger "unselected", null,
-                        editable: widget
-                        originalEvent: event
-                return
+            # The mouseup event triggers before the text selection is updated.
+            # I did not find a better solution than setTimeout in 0 ms
+            setTimeout ()->
+                sel = widget.getSelection()
+                if widget._isEmptySelection(sel) or widget._isEmptyRange(sel)
+                    if widget.selection
+                        widget.selection = null
+                        widget._trigger "unselected", null,
+                            editable: widget
+                            originalEvent: event
+                    return
 
-            if !widget.selection or not widget._rangesEqual sel, widget.selection
-                widget.selection = sel.cloneRange();
-                widget._trigger "selected", null,
-                    editable: widget
-                    selection: widget.selection
-                    ranges: [widget.selection]
-                    originalEvent: event
+                if !widget.selection or not widget._rangesEqual sel, widget.selection
+                    widget.selection = sel.cloneRange();
+                    widget._trigger "selected", null,
+                        editable: widget
+                        selection: widget.selection
+                        ranges: [widget.selection]
+                        originalEvent: event
+            , 0
 
         _isEmptySelection: (selection) ->
             if selection.type is "Caret"
