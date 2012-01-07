@@ -1,4 +1,3 @@
-(function() {
 
   (function(jQuery) {
     return jQuery.widget("Liip.halloimage", {
@@ -541,5 +540,3 @@
       }
     });
   })(jQuery);
-
-}).call(this);
