@@ -285,7 +285,7 @@
           uploadForm.attr "encoding", "multipart/form-data"
           uploadForm.attr "target", widget.options.iframeName
           uploadForm.submit()
-          jQuery("##postframe").load ->
+          jQuery("##{widget.options.iframeName}").load ->
               data.success jQuery("##{widget.options.iframeName}")[0].contentWindow.location.href
 
         _addGuiTabUpload: (tabs, element) ->
@@ -311,7 +311,10 @@
                       file: userFile
                       success: (imageUrl) ->
                           imageID = "si" + Math.floor(Math.random() * (400 - 300 + 1) + 400) + "ab"
-                          jQuery(".imageThumbnailContainer ul").append "<li><img src=\"#{imageUrl}\" id=\"#{imageID}\" class=\"imageThumbnail\"></li>" 
+                          if jQuery(".imageThumbnailContainer ul", widget.options.dialog).length is 0
+                            list = jQuery '<ul></ul>'
+                            jQuery('.imageThumbnailContainer').append list
+                          jQuery(".imageThumbnailContainer ul", widget.options.dialog).append "<li><img src=\"#{imageUrl}\" id=\"#{imageID}\" class=\"imageThumbnail\"></li>" 
                           jQuery("#" + imageID).trigger "click"
                           jQuery(widget.options.dialog).find(".nav li").first().trigger "click"
                   return false;
