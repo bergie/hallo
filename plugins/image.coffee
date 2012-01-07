@@ -30,6 +30,8 @@
             #     the object has fields offset (the requested offset), total (total number of results) and assets (list of url and alt text for each image)
             suggestions: null
             loaded: null
+            upload: null
+            uploadUrl: null
             dialogOpts:
                 autoOpen: false
                 width: 270
@@ -55,11 +57,14 @@
                 <div class=\"dialogcontent\">
             </div>"
 
+            if widget.options.uploadUrl and !widget.options.upload
+              widget.options.upload = widget._iframeUpload
+
             if widget.options.suggestions
                 @_addGuiTabSuggestions jQuery(".tabs", @options.dialog), jQuery(".dialogcontent", @options.dialog)
             if widget.options.search
                 @_addGuiTabSearch jQuery(".tabs", @options.dialog), jQuery(".dialogcontent", @options.dialog)
-            if (true) #TODO: upload function
+            if widget.options.upload
                 @_addGuiTabUpload jQuery(".tabs", @options.dialog), jQuery(".dialogcontent", @options.dialog)
 
             buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
@@ -260,6 +265,25 @@
 
                 widget.options.search(null, widget.options.limit, 0, showResults)
 
+        _iframeUpload: (data) ->
+          console.log data
+          widget = data.widget
+          iframe = jQuery "<iframe name=\"postframe\" id=\"postframe\" class=\"hidden\" src=\"about:none\" style=\"display:none\" />"
+
+          jQuery("##{widget.options.uuid}-#{widget.widgetName}-iframe").append iframe
+          jQuery("##{widget.options.uuid}-#{widget.widgetName}-tags").val jQuery(".inEditMode").parent().find(".articleTags input").val()
+
+          uploadForm = jQuery("##{widget.options.uuid}-#{widget.widgetName}-uploadform")
+          uploadForm.attr "action", widget.options.uploadUrl
+          uploadForm.attr "method", "post"
+          uploadForm.attr "userfile", data.file
+          uploadForm.attr "enctype", "multipart/form-data"
+          uploadForm.attr "encoding", "multipart/form-data"
+          uploadForm.attr "target", "postframe"
+          uploadForm.submit()
+          jQuery("#postframe").load ->
+              data.success jQuery("#postframe")[0].contentWindow.location.href
+
         _addGuiTabUpload: (tabs, element) ->
             widget = this
             tabs.append jQuery "<li id=\"#{@options.uuid}-tab-upload\" class=\"#{widget.widgetName}-tabselector #{widget.widgetName}-tab-upload\"><span>Upload</span></li>"
@@ -278,23 +302,14 @@
             jQuery("##{widget.options.uuid}-#{widget.widgetName}-upload").live "click", (e) ->
                   e.preventDefault()
                   userFile = jQuery("##{widget.options.uuid}-#{widget.widgetName}-file").val()
-                  jQuery("##{widget.options.uuid}-#{widget.widgetName}-iframe").append iframe
-                  jQuery("##{widget.options.uuid}-#{widget.widgetName}-tags").val jQuery(".inEditMode").parent().find(".articleTags input").val()
-                  uploadFrom = jQuery("##{widget.options.uuid}-#{widget.widgetName}-uploadform")
-                  uploadFrom.attr "action", "/app_dev.php/image/upload/"
-                  uploadFrom.attr "method", "post"
-                  uploadFrom.attr "userfile", userFile
-                  uploadFrom.attr "enctype", "multipart/form-data"
-                  uploadFrom.attr "encoding", "multipart/form-data"
-                  uploadFrom.attr "target", "postframe"
-                  uploadFrom.submit()
-                  jQuery("#postframe").load ->
-                      src = jQuery("#postframe")[0].contentWindow.location.href
-                      imageID = "si" + Math.floor(Math.random() * (400 - 300 + 1) + 400) + "ab"
-                      jQuery(".imageThumbnailContainer ul").append "<li><img src=\"#{src}\" id=\"#{imageID}\" class=\"imageThumbnail\"></li>"
-                      jQuery("#" + imageID).trigger "click"
-                      jQuery(widget.options.dialog).find(".nav li").first().trigger "click"
-
+                  widget.options.upload
+                      widget: widget
+                      file: userFile
+                      success: (imageUrl) ->
+                          imageID = "si" + Math.floor(Math.random() * (400 - 300 + 1) + 400) + "ab"
+                          jQuery(".imageThumbnailContainer ul").append "<li><img src=\"#{src}\" id=\"#{imageID}\" class=\"imageThumbnail\"></li>" 
+                          jQuery("#" + imageID).trigger "click"
+                          jQuery(widget.options.dialog).find(".nav li").first().trigger "click"
                   return false;
 
             insertImage = () ->
@@ -317,7 +332,6 @@
                 widget._closeDialog()
 
             @options.dialog.find(".halloimage-activeImage, ##{widget.options.uuid}-#{widget.widgetName}-addimage").click insertImage
-
 
         _addDragnDrop: ->
             helper =

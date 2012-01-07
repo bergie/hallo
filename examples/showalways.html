@@ -89,7 +89,8 @@
                     response = {offset: offset, total: limit + 1, assets: searchresult.slice(offset, offset+limit)};
                     successCallback(response);
                 },
-                suggestions: null
+                suggestions: null,
+                uploadUrl: '/some/example/url'
             }
           },
           editable: true,
