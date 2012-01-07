@@ -8,3 +8,77 @@ div.hallotoolbar {
     width: 260px;
     z-index: 500;
 }
+
+/* Drag n Drop */
+[contenteditable] .tmp {
+    opacity: 0.3
+}
+
+[contenteditable] .tmpLine{
+    background-color: #ffffff;
+    width: 98%;
+    height: 2px;
+    margin: 0 auto 10px auto;
+    border-top: 2px solid #1cb8d6;
+    border-bottom: 2px solid #1cb8d6;
+    opacity: 1;
+    padding: 1px;
+}
+
+.bigOverlay, .smallOverlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(28, 184, 214, 0.4);
+}
+
+.bigOverlayRight{
+    display : block;
+    border-right : 3px dashed rgb(28, 184, 214);
+    border-left : none;
+}
+
+.bigOverlayLeft{
+    display : block;
+    border-left : 3px dashed rgb(28, 184, 214);
+    border-right : none;
+}
+
+.smallOverlayLeft{
+   border-right : 3px dashed rgb(28, 184, 214);
+}
+
+.smallOverlayRight{
+    border-left : 3px dashed rgb(28, 184, 214);
+}
+
+.ui-draggable{
+    cursor: move;
+}
+
+.ui-draggable-dragging{
+    border: 3px solid white;
+}
+
+[contenteditable] img.ui-state-disabled {
+    opacity: 1;
+}
+
+.customHelper{
+    background-size: cover;
+    width: 100px;
+    height: 100px;
+    z-index: 1050;
+}
+
+.trashcan{
+    width: 50px;
+    height: 50px;
+    position: relative;
+    top: 25px;
+    left: 25px;
+    background: rgba(0,0,0,0.8) url('images/trash.png') no-repeat 12px 12px;
+    border-radius: 10px;
+    cursor: none;
+}
