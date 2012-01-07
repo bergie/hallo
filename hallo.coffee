@@ -347,16 +347,10 @@
 
             return false
 
-        _activated: (event) ->
-            widget = event.data
-
-            if widget.getContents() is widget.options.placeholder
-                widget.setContents ''
-
-            if widget.toolbar.html() isnt ''
-                widget.toolbar.css "top", widget.element.offset().top - widget.toolbar.height() + 10
-
         turnOn: () ->
+            if this.getContents() is this.options.placeholder
+                this.setContents ''
+
             jQuery(@element).addClass 'inEditMode'
             #make sure the toolbar has not got the full width of the editable element when floating is set to true
             if !@options.floating
