@@ -1,4 +1,11 @@
 
+/*     Hallo - a rich text editing jQuery UI widget
+#     (c) 2011 Henri Bergius, IKS Consortium
+#     Hallo may be freely distributed under the MIT license
+*/
+
+(function() {
+
   (function(jQuery) {
     return jQuery.widget("IKS.halloformat", {
       options: {
@@ -13,8 +20,8 @@
         }
       },
       _create: function() {
-        var buttonize, buttonset, enabled, format, widget, _ref;
-        var _this = this;
+        var buttonize, buttonset, enabled, format, widget, _ref,
+          _this = this;
         widget = this;
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         buttonize = function(format) {
@@ -59,3 +66,5 @@
       _init: function() {}
     });
   })(jQuery);
+
+}).call(this);
