@@ -26,8 +26,8 @@
                 widget.buttons[cmd] = button
 
             buttonize "enhance", "Enhance"
-            buttonize "done", "Done"
-            buttonize "acceptAll", "Accept all"
+            # buttonize "done", "Done"
+            # buttonize "acceptAll", "Accept all"
             buttonset.buttonset()
             @options.toolbar.append buttonset
             @instantiate()
@@ -38,8 +38,7 @@
                 vie: @options.vie
                 debug: true
                 showTooltip: true
-            @buttons.acceptAll
-            .hide()
+            # @buttons.acceptAll.hide()
         acceptAll: ->
             @options.editable.element.each ->
                 jQuery(this).annotate "acceptAll", (report) ->
@@ -50,15 +49,18 @@
         enhance: ->
             widget = @
             console.info ".content", @options.editable.element
-            origLabel = @buttons.enhance.button("disable").button "option", "label"
-            @buttons.enhance.button("disable").button "option", "label", "in progress..."
+            origLabel = @buttons.enhance.button( "option", "label" )
+            # .button ( "disable" )
+            # @buttons.enhance
+            # .button "option", "label", "in progress..."
             try
                 @options.editable.element.annotate "enable", (success) =>
                     if success
-                        @buttons.enhance.button("disable").button "option", "label", origLabel
-                        @buttons.enhance.enable().hide()
-                        @buttons.done.show()
-                        @buttons.acceptAll.show()
+                        # @buttons.enhance.button("disable").button "option", "label", origLabel
+                        # @buttons.enhance.button("enable").hide()
+                        # @buttons.done.show()
+                        # @buttons.acceptAll.show()
+                        console.log "done"
                     else
                         @buttons.enhance.show()
                         .button("enable")
