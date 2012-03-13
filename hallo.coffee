@@ -136,7 +136,7 @@
             if not @bound
                 @element.bind "focus", this, @_activated
                 # Only add the blur event when showAlways is set to true
-                if not @options.showAlways
+                if @options.showAlways
                     @element.bind "blur", this, @_deactivated
                 @element.bind "keyup paste change", this, @_checkModified
                 @element.bind "keyup", this, @_keys
@@ -370,8 +370,6 @@
         turnOff: () ->
             @toolbar.hide()
             jQuery(@element).removeClass 'inEditMode'
-            if (@options.showAlways)
-                @element.blur()
             @_trigger "deactivated", @
 
             unless @getContents()
