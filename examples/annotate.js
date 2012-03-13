@@ -35,8 +35,8 @@
         buttonize("done", "Done");
         buttonize("acceptAll", "Accept all");
         buttonset.buttonset();
-        widget.buttons.done.hide();
-        widget.buttons.acceptAll.hide();
+        widget.buttons.done.button("disable");
+        widget.buttons.acceptAll.button("disable");
         this.options.toolbar.append(buttonset);
         return this.instantiate();
       },
@@ -61,15 +61,14 @@
         widget = this;
         console.info(".content", this.options.editable.element);
         origLabel = this.buttons.enhance.button("option", "label");
-        this.buttons.enhance.button("disable").button("option", "label", "in progress...");
+        this.buttons.enhance.button("disable");
         try {
           return this.options.editable.element.annotate("enable", function(success) {
             if (success) {
-              _this.buttons.enhance.button("disable").button("option", "label", origLabel);
-              _this.buttons.enhance.button("enable").hide();
-              _this.buttons.enhance.hide();
-              _this.buttons.done.show();
-              _this.buttons.acceptAll.show();
+              _this.buttons.enhance.button("enable");
+              _this.buttons.enhance.button("disable");
+              _this.buttons.done.button("enable");
+              _this.buttons.acceptAll.button("enable");
               return console.log("done");
             } else {
               return _this.buttons.enhance.show().button("enable").button("option", "label", "error, see the log.. Try to enhance again!");
@@ -81,9 +80,9 @@
       },
       done: function() {
         this.options.editable.element.annotate("disable");
-        this.buttons.enhance.show().button("option", "label", "Enhance!");
-        this.buttons.done.button("hide");
-        return this.buttons.acceptAll.buttonset("hide");
+        this.buttons.enhance.button("enable");
+        this.buttons.done.button("disable");
+        return this.buttons.acceptAll.button("disable");
       }
     });
   })(jQuery);

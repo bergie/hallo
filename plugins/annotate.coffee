@@ -29,8 +29,9 @@
             buttonize "done", "Done"
             buttonize "acceptAll", "Accept all"
             buttonset.buttonset()
-            widget.buttons.done.hide()
-            widget.buttons.acceptAll.hide()
+
+            widget.buttons.done.button "disable"
+            widget.buttons.acceptAll.button "disable"
             @options.toolbar.append buttonset
             @instantiate()
 
@@ -52,17 +53,16 @@
             widget = @
             console.info ".content", @options.editable.element
             origLabel = @buttons.enhance.button( "option", "label" )
-            @buttons.enhance
-            .button("disable")
-            .button "option", "label", "in progress..."
+            @buttons.enhance.button("disable")
+#            .button "option", "label", "in progress..."
             try
                 @options.editable.element.annotate "enable", (success) =>
                     if success
-                        @buttons.enhance.button("disable").button "option", "label", origLabel
-                        @buttons.enhance.button("enable").hide()
-                        @buttons.enhance.hide()
-                        @buttons.done.show()
-                        @buttons.acceptAll.show()
+#                        @buttons.enhance.button("disable").button "option", "label", origLabel
+                        @buttons.enhance.button "enable"
+                        @buttons.enhance.button "disable"
+                        @buttons.done.button "enable"
+                        @buttons.acceptAll.button "enable"
                         console.log "done"
                     else
                         @buttons.enhance.show()
@@ -72,8 +72,8 @@
                 alert e
         done: ->
             @options.editable.element.annotate "disable"
-            @buttons.enhance.show().button "option", "label", "Enhance!"
+            @buttons.enhance.button "enable"
 
-            @buttons.done.button("hide")
-            @buttons.acceptAll.buttonset("hide")
+            @buttons.done.button "disable"
+            @buttons.acceptAll.button "disable"
 )(jQuery)
