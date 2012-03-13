@@ -1,4 +1,3 @@
-(function() {
 
 /*     Hallo - a rich text editing jQuery UI widget
 #     (c) 2011 Henri Bergius, IKS Consortium
@@ -148,8 +147,16 @@
       setUnmodified: function() {
         return this.originalContent = this.getContents();
       },
-      restoreOriginalContent: function() {
-        return this.element.html(this.originalContent);
+      restoreOriginalContent: function(event) {
+        var old, widget;
+        widget = event.data;
+        old = this.getContents();
+        this.element.html(this.originalContent);
+        return widget._trigger("restored", null, {
+          editable: widget,
+          content: this.getContents(),
+          thrown: old
+        });
       },
       execute: function(command, value) {
         if (document.execCommand(command, false, value)) {
@@ -252,7 +259,7 @@
         var widget;
         widget = event.data;
         if (event.keyCode === 27) {
-          widget.restoreOriginalContent();
+          widget.restoreOriginalContent(event);
           return widget.turnOff();
         }
       },

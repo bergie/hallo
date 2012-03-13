@@ -75,6 +75,17 @@
     #         console.log("New contents are " + data.content);
     #     });
     #
+    # ### Restored
+    #
+    # When contents are restored through calling .hallo("restoreOriginalContent")
+    # or the user pressing ESC while the cursor is in the editable element,
+    # a 'hallorestored' event will be fired.
+    #
+    #     jQuery('p').bind('hallorestored', function(event, data) {
+    #         console.log("The thrown contents are " + data.thrown);
+    #         console.log("The restored contents are " + data.content);
+    #     });
+    #
     jQuery.widget "IKS.hallo",
         toolbar: null
         bound: false
@@ -213,8 +224,14 @@
            @originalContent = @getContents()
 
         # Restore the content original
-        restoreOriginalContent: ->
+        restoreOriginalContent: (event) ->
+            widget = event.data
+            old = @getContents()
             @element.html(@originalContent)
+            widget._trigger "restored", null,
+                editable: widget
+                content: @getContents()
+                thrown: old
 
         # Execute a contentEditable command
         execute: (command, value) ->
@@ -299,7 +316,7 @@
         _keys: (event) ->
             widget = event.data
             if event.keyCode == 27
-                widget.restoreOriginalContent()
+                widget.restoreOriginalContent(event)
                 widget.turnOff()
 
         _rangesEqual: (r1, r2) ->
