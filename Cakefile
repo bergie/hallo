@@ -22,3 +22,7 @@ task 'doc', 'generate documentation for *.coffee files', ->
 task 'build', 'generate unified JavaScript file for whole Hallo', ->
   invoke 'mergedirs'
   exec "coffee -o examples -j hallo.js -c src/*.coffee", exerr
+
+task 'min', 'minify the generated JavaScript file', ->
+  invoke 'build'
+  exec "uglifyjs examples/hallo.js > examples/hallo-min.js", exerr
