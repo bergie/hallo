@@ -11,14 +11,6 @@
     <script src="lists.js"></script>
     <script src="link.js"></script>
     <script src="reundo.js"></script>
-
-    <script src="underscoreJS/underscore.min.js"></script>
-    <script src="backboneJS/backbone.min.js"></script>
-    <script src="rdfquery/latest/jquery.rdfquery.min.js"></script>
-
-    <script src="vie-latest.js"></script>
-    <script src="vie-annotate.js"></script>
-    <script src="annotate.js"></script>
     <title>Hallo example</title>
   </head>
   <body>
@@ -48,7 +40,6 @@
       jQuery('#enable').button().click(function() {
         jQuery('.editable').hallo({
           plugins: {
-            'halloannotate': {},
             'halloformat': {},
             'halloheadings': {},
             'hallojustify': {},
@@ -56,8 +47,7 @@
             'hallolink': {},
             'halloreundo': {}
           },
-          editable: true,
-          showAlways: true
+          editable: true
         });
         jQuery('.editable').bind('hallomodified', function(event, data) {
             jQuery('#modified').html("Editables modified");

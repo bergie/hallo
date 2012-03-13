@@ -35,16 +35,17 @@
         buttonize("done", "Done");
         buttonize("acceptAll", "Accept all");
         buttonset.buttonset();
+        widget.buttons.done.hide();
+        widget.buttons.acceptAll.hide();
         this.options.toolbar.append(buttonset);
         return this.instantiate();
       },
       instantiate: function() {
-        this.options.editable.element.annotate({
+        return this.options.editable.element.annotate({
           vie: this.options.vie,
           debug: true,
           showTooltip: true
         });
-        return this.buttons.acceptAll.hide();
       },
       acceptAll: function() {
         this.options.editable.element.each(function() {
@@ -59,15 +60,17 @@
           _this = this;
         widget = this;
         console.info(".content", this.options.editable.element);
-        origLabel = this.buttons.enhance.button("disable").button("option", "label");
+        origLabel = this.buttons.enhance.button("option", "label");
         this.buttons.enhance.button("disable").button("option", "label", "in progress...");
         try {
           return this.options.editable.element.annotate("enable", function(success) {
             if (success) {
               _this.buttons.enhance.button("disable").button("option", "label", origLabel);
-              _this.buttons.enhance.enable().hide();
+              _this.buttons.enhance.button("enable").hide();
+              _this.buttons.enhance.hide();
               _this.buttons.done.show();
-              return _this.buttons.acceptAll.show();
+              _this.buttons.acceptAll.show();
+              return console.log("done");
             } else {
               return _this.buttons.enhance.show().button("enable").button("option", "label", "error, see the log.. Try to enhance again!");
             }
@@ -79,7 +82,8 @@
       done: function() {
         this.options.editable.element.annotate("disable");
         this.buttons.enhance.show().button("option", "label", "Enhance!");
-        return jQuery(".acceptAllButton").hide();
+        this.buttons.done.button("hide");
+        return this.buttons.acceptAll.buttonset("hide");
       }
     });
   })(jQuery);

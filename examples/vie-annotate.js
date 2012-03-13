@@ -1,14 +1,30 @@
+
+/*   Annotate - a text enhancement interaction jQuery UI widget
+#     (c) 2011 Szaby Gruenwald, IKS Consortium
+#     Annotate may be freely distributed under the MIT license
+*/
+
 (function() {
-  var EntityCache, ns, uriSuffix, vie,
+  var Backbone, EntityCache, VIE, jQuery, ns, root, uriSuffix, vie, _, _base,
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   ns = {
     rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     enhancer: 'http://fise.iks-project.eu/ontology/',
-    dc: 'http://purl.org/dc/terms/',
+    dcterms: 'http://purl.org/dc/terms/',
     rdfs: 'http://www.w3.org/2000/01/rdf-schema#',
     skos: 'http://www.w3.org/2004/02/skos/core#'
   };
+
+  root = this;
+
+  jQuery = root.jQuery;
+
+  Backbone = root.Backbone;
+
+  _ = root._;
+
+  VIE = root.VIE;
 
   vie = new VIE();
 
@@ -16,6 +32,14 @@
     url: "http://dev.iks-project.eu:8080",
     proxyDisabled: true
   }));
+
+  vie.namespaces.add("skos", ns.skos);
+
+  if ((_base = String.prototype).trim == null) {
+    _base.trim = function() {
+      return this.replace(/^\s+|\s+$/g, '');
+    };
+  }
 
   EntityCache = (function() {
 
@@ -113,7 +137,7 @@
             return "Subcategory of " + (labels.join(', ')) + ".";
           }
         }, {
-          property: "dc:subject",
+          property: "dcterms:subject",
           makeLabel: function(propertyValueArr) {
             var labels;
             labels = _(propertyValueArr).map(function(termUri) {
@@ -129,6 +153,7 @@
         skos: "http://www.w3.org/2004/02/skos/core#"
       },
       typeFilter: null,
+      annotationInteractionWidget: "annotationInteraction",
       getTypes: function() {
         return [
           {
@@ -171,15 +196,21 @@
         vie: this.options.vie,
         logger: this._logger
       });
-      if (this.options.autoAnalyze) return this.enable();
+      if (this.options.autoAnalyze) this.enable();
+      if (!jQuery().tooltip) {
+        this.options.showTooltip = false;
+        this._logger.warn("the used jQuery UI doesn't support tooltips, disabling.");
+      }
+      return this._initExistingAnnotations();
     },
     _destroy: function() {
       this.disable();
-      return $(':IKS-annotationSelector', this.element).each(function() {
+      $(':IKS-annotationSelector', this.element).each(function() {
         if ($(this).data().annotationSelector) {
           return $(this).annotationSelector('destroy');
         }
       });
+      return this._destroyExistingAnnotationInteractionWidgets();
     },
     enable: function(cb) {
       var analyzedNode,
@@ -193,7 +224,11 @@
           entityAnnotations = Stanbol.getEntityAnnotations(enhancements);
           for (_i = 0, _len = entityAnnotations.length; _i < _len; _i++) {
             entAnn = entityAnnotations[_i];
-            textAnns = entAnn.get("dc:relation");
+            textAnns = entAnn.get("dcterms:relation");
+            if (!textAnns) {
+              _this._logger.error("For " + (entAnn.getSubject()) + " dcterms:relation is not set! This makes this EntityAnnotation unusable!", entAnn);
+              continue;
+            }
             _ref = _.flatten([textAnns]);
             for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
               textAnn = _ref[_j];
@@ -219,7 +254,7 @@
           });
           _(textAnnotations).each(function(s) {
             _this._logger.info(s._enhancement, 'confidence', s.getConfidence(), 'selectedText', s.getSelectedText(), 'type', s.getType(), 'EntityEnhancements', s.getEntityEnhancements());
-            return _this.processTextEnhancement(s, analyzedNode);
+            return _this._processTextEnhancement(s, analyzedNode);
           });
           _this._trigger("success", true);
           if (typeof cb === "function") return cb(true);
@@ -237,6 +272,14 @@
         }
       });
     },
+    _initExistingAnnotations: function() {
+      this.existingAnnotations = jQuery("a[about][typeof]", this.element);
+      console.info(this.existingAnnotations);
+      return this.existingAnnotations[this.options.annotationInteractionWidget](this.options);
+    },
+    _destroyExistingAnnotationInteractionWidgets: function() {
+      return this.existingAnnotations[this.options.annotationInteractionWidget]("destroy");
+    },
     acceptAll: function(reportCallback) {
       var report;
       report = {
@@ -253,9 +296,9 @@
           }
         }
       });
-      return typeof reportCallback === "function" ? reportCallback(report) : void 0;
+      return reportCallback(report);
     },
-    processTextEnhancement: function(textEnh, parentEl) {
+    _processTextEnhancement: function(textEnh, parentEl) {
       var eEnh, eEnhUri, el, options, sType, type, widget, _i, _j, _len, _len2, _ref,
         _this = this;
       if (!textEnh.getSelectedText()) {
@@ -388,6 +431,191 @@
     }
   });
 
+  jQuery.widget("IKS.annotationInteraction", {
+    __widgetName: "IKS.annotationInteraction",
+    options: {
+      ns: {
+        dbpedia: "http://dbpedia.org/ontology/",
+        skos: "http://www.w3.org/2004/02/skos/core#"
+      },
+      getTypes: function() {
+        return [
+          {
+            uri: "" + this.ns.dbpedia + "Place",
+            label: 'Place'
+          }, {
+            uri: "" + this.ns.dbpedia + "Person",
+            label: 'Person'
+          }, {
+            uri: "" + this.ns.dbpedia + "Organisation",
+            label: 'Organisation'
+          }, {
+            uri: "" + this.ns.skos + "Concept",
+            label: 'Concept'
+          }
+        ];
+      },
+      getSources: function() {
+        return [
+          {
+            uri: "http://dbpedia.org/resource/",
+            label: "dbpedia"
+          }, {
+            uri: "http://sws.geonames.org/",
+            label: "geonames"
+          }
+        ];
+      }
+    },
+    _create: function() {
+      var _this = this;
+      this._logger = this.options.debug ? console : {
+        info: function() {},
+        warn: function() {},
+        error: function() {},
+        log: function() {}
+      };
+      this.vie = this.options.vie;
+      return this._loadEntity(function(entity) {
+        _this.entity = entity;
+        return _this._initTooltip();
+      });
+    },
+    _destroy: function() {
+      return this.element.tooltip('destroy');
+    },
+    _initTooltip: function() {
+      var widget,
+        _this = this;
+      widget = this;
+      this._logger.info("init tooltip for", this.element);
+      if (this.options.showTooltip) {
+        return jQuery(this.element).tooltip({
+          items: "[about]",
+          hide: {
+            effect: "hide",
+            delay: 50
+          },
+          show: {
+            effect: "show",
+            delay: 50
+          },
+          content: function(response) {
+            var uri;
+            uri = _this.element.attr("about");
+            _this._logger.info("tooltip uri:", uri);
+            return widget._createPreview(uri);
+          }
+        });
+      }
+    },
+    _createPreview: function(uri) {
+      var depictionUrl, descr, html, picSize;
+      html = "";
+      picSize = 100;
+      depictionUrl = this._getDepiction(this.entity, picSize);
+      if (depictionUrl) {
+        html += "<img style='float:left;padding: 5px;width: " + picSize + "px' src='" + (depictionUrl.substring(1, depictionUrl.length - 1)) + "'/>";
+      }
+      descr = this._getDescription(this.entity);
+      if (!descr) {
+        this._logger.warn("No description found for", this.entity);
+        descr = "No description found.";
+      }
+      html += "<div style='padding 5px;width:250px;float:left;'><small>" + descr + "</small></div>";
+      this._logger.info("tooltip for " + uri + ": cacheEntry loaded", this.entity);
+      return html;
+    },
+    _loadEntity: function(callback) {
+      var _this = this;
+      this.vie.use(new this.vie.RdfaService());
+      return this.vie.load({
+        element: this.element
+      }).using("rdfa").execute().success(function(res) {
+        _this._logger.info("found", res, _this.element, _this.vie);
+        return _(res).each(function(entity) {
+          return _this.vie.load({
+            entity: entity.getSubject()
+          }).using("stanbol").execute().success(function(res) {
+            var loadedEntity;
+            loadedEntity = _(res).detect(function(e) {
+              return entity.getSubject() === e.getSubject();
+            });
+            return callback(loadedEntity);
+          }).fail(function(err) {
+            return _this._logger.error("error getting entity from stanbol", err, entity.getSubject());
+          });
+        });
+      }).fail(function(f) {
+        return _this._logger.error("error reading RDFa", f, _this.element);
+      });
+    },
+    _getUserLang: function() {
+      var navigatorLanguage;
+      navigatorLanguage = window.navigator.language || window.navigator.userLanguage;
+      return navigatorLanguage.split("-")[0];
+    },
+    _getDepiction: function(entity, picSize) {
+      var depictionUrl, field, fieldValue, preferredFields;
+      preferredFields = this.options.depictionProperties;
+      field = _(preferredFields).detect(function(field) {
+        if (entity.get(field)) return true;
+      });
+      if (field && (fieldValue = _([entity.get(field)]).flatten())) {
+        depictionUrl = _(fieldValue).detect(function(uri) {
+          uri = (typeof uri.getSubject === "function" ? uri.getSubject() : void 0) || uri;
+          if (uri.indexOf("thumb") !== -1) return true;
+        }).replace(/[0-9]{2..3}px/, "" + picSize + "px");
+        return depictionUrl;
+      }
+    },
+    _getLabel: function(entity) {
+      var preferredFields, preferredLanguages;
+      preferredFields = this.options.labelProperties;
+      preferredLanguages = [this._getUserLang(), this.options.fallbackLanguage];
+      return this._getPreferredLangForPreferredProperty(entity, preferredFields, preferredLanguages);
+    },
+    _getDescription: function(entity) {
+      var preferredFields, preferredLanguages;
+      preferredFields = this.options.descriptionProperties;
+      preferredLanguages = [this._getUserLang(), this.options.fallbackLanguage];
+      return this._getPreferredLangForPreferredProperty(entity, preferredFields, preferredLanguages);
+    },
+    _getPreferredLangForPreferredProperty: function(entity, preferredFields, preferredLanguages) {
+      var label, labelArr, lang, property, valueArr, _i, _j, _len, _len2,
+        _this = this;
+      for (_i = 0, _len = preferredLanguages.length; _i < _len; _i++) {
+        lang = preferredLanguages[_i];
+        for (_j = 0, _len2 = preferredFields.length; _j < _len2; _j++) {
+          property = preferredFields[_j];
+          if (typeof property === "string" && entity.get(property)) {
+            labelArr = _.flatten([entity.get(property)]);
+            label = _(labelArr).detect(function(label) {
+              if (typeof label === "string" && label.toString().indexOf("@" + lang) > -1) {
+                true;
+              }
+              if (typeof label === "object" && label["@language"] === lang) {
+                return true;
+              }
+            });
+            if (label) return label.toString().replace(/(^\"*|\"*@..$)/g, "");
+          } else if (typeof property === "object" && entity.get(property.property)) {
+            valueArr = _.flatten([entity.get(property.property)]);
+            valueArr = _(valueArr).map(function(termUri) {
+              if (termUri.isEntity) {
+                return termUri.getSubject();
+              } else {
+                return termUri;
+              }
+            });
+            return property.makeLabel(valueArr);
+          }
+        }
+      }
+      return "";
+    }
+  });
+
   jQuery.widget('IKS.annotationSelector', {
     __widgetName: "IKS.annotationSelector",
     options: {
@@ -440,8 +668,9 @@
           type: this.element.attr("typeof")
         };
         return this.options.cache.get(this.linkedEntity.uri, this, function(cachedEntity) {
-          var userLang;
-          userLang = window.navigator.language.split("-")[0];
+          var navigatorLanguage, userLang;
+          navigatorLanguage = window.navigator.language || window.navigator.userLanguage;
+          userLang = navigatorLanguage.split("-")[0];
           _this.linkedEntity.label = _(cachedEntity.get("rdfs:label")).detect(function(label) {
             if (label.indexOf("@" + userLang) > -1) return true;
           }).replace(/(^\"*|\"*@..$)/g, "");
@@ -453,7 +682,7 @@
       var _this = this;
       return this.element.click(function(e) {
         _this._logger.log("click", e, e.isDefaultPrevented());
-        if (!_this.dialog) {
+        if (_this.dialog || !_this.dialog) {
           _this._createDialog();
           setTimeout((function() {
             return _this.dialog.open();
@@ -469,7 +698,7 @@
       });
     },
     disableEditing: function() {
-      return this._logger.info("TODO: remove click handler");
+      return jQuery(this.element).unbind('click');
     },
     _destroy: function() {
       this.disableEditing();
@@ -482,13 +711,16 @@
         this.dialog.destroy();
         this.dialog.element.remove();
         this.dialog.uiDialogTitlebar.remove();
-        return delete this.dialog;
+        delete this.dialog;
       }
+      this._logger.info("destroy tooltip");
+      if (this.element.data().tooltip) return this.element.tooltip("destroy");
     },
     remove: function(event) {
       var el;
       el = this.element.parent();
-      this.element.tooltip("destroy");
+      this._logger.info("destroy tooltip");
+      if (this.element.data().tooltip) this.element.tooltip("destroy");
       if (!this.isAnnotated() && this.textEnhancements) {
         this._trigger('decline', event, {
           textEnhancements: this.textEnhancements
@@ -526,7 +758,8 @@
       entityHtml = this.element.html();
       sType = entityEnhancement.getTextEnhancement().getType();
       if (!sType.length) sType = ["Other"];
-      rel = options.rel || ("" + ns.skos + "related");
+      this.element.attr('xmlns:skos', ns.skos);
+      rel = options.rel || "skos:related";
       entityClass = 'entity ' + uriSuffix(sType[0]).toLowerCase();
       newElement = $("<a href='" + entityUri + "'            about='" + entityUri + "'            typeof='" + entityType + "'            rel='" + rel + "'            class='" + entityClass + "'>" + entityHtml + "</a>");
       this._cloneCopyEvent(this.element[0], newElement[0]);
@@ -548,7 +781,8 @@
         entityEnhancement: entityEnhancement
       };
       this.select(ui);
-      return this._initTooltip();
+      this._initTooltip();
+      return jQuery(newElement).annotationSelector(this.options);
     },
     select: function(ui) {
       this._trigger('select', null, ui);
@@ -570,7 +804,10 @@
       return this.textEnhancements = this.options.textEnhancements;
     },
     close: function() {
-      this.destroy();
+      var _ref;
+      if ((_ref = this.dialog) != null) {
+        if (typeof _ref.close === "function") _ref.close();
+      }
       return jQuery(".ui-tooltip").remove();
     },
     _initTooltip: function() {
@@ -578,6 +815,7 @@
         _this = this;
       widget = this;
       if (this.options.showTooltip) {
+        this._logger.info("init tooltip for", this.element);
         return jQuery(this.element).tooltip({
           items: "[about]",
           hide: {
@@ -614,7 +852,7 @@
       eEnhancements = _(eEnhancements).filter(function(eEnh) {
         var uri;
         uri = eEnh.getUri();
-        if (_tempUris.indexOf(uri) === -1) {
+        if (_.indexOf(_tempUris, uri) === -1) {
           _tempUris.push(uri);
           return true;
         } else {
@@ -659,7 +897,8 @@
       var dialogEl, label, widget,
         _this = this;
       label = this.element.text();
-      dialogEl = $("<div><span class='entity-link'></span></div>").attr("tabIndex", -1).addClass().keydown(function(event) {
+      jQuery(".annotateselector-dialog").dialog("destroy").remove();
+      dialogEl = $("<div class='annotateselector-dialog'><span class='entity-link'></span></div>").attr("tabIndex", -1).addClass().keydown(function(event) {
         if (!event.isDefaultPrevented() && event.keyCode && event.keyCode === $.ui.keyCode.ESCAPE) {
           _this.close(event);
           return event.preventDefault();
@@ -675,9 +914,6 @@
       dialogEl.dialog({
         width: 400,
         title: label,
-        close: function(event, ui) {
-          return _this.close(event);
-        },
         autoOpen: false,
         open: function(e, ui) {
           return $.data(this, 'dialog').uiDialog.position({
@@ -728,19 +964,21 @@
       }
     },
     _createMenu: function() {
-      var ul, widget,
+      var selectHandler, ul, widget,
         _this = this;
       widget = this;
       ul = $('<ul></ul>').appendTo(this.dialog.element);
       this._renderMenu(ul, this.entityEnhancements);
+      selectHandler = function(event, ui) {
+        _this._logger.info("selected menu item", ui.item);
+        _this.annotate(ui.item.data('enhancement'), {
+          styleClass: 'acknowledged'
+        });
+        return _this.close(event);
+      };
       this.menu = ul.menu({
-        select: function(event, ui) {
-          _this._logger.info("selected menu item", ui.item);
-          _this.annotate(ui.item.data('enhancement'), {
-            styleClass: 'acknowledged'
-          });
-          return _this.close(event);
-        },
+        selected: selectHandler,
+        select: selectHandler,
         blur: function(event, ui) {
           return _this._logger.info('menu.blur()', ui.item);
         }
@@ -796,7 +1034,9 @@
       return this.options.cache.get(uri, this, success, fail);
     },
     _getUserLang: function() {
-      return window.navigator.language.split("-")[0];
+      var navigatorLanguage;
+      navigatorLanguage = window.navigator.language || window.navigator.userLanguage;
+      return navigatorLanguage.split("-")[0];
     },
     _getDepiction: function(entity, picSize) {
       var depictionUrl, field, fieldValue, preferredFields;
@@ -806,6 +1046,7 @@
       });
       if (field && (fieldValue = _([entity.get(field)]).flatten())) {
         depictionUrl = _(fieldValue).detect(function(uri) {
+          uri = (typeof uri.getSubject === "function" ? uri.getSubject() : void 0) || uri;
           if (uri.indexOf("thumb") !== -1) return true;
         }).replace(/[0-9]{2..3}px/, "" + picSize + "px");
         return depictionUrl;
@@ -833,9 +1074,14 @@
           if (typeof property === "string" && entity.get(property)) {
             labelArr = _.flatten([entity.get(property)]);
             label = _(labelArr).detect(function(label) {
-              if (label.indexOf("@" + lang) > -1) return true;
+              if (typeof label === "string" && label.toString().indexOf("@" + lang) > -1) {
+                true;
+              }
+              if (typeof label === "object" && label["@language"] === lang) {
+                return true;
+              }
             });
-            if (label) return label.replace(/(^\"*|\"*@..$)/g, "");
+            if (label) return label.toString().replace(/(^\"*|\"*@..$)/g, "");
           } else if (typeof property === "object" && entity.get(property.property)) {
             valueArr = _.flatten([entity.get(property.property)]);
             valueArr = _(valueArr).map(function(termUri) {
@@ -868,7 +1114,7 @@
       type = this._typeLabels(eEnhancement.getTypes()).toString() || "Other";
       source = this._sourceLabel(eEnhancement.getUri());
       active = this.linkedEntity && eEnhancement.getUri() === this.linkedEntity.uri ? " class='ui-state-active'" : "";
-      return item = $("<li" + active + " entityuri='" + (eEnhancement.getUri()) + "'><a>" + label + " <small>(" + type + " from " + source + ")</small></a></li>").data('enhancement', eEnhancement).appendTo(ul);
+      return item = $("<li" + active + " entityuri='" + (eEnhancement.getUri()) + "' about='" + (eEnhancement.getUri()) + "'><a>" + label + " <small>(" + type + " from " + source + ")</small></a></li>").data('enhancement', eEnhancement).appendTo(ul);
     },
     _createSearchbox: function() {
       var sugg, widget,
@@ -962,6 +1208,13 @@
       return this._logger.info("show searchbox");
     },
     _cloneCopyEvent: function(src, dest) {
+      if (jQuery().jquery.indexOf("1.6") === 0) {
+        return this._cloneCopyEvent1_6(src, dest);
+      } else {
+        return this._cloneCopyEvent1_7(src, dest);
+      }
+    },
+    _cloneCopyEvent1_6: function(src, dest) {
       var curData, events, i, internalKey, l, oldData, type;
       if (dest.nodeType !== 1 || !jQuery.hasData(src)) return;
       internalKey = $.expando;
@@ -984,6 +1237,29 @@
         }
         return null;
       }
+    },
+    _cloneCopyEvent1_7: function(src, dest) {
+      var curData, events, i, l, oldData, type;
+      if (dest.nodeType !== 1 || !jQuery.hasData(src)) return;
+      type = void 0;
+      i = void 0;
+      l = void 0;
+      oldData = jQuery._data(src);
+      curData = jQuery._data(dest, oldData);
+      events = oldData.events;
+      if (events) {
+        delete curData.handle;
+        curData.events = {};
+        for (type in events) {
+          i = 0;
+          l = events[type].length;
+          while (i < l) {
+            jQuery.event.add(dest, type + (events[type][i].namespace ? "." : "") + events[type][i].namespace, events[type][i], events[type][i].data);
+            i++;
+          }
+        }
+      }
+      if (curData.data) return curData.data = jQuery.extend({}, curData.data);
     }
   });
 
@@ -1021,7 +1297,10 @@
     }
 
     TextEnhancement.prototype.getSelectedText = function() {
-      return this._vals("enhancer:selected-text");
+      var res;
+      res = this._vals("enhancer:selected-text");
+      if (typeof res === "string") return res;
+      if (typeof res === "object") return res.toString();
     };
 
     TextEnhancement.prototype.getConfidence = function() {
@@ -1040,7 +1319,7 @@
     };
 
     TextEnhancement.prototype.getType = function() {
-      return this._uriTrim(this._vals("dc:type"));
+      return this._uriTrim(this._vals("dcterms:type"));
     };
 
     TextEnhancement.prototype.getContext = function() {
@@ -1101,7 +1380,7 @@
     }
 
     EntityEnhancement.prototype.getLabel = function() {
-      return this._vals("enhancer:entity-label").replace(/(^\"*|\"*@..$)/g, "");
+      return this._vals("enhancer:entity-label").toString().replace(/(^\"*|\"*@..$)/g, "");
     };
 
     EntityEnhancement.prototype.getUri = function() {

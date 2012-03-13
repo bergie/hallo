@@ -26,9 +26,11 @@
                 widget.buttons[cmd] = button
 
             buttonize "enhance", "Enhance"
-            # buttonize "done", "Done"
-            # buttonize "acceptAll", "Accept all"
+            buttonize "done", "Done"
+            buttonize "acceptAll", "Accept all"
             buttonset.buttonset()
+            widget.buttons.done.hide()
+            widget.buttons.acceptAll.hide()
             @options.toolbar.append buttonset
             @instantiate()
 
@@ -50,16 +52,17 @@
             widget = @
             console.info ".content", @options.editable.element
             origLabel = @buttons.enhance.button( "option", "label" )
-            # .button ( "disable" )
-            # @buttons.enhance
-            # .button "option", "label", "in progress..."
+            @buttons.enhance
+            .button("disable")
+            .button "option", "label", "in progress..."
             try
                 @options.editable.element.annotate "enable", (success) =>
                     if success
-                        # @buttons.enhance.button("disable").button "option", "label", origLabel
-                        # @buttons.enhance.button("enable").hide()
-                        # @buttons.done.show()
-                        # @buttons.acceptAll.show()
+                        @buttons.enhance.button("disable").button "option", "label", origLabel
+                        @buttons.enhance.button("enable").hide()
+                        @buttons.enhance.hide()
+                        @buttons.done.show()
+                        @buttons.acceptAll.show()
                         console.log "done"
                     else
                         @buttons.enhance.show()
@@ -70,5 +73,7 @@
         done: ->
             @options.editable.element.annotate "disable"
             @buttons.enhance.show().button "option", "label", "Enhance!"
-            jQuery(".acceptAllButton").hide()
+
+            @buttons.done.button("hide")
+            @buttons.acceptAll.buttonset("hide")
 )(jQuery)
