@@ -1,6 +1,7 @@
-#     Hallo - a rich text editing jQuery UI widget
+###     Hallo - a rich text editing jQuery UI widget
 #     (c) 2011 Henri Bergius, IKS Consortium
 #     Hallo may be freely distributed under the MIT license
+###
 ((jQuery) ->
     # Hallo provides a jQuery UI widget `hallo`. Usage:
     #
@@ -72,6 +73,17 @@
     #
     #     jQuery('p').bind('hallomodified', function(event, data) {
     #         console.log("New contents are " + data.content);
+    #     });
+    #
+    # ### Restored
+    #
+    # When contents are restored through calling .hallo("restoreOriginalContent")
+    # or the user pressing ESC while the cursor is in the editable element,
+    # a 'hallorestored' event will be fired.
+    #
+    #     jQuery('p').bind('hallorestored', function(event, data) {
+    #         console.log("The thrown contents are " + data.thrown);
+    #         console.log("The restored contents are " + data.content);
     #     });
     #
     jQuery.widget "IKS.hallo",
@@ -212,7 +224,7 @@
            @originalContent = @getContents()
 
         # Restore the content original
-        restoreOriginalContent: ->
+        restoreOriginalContent: () ->
             @element.html(@originalContent)
 
         # Execute a contentEditable command
@@ -298,7 +310,13 @@
         _keys: (event) ->
             widget = event.data
             if event.keyCode == 27
-                widget.restoreOriginalContent()
+                old = widget.getContents()
+                widget.restoreOriginalContent(event)
+                widget._trigger "restored", null,
+                    editable: widget
+                    content: widget.getContents()
+                    thrown: old
+
                 widget.turnOff()
 
         _rangesEqual: (r1, r2) ->

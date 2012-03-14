@@ -1,4 +1,11 @@
 
+/*     Hallo - a rich text editing jQuery UI widget
+#     (c) 2011 Henri Bergius, IKS Consortium
+#     Hallo may be freely distributed under the MIT license
+*/
+
+(function() {
+
   (function(jQuery) {
     return jQuery.widget("IKS.halloformat", {
       options: {
@@ -13,8 +20,8 @@
         }
       },
       _create: function() {
-        var buttonize, buttonset, enabled, format, widget, _ref;
-        var _this = this;
+        var buttonize, buttonset, enabled, format, widget, _ref,
+          _this = this;
         widget = this;
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         buttonize = function(format) {
@@ -59,6 +66,11 @@
       _init: function() {}
     });
   })(jQuery);
+
+  /*     Hallo - a rich text editing jQuery UI widget
+  #     (c) 2011 Henri Bergius, IKS Consortium
+  #     Hallo may be freely distributed under the MIT license
+  */
 
   (function(jQuery) {
     return jQuery.widget("IKS.hallo", {
@@ -302,10 +314,16 @@
         }
       },
       _keys: function(event) {
-        var widget;
+        var old, widget;
         widget = event.data;
         if (event.keyCode === 27) {
-          widget.restoreOriginalContent();
+          old = widget.getContents();
+          widget.restoreOriginalContent(event);
+          widget._trigger("restored", null, {
+            editable: widget,
+            content: widget.getContents(),
+            thrown: old
+          });
           return widget.turnOff();
         }
       },
@@ -391,8 +409,8 @@
         headers: [1, 2, 3]
       },
       _create: function() {
-        var button, buttonize, buttonset, header, id, label, widget, _i, _len, _ref;
-        var _this = this;
+        var button, buttonize, buttonset, header, id, label, widget, _i, _len, _ref,
+          _this = this;
         widget = this;
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         id = "" + this.options.uuid + "-paragraph";
@@ -1028,8 +1046,8 @@
         uuid: ""
       },
       _create: function() {
-        var buttonize, buttonset, widget;
-        var _this = this;
+        var buttonize, buttonset, widget,
+          _this = this;
         widget = this;
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         buttonize = function(alignment) {
@@ -1093,8 +1111,8 @@
         }
       },
       _create: function() {
-        var buttonize, buttonset, dialog, dialogId, dialogSubmitCb, urlInput, widget;
-        var _this = this;
+        var buttonize, buttonset, dialog, dialogId, dialogSubmitCb, urlInput, widget,
+          _this = this;
         widget = this;
         dialogId = "" + this.options.uuid + "-dialog";
         dialog = jQuery("<div id=\"" + dialogId + "\"><form action=\"#\" method=\"post\" class=\"linkForm\"><input class=\"url\" type=\"text\" name=\"url\" value=\"" + this.options.defaultUrl + "\" /><input type=\"submit\" id=\"addlinkButton\" value=\"Insert\" /></form></div>");
@@ -1180,8 +1198,8 @@
         }
       },
       _create: function() {
-        var buttonize, buttonset, widget;
-        var _this = this;
+        var buttonize, buttonset, widget,
+          _this = this;
         widget = this;
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         buttonize = function(type, label) {
@@ -1317,8 +1335,8 @@
         uuid: ""
       },
       _create: function() {
-        var buttonize, buttonset, widget;
-        var _this = this;
+        var buttonize, buttonset, widget,
+          _this = this;
         widget = this;
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         buttonize = function(cmd, label) {
@@ -1377,3 +1395,5 @@
       _init: function() {}
     });
   })(jQuery);
+
+}).call(this);
