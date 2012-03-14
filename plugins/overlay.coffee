@@ -1,19 +1,17 @@
-#   Hallo - a rich text editing jQuery UI widget
-#   (c) 2011 Henri Bergius, IKS Consortium
-#   Hallo may be freely distributed under the MIT license
+#     Hallo - a rich text editing jQuery UI widget
+#     (c) 2011 Henri Bergius, IKS Consortium
+#     Hallo may be freely distributed under the MIT license
 #
-# ============================================================
+# -----------------------------------------
 #
-#   Hallo overlay plugin
-#   (c) 2011 Liip AG, Switzerland
-#   This plugin may be freely distributed under the MIT license.
+#     Hallo overlay plugin
+#     (c) 2011 Liip AG, Switzerland
+#     This plugin may be freely distributed under the MIT license.
 #
-#   The overlay plugin adds an overlay around the editable element.
-#   It has no direct dependency with other plugins, but requires the
-#   "floating" hallo option to be false to look nice. Furthermore, the
-#   toolbar should have the same width as the editable element.
-#
-
+# The overlay plugin adds an overlay around the editable element.
+# It has no direct dependency with other plugins, but requires the
+# "floating" hallo option to be false to look nice. Furthermore, the
+# toolbar should have the same width as the editable element.
 ((jQuery) ->
     jQuery.widget "Liip.hallooverlay",
         options:

@@ -4,7 +4,6 @@
 #
 #     Image insertion plugin
 #     Liip AG: Colin Frei, Reto Ryter, David Buchmann, Fabian Vogler, Bartosz Podlewski
-#
 ((jQuery) ->
     jQuery.widget "Liip.halloimage",
         options:

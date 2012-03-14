@@ -1,75 +1,8 @@
 
-/*     Hallo - a rich text editing jQuery UI widget
-#     (c) 2011 Henri Bergius, IKS Consortium
-#     Hallo may be freely distributed under the MIT license
-*/
-
-(function() {
-
-  (function(jQuery) {
-    return jQuery.widget("IKS.halloformat", {
-      options: {
-        editable: null,
-        toolbar: null,
-        uuid: "",
-        formattings: {
-          bold: true,
-          italic: true,
-          strikeThrough: true,
-          underline: true
-        }
-      },
-      _create: function() {
-        var buttonize, buttonset, enabled, format, widget, _ref,
-          _this = this;
-        widget = this;
-        buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
-        buttonize = function(format) {
-          var button, element, id, label, queryState;
-          label = format.substr(0, 1).toUpperCase();
-          id = "" + _this.options.uuid + "-" + format;
-          buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\" class=\"" + format + "_button\">" + label + "</label>").button());
-          button = jQuery("#" + id, buttonset);
-          button.attr("hallo-command", format);
-          button.addClass(format);
-          button.bind("change", function(event) {
-            format = jQuery(this).attr("hallo-command");
-            return widget.options.editable.execute(format);
-          });
-          queryState = function(event) {
-            if (document.queryCommandState(format)) {
-              button.attr("checked", true);
-              button.next("label").addClass("ui-state-clicked");
-              return button.button("refresh");
-            } else {
-              button.attr("checked", false);
-              button.next("label").removeClass("ui-state-clicked");
-              return button.button("refresh");
-            }
-          };
-          element = _this.element;
-          _this.element.bind("halloenabled", function() {
-            return element.bind("keyup paste change mouseup", queryState);
-          });
-          return _this.element.bind("hallodisabled", function() {
-            return element.unbind("keyup paste change mouseup", queryState);
-          });
-        };
-        _ref = this.options.formattings;
-        for (format in _ref) {
-          enabled = _ref[format];
-          if (enabled) buttonize(format);
-        }
-        buttonset.buttonset();
-        return this.options.toolbar.append(buttonset);
-      },
-      _init: function() {}
-    });
-  })(jQuery);
-
-  /*     Hallo - a rich text editing jQuery UI widget
-  #     (c) 2011 Henri Bergius, IKS Consortium
-  #     Hallo may be freely distributed under the MIT license
+  /*
+  Hallo - a rich text editing jQuery UI widget
+  (c) 2011 Henri Bergius, IKS Consortium
+  Hallo may be freely distributed under the MIT license
   */
 
   (function(jQuery) {
@@ -401,6 +334,67 @@
   })(jQuery);
 
   (function(jQuery) {
+    return jQuery.widget("IKS.halloformat", {
+      options: {
+        editable: null,
+        toolbar: null,
+        uuid: "",
+        formattings: {
+          bold: true,
+          italic: true,
+          strikeThrough: true,
+          underline: true
+        }
+      },
+      _create: function() {
+        var buttonize, buttonset, enabled, format, widget, _ref;
+        var _this = this;
+        widget = this;
+        buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
+        buttonize = function(format) {
+          var button, element, id, label, queryState;
+          label = format.substr(0, 1).toUpperCase();
+          id = "" + _this.options.uuid + "-" + format;
+          buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\" class=\"" + format + "_button\">" + label + "</label>").button());
+          button = jQuery("#" + id, buttonset);
+          button.attr("hallo-command", format);
+          button.addClass(format);
+          button.bind("change", function(event) {
+            format = jQuery(this).attr("hallo-command");
+            return widget.options.editable.execute(format);
+          });
+          queryState = function(event) {
+            if (document.queryCommandState(format)) {
+              button.attr("checked", true);
+              button.next("label").addClass("ui-state-clicked");
+              return button.button("refresh");
+            } else {
+              button.attr("checked", false);
+              button.next("label").removeClass("ui-state-clicked");
+              return button.button("refresh");
+            }
+          };
+          element = _this.element;
+          _this.element.bind("halloenabled", function() {
+            return element.bind("keyup paste change mouseup", queryState);
+          });
+          return _this.element.bind("hallodisabled", function() {
+            return element.unbind("keyup paste change mouseup", queryState);
+          });
+        };
+        _ref = this.options.formattings;
+        for (format in _ref) {
+          enabled = _ref[format];
+          if (enabled) buttonize(format);
+        }
+        buttonset.buttonset();
+        return this.options.toolbar.append(buttonset);
+      },
+      _init: function() {}
+    });
+  })(jQuery);
+
+  (function(jQuery) {
     return jQuery.widget("IKS.halloheadings", {
       options: {
         editable: null,
@@ -409,8 +403,8 @@
         headers: [1, 2, 3]
       },
       _create: function() {
-        var button, buttonize, buttonset, header, id, label, widget, _i, _len, _ref,
-          _this = this;
+        var button, buttonize, buttonset, header, id, label, widget, _i, _len, _ref;
+        var _this = this;
         widget = this;
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         id = "" + this.options.uuid + "-paragraph";
@@ -1046,8 +1040,8 @@
         uuid: ""
       },
       _create: function() {
-        var buttonize, buttonset, widget,
-          _this = this;
+        var buttonize, buttonset, widget;
+        var _this = this;
         widget = this;
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         buttonize = function(alignment) {
@@ -1111,8 +1105,8 @@
         }
       },
       _create: function() {
-        var buttonize, buttonset, dialog, dialogId, dialogSubmitCb, urlInput, widget,
-          _this = this;
+        var buttonize, buttonset, dialog, dialogId, dialogSubmitCb, urlInput, widget;
+        var _this = this;
         widget = this;
         dialogId = "" + this.options.uuid + "-dialog";
         dialog = jQuery("<div id=\"" + dialogId + "\"><form action=\"#\" method=\"post\" class=\"linkForm\"><input class=\"url\" type=\"text\" name=\"url\" value=\"" + this.options.defaultUrl + "\" /><input type=\"submit\" id=\"addlinkButton\" value=\"Insert\" /></form></div>");
@@ -1198,8 +1192,8 @@
         }
       },
       _create: function() {
-        var buttonize, buttonset, widget,
-          _this = this;
+        var buttonize, buttonset, widget;
+        var _this = this;
         widget = this;
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         buttonize = function(type, label) {
@@ -1335,8 +1329,8 @@
         uuid: ""
       },
       _create: function() {
-        var buttonize, buttonset, widget,
-          _this = this;
+        var buttonize, buttonset, widget;
+        var _this = this;
         widget = this;
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         buttonize = function(cmd, label) {
@@ -1395,5 +1389,3 @@
       _init: function() {}
     });
   })(jQuery);
-
-}).call(this);

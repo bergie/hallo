@@ -26,3 +26,7 @@ task 'build', 'generate unified JavaScript file for whole Hallo', ->
 task 'min', 'minify the generated JavaScript file', ->
   invoke 'build'
   exec "uglifyjs examples/hallo.js > examples/hallo-min.js", exerr
+
+task 'bam', 'build and minify Hallo', ->
+  invoke 'build'
+  invoke 'min'
