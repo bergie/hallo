@@ -52,6 +52,9 @@
         jQuery('.editable').bind('hallounselected', function(event, data) {
             jQuery('#modified').html("Selection removed");
         });
+        jQuery('.editable').bind('hallorestored', function(event, data) {
+            jQuery('#modified').html("restored");
+        });
       });
       jQuery('#disable').button().click(function() {
         jQuery('.editable').hallo({editable: false});
