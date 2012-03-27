@@ -1,0 +1,576 @@
+<!DOCTYPE html><html><head><title>image.coffee</title><meta http-equiv="Content-Type" content="text/html" charset="UTF-8"><link rel="stylesheet" media="all" href="../../docco.css"></head><body><div id="container"><div id="background"></div><div id="jump_to">Jump To &hellip;<div id="jump_wrapper"><div id="jump_page"><a href="../../index.html" class="source"><span class="file_name">README</span></a><a href="../../src/hallo.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">hallo.coffee</span></a><a href="../../src/plugins/lists.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">lists.coffee</span></a><a href="../../src/plugins/headings.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">headings.coffee</span></a><a href="../../src/plugins/overlay.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">overlay.coffee</span></a><a href="../../src/plugins/toolbarlinebreak.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">toolbarlinebreak.coffee</span></a><a href="../../src/plugins/image.coffee.html" class="source selected"><span class="base_path">src / plugins / </span><span class="file_name">image.coffee</span></a><a href="../../src/plugins/halloformat.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">halloformat.coffee</span></a><a href="../../src/plugins/reundo.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">reundo.coffee</span></a><a href="../../src/plugins/link.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">link.coffee</span></a><a href="../../src/plugins/justify.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">justify.coffee</span></a><a href="../../src/widgets/button.coffee.html" class="source "><span class="base_path">src / widgets / </span><span class="file_name">button.coffee</span></a></div></div></div><table cellpadding="0" cellspacing="0"><thead><tr><th class="docs"><h1>image.coffee</h1><div class="filepath">src/plugins/</div></th><th class="code"></th></tr></thead><tbody><tr id="section-1"><td class="docs"><div class="pilwrap"><a href="#section-1" class="pilcrow">&#182;</a></div><pre><code>Hallo - a rich text editing jQuery UI widget
+(c) 2011 Henri Bergius, IKS Consortium
+Hallo may be freely distributed under the MIT license
+
+Image insertion plugin
+Liip AG: Colin Frei, Reto Ryter, David Buchmann, Fabian Vogler, Bartosz Podlewski
+</code></pre>
+</td><td class="code"><div class="highlight"><pre><span class="p">(</span><span class="nf">(jQuery) -&gt;</span>
+    <span class="nx">jQuery</span><span class="p">.</span><span class="nx">widget</span> <span class="s2">&quot;Liip.halloimage&quot;</span><span class="p">,</span>
+        <span class="nv">options:</span>
+            <span class="nv">editable: </span><span class="kc">null</span>
+            <span class="nv">toolbar: </span><span class="kc">null</span>
+            <span class="nv">uuid: </span><span class="s2">&quot;&quot;</span></pre></div></td></tr><tr id="section-2"><td class="docs"><div class="pilwrap"><a href="#section-2" class="pilcrow">&#182;</a></div><p>number of thumbnails for paging in search results</p>
+</td><td class="code"><div class="highlight"><pre>            <span class="nv">limit: </span><span class="mi">8</span></pre></div></td></tr><tr id="section-3"><td class="docs"><div class="pilwrap"><a href="#section-3" class="pilcrow">&#182;</a></div><p>this function is responsible to fetch search results
+query: terms to search
+limit: how many results to show at max
+offset: offset for the returned result
+successCallback: function that will be called with the response json object
+    the object has fields offset (the requested offset), total (total number of results) and assets (list of url and alt text for each image)</p>
+</td><td class="code"><div class="highlight"><pre>            <span class="nv">search: </span><span class="kc">null</span></pre></div></td></tr><tr id="section-4"><td class="docs"><div class="pilwrap"><a href="#section-4" class="pilcrow">&#182;</a></div><p>this function is responsible to fetch suggestions for images to insert
+this could for example be based on tags of the entity or some semantic enhancement, ...</p>
+
+<p>tags: tag information - TODO: do not expect that here but get it from context
+limit: how many results to show at max
+offset: offset for the returned result
+successCallback: function that will be called with the response json object
+    the object has fields offset (the requested offset), total (total number of results) and assets (list of url and alt text for each image)</p>
+</td><td class="code"><div class="highlight"><pre>            <span class="nv">suggestions: </span><span class="kc">null</span>
+            <span class="nv">loaded: </span><span class="kc">null</span>
+            <span class="nv">upload: </span><span class="kc">null</span>
+            <span class="nv">uploadUrl: </span><span class="kc">null</span>
+            <span class="nv">dialogOpts:</span>
+                <span class="nv">autoOpen: </span><span class="kc">false</span>
+                <span class="nv">width: </span><span class="mi">270</span>
+                <span class="nv">height: </span><span class="s2">&quot;auto&quot;</span>
+                <span class="nv">title: </span><span class="s2">&quot;Insert Images&quot;</span>
+                <span class="nv">modal: </span><span class="kc">false</span>
+                <span class="nv">resizable: </span><span class="kc">false</span>
+                <span class="nv">draggable: </span><span class="kc">true</span>
+                <span class="nv">dialogClass: </span><span class="s1">&#39;halloimage-dialog&#39;</span>
+                <span class="nv">close: </span><span class="nf">(ev, ui) -&gt;</span>
+                    <span class="nx">jQuery</span><span class="p">(</span><span class="s1">&#39;.image_button&#39;</span><span class="p">).</span><span class="nx">removeClass</span><span class="p">(</span><span class="s1">&#39;ui-state-clicked&#39;</span><span class="p">)</span>
+            <span class="nv">dialog: </span><span class="kc">null</span>
+
+        <span class="nv">_create: </span><span class="o">-&gt;</span>
+            <span class="nv">widget = </span><span class="k">this</span>
+            <span class="nv">dialogId = </span><span class="s2">&quot;#{@options.uuid}-image-dialog&quot;</span>
+            <span class="vi">@options.dialog = </span><span class="nx">jQuery</span> <span class="s2">&quot;&lt;div id=\&quot;#{dialogId}\&quot;&gt;</span>
+<span class="s2">                &lt;div class=\&quot;nav\&quot;&gt;</span>
+<span class="s2">                    &lt;ul class=\&quot;tabs\&quot;&gt;</span>
+<span class="s2">                    &lt;/ul&gt;</span>
+<span class="s2">                    &lt;div id=\&quot;#{@options.uuid}-tab-activeIndicator\&quot; class=\&quot;tab-activeIndicator\&quot; /&gt;</span>
+<span class="s2">                &lt;/div&gt;</span>
+<span class="s2">                &lt;div class=\&quot;dialogcontent\&quot;&gt;</span>
+<span class="s2">            &lt;/div&gt;&quot;</span>
+
+            <span class="k">if</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">uploadUrl</span> <span class="o">and</span> <span class="o">!</span><span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">upload</span>
+              <span class="nv">widget.options.upload = </span><span class="nx">widget</span><span class="p">.</span><span class="nx">_iframeUpload</span>
+
+            <span class="k">if</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">suggestions</span>
+                <span class="nx">@_addGuiTabSuggestions</span> <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.tabs&quot;</span><span class="p">,</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">dialog</span><span class="p">),</span> <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.dialogcontent&quot;</span><span class="p">,</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">dialog</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">search</span>
+                <span class="nx">@_addGuiTabSearch</span> <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.tabs&quot;</span><span class="p">,</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">dialog</span><span class="p">),</span> <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.dialogcontent&quot;</span><span class="p">,</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">dialog</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">upload</span>
+                <span class="nx">@_addGuiTabUpload</span> <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.tabs&quot;</span><span class="p">,</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">dialog</span><span class="p">),</span> <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.dialogcontent&quot;</span><span class="p">,</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">dialog</span><span class="p">)</span>
+
+            <span class="nv">buttonset = </span><span class="nx">jQuery</span> <span class="s2">&quot;&lt;span class=\&quot;#{widget.widgetName}\&quot;&gt;&lt;/span&gt;&quot;</span>
+
+            <span class="nv">id = </span><span class="s2">&quot;#{@options.uuid}-image&quot;</span>
+            <span class="nx">buttonset</span><span class="p">.</span><span class="nx">append</span> <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;&lt;input id=\&quot;#{id}\&quot; type=\&quot;checkbox\&quot; /&gt;&lt;label for=\&quot;#{id}\&quot; class=\&quot;image_button\&quot; &gt;Image&lt;/label&gt;&quot;</span><span class="p">).</span><span class="nx">button</span><span class="p">()</span>
+            <span class="nv">button = </span><span class="nx">jQuery</span> <span class="s2">&quot;##{id}&quot;</span><span class="p">,</span> <span class="nx">buttonset</span>
+            <span class="nx">button</span><span class="p">.</span><span class="nx">bind</span> <span class="s2">&quot;change&quot;</span><span class="p">,</span> <span class="nf">(event) -&gt;</span>
+                <span class="k">if</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">dialog</span><span class="p">.</span><span class="nx">dialog</span> <span class="s2">&quot;isOpen&quot;</span>
+                    <span class="nx">widget</span><span class="p">.</span><span class="nx">_closeDialog</span><span class="p">()</span>
+                <span class="k">else</span>
+                    <span class="nx">widget</span><span class="p">.</span><span class="nx">_openDialog</span><span class="p">()</span>
+
+            <span class="nx">@options</span><span class="p">.</span><span class="nx">editable</span><span class="p">.</span><span class="nx">element</span><span class="p">.</span><span class="nx">bind</span> <span class="s2">&quot;hallodeactivated&quot;</span><span class="p">,</span> <span class="nf">(event) -&gt;</span>
+                <span class="nx">widget</span><span class="p">.</span><span class="nx">_closeDialog</span><span class="p">()</span>
+
+            <span class="nx">jQuery</span><span class="p">(</span><span class="nx">@options</span><span class="p">.</span><span class="nx">editable</span><span class="p">.</span><span class="nx">element</span><span class="p">).</span><span class="nx">delegate</span> <span class="s2">&quot;img&quot;</span><span class="p">,</span> <span class="s2">&quot;click&quot;</span><span class="p">,</span> <span class="nf">(event) -&gt;</span>
+                <span class="nx">widget</span><span class="p">.</span><span class="nx">_openDialog</span><span class="p">()</span>
+
+            <span class="nx">jQuery</span><span class="p">(</span><span class="nx">@options</span><span class="p">.</span><span class="nx">dialog</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;.nav li&quot;</span><span class="p">).</span><span class="nx">click</span> <span class="nf">() -&gt;</span>
+                <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.#{widget.widgetName}-tab&quot;</span><span class="p">).</span><span class="nx">each</span> <span class="nf">() -&gt;</span>
+                    <span class="nx">jQuery</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">hide</span><span class="p">()</span>
+
+                <span class="nv">id = </span><span class="nx">jQuery</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+                <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;##{id}-content&quot;</span><span class="p">).</span><span class="nx">show</span><span class="p">()</span>
+                <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;##{widget.options.uuid}-tab-activeIndicator&quot;</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="s2">&quot;margin-left&quot;</span><span class="p">,</span> <span class="nx">jQuery</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">position</span><span class="p">().</span><span class="nx">left</span> <span class="o">+</span> <span class="p">(</span><span class="nx">jQuery</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">width</span><span class="p">()</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span></pre></div></td></tr><tr id="section-5"><td class="docs"><div class="pilwrap"><a href="#section-5" class="pilcrow">&#182;</a></div><p>Add action to image thumbnails</p>
+</td><td class="code"><div class="highlight"><pre>            <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.#{widget.widgetName}-tab .imageThumbnail&quot;</span><span class="p">).</span><span class="nx">live</span> <span class="s2">&quot;click&quot;</span><span class="p">,</span> <span class="nf">(event) -&gt;</span>
+                <span class="nv">scope = </span><span class="nx">jQuery</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">closest</span><span class="p">(</span><span class="s2">&quot;.#{widget.widgetName}-tab&quot;</span><span class="p">)</span>
+                <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.imageThumbnail&quot;</span><span class="p">,</span> <span class="nx">scope</span><span class="p">).</span><span class="nx">removeClass</span> <span class="s2">&quot;imageThumbnailActive&quot;</span>
+                <span class="nx">jQuery</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">addClass</span> <span class="s2">&quot;imageThumbnailActive&quot;</span>
+                <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.activeImage&quot;</span><span class="p">,</span> <span class="nx">scope</span><span class="p">).</span><span class="nx">attr</span> <span class="s2">&quot;src&quot;</span><span class="p">,</span> <span class="nx">jQuery</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span> <span class="s2">&quot;src&quot;</span>
+                <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.activeImageBg&quot;</span><span class="p">,</span> <span class="nx">scope</span><span class="p">).</span><span class="nx">attr</span> <span class="s2">&quot;src&quot;</span><span class="p">,</span> <span class="nx">jQuery</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span> <span class="s2">&quot;src&quot;</span>
+
+            <span class="nx">buttonset</span><span class="p">.</span><span class="nx">buttonset</span><span class="p">()</span>
+            <span class="nx">@options</span><span class="p">.</span><span class="nx">toolbar</span><span class="p">.</span><span class="nx">append</span> <span class="nx">buttonset</span>
+            <span class="nx">@options</span><span class="p">.</span><span class="nx">dialog</span><span class="p">.</span><span class="nx">dialog</span><span class="p">(</span><span class="nx">@options</span><span class="p">.</span><span class="nx">dialogOpts</span><span class="p">)</span></pre></div></td></tr><tr id="section-6"><td class="docs"><div class="pilwrap"><a href="#section-6" class="pilcrow">&#182;</a></div><p>Add DragnDrop</p>
+</td><td class="code"><div class="highlight"><pre>            <span class="nx">@_addDragnDrop</span><span class="p">()</span>
+
+        <span class="nv">_init: </span><span class="o">-&gt;</span>
+
+        <span class="nv">_openDialog: </span><span class="o">-&gt;</span>
+            <span class="nv">widget = </span><span class="k">this</span>
+            <span class="nv">cleanUp = </span><span class="o">-&gt;</span>
+                <span class="nb">window</span><span class="p">.</span><span class="nx">setTimeout</span> <span class="p">(</span><span class="o">-&gt;</span>
+                    <span class="nv">thumbnails = </span><span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.imageThumbnail&quot;</span><span class="p">)</span>
+                    <span class="nx">jQuery</span><span class="p">(</span><span class="nx">thumbnails</span><span class="p">).</span><span class="nx">each</span> <span class="o">-&gt;</span>
+                        <span class="nv">size = </span><span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;#&quot;</span> <span class="o">+</span> <span class="nx">@id</span><span class="p">).</span><span class="nx">width</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="nx">size</span> <span class="o">&lt;=</span> <span class="mi">20</span>
+                            <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;#&quot;</span> <span class="o">+</span> <span class="nx">@id</span><span class="p">).</span><span class="nx">parent</span><span class="p">(</span><span class="s2">&quot;li&quot;</span><span class="p">).</span><span class="nx">remove</span><span class="p">()</span>
+                <span class="p">),</span> <span class="mi">15000</span>  <span class="c1"># cleanup after 15 sec</span>
+
+            <span class="nv">repoImagesFound = </span><span class="kc">false</span>
+
+            <span class="nv">showResults = </span><span class="nf">(response) -&gt;</span></pre></div></td></tr><tr id="section-7"><td class="docs"><div class="pilwrap"><a href="#section-7" class="pilcrow">&#182;</a></div><p>TODO: paging</p>
+</td><td class="code"><div class="highlight"><pre>                <span class="nx">jQuery</span><span class="p">.</span><span class="nx">each</span> <span class="nx">response</span><span class="p">.</span><span class="nx">assets</span><span class="p">,</span> <span class="nf">(key, val) -&gt;</span>
+                    <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.imageThumbnailContainer ul&quot;</span><span class="p">).</span><span class="nx">append</span> <span class="s2">&quot;&lt;li&gt;&lt;img src=\&quot;&quot;</span> <span class="o">+</span> <span class="nx">val</span><span class="p">.</span><span class="nx">url</span> <span class="o">+</span> <span class="s2">&quot;\&quot; class=\&quot;imageThumbnail\&quot;&gt;&lt;/li&gt;&quot;</span>
+                    <span class="nv">repoImagesFound = </span><span class="kc">true</span>
+                <span class="k">if</span> <span class="nx">response</span><span class="p">.</span><span class="nx">assets</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                    <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;#activitySpinner&quot;</span><span class="p">).</span><span class="nx">hide</span><span class="p">()</span></pre></div></td></tr><tr id="section-8"><td class="docs"><div class="pilwrap"><a href="#section-8" class="pilcrow">&#182;</a></div><p>Update state of button in toolbar</p>
+</td><td class="code"><div class="highlight"><pre>            <span class="nx">jQuery</span><span class="p">(</span><span class="s1">&#39;.image_button&#39;</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="s1">&#39;ui-state-clicked&#39;</span><span class="p">)</span></pre></div></td></tr><tr id="section-9"><td class="docs"><div class="pilwrap"><a href="#section-9" class="pilcrow">&#182;</a></div><p>Update active Image</p>
+</td><td class="code"><div class="highlight"><pre>            <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;##{@options.uuid}-sugg-activeImage&quot;</span><span class="p">).</span><span class="nx">attr</span> <span class="s2">&quot;src&quot;</span><span class="p">,</span> <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;##{@options.uuid}-tab-suggestions-content .imageThumbnailActive&quot;</span><span class="p">).</span><span class="nx">first</span><span class="p">().</span><span class="nx">attr</span> <span class="s2">&quot;src&quot;</span>
+            <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;##{@options.uuid}-sugg-activeImageBg&quot;</span><span class="p">).</span><span class="nx">attr</span> <span class="s2">&quot;src&quot;</span><span class="p">,</span> <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;##{@options.uuid}-tab-suggestions-content .imageThumbnailActive&quot;</span><span class="p">).</span><span class="nx">first</span><span class="p">().</span><span class="nx">attr</span> <span class="s2">&quot;src&quot;</span></pre></div></td></tr><tr id="section-10"><td class="docs"><div class="pilwrap"><a href="#section-10" class="pilcrow">&#182;</a></div><p>Save current caret point</p>
+</td><td class="code"><div class="highlight"><pre>            <span class="vi">@lastSelection = </span><span class="nx">@options</span><span class="p">.</span><span class="nx">editable</span><span class="p">.</span><span class="nx">getSelection</span><span class="p">()</span></pre></div></td></tr><tr id="section-11"><td class="docs"><div class="pilwrap"><a href="#section-11" class="pilcrow">&#182;</a></div><p>Position correctly</p>
+</td><td class="code"><div class="highlight"><pre>            <span class="nv">xposition = </span><span class="nx">jQuery</span><span class="p">(</span><span class="nx">@options</span><span class="p">.</span><span class="nx">editable</span><span class="p">.</span><span class="nx">element</span><span class="p">).</span><span class="nx">offset</span><span class="p">().</span><span class="nx">left</span> <span class="o">+</span> <span class="nx">jQuery</span><span class="p">(</span><span class="nx">@options</span><span class="p">.</span><span class="nx">editable</span><span class="p">.</span><span class="nx">element</span><span class="p">).</span><span class="nx">outerWidth</span><span class="p">()</span> <span class="o">-</span> <span class="mi">3</span> <span class="c1"># 3 is the border width of the contenteditable border</span>
+            <span class="nv">yposition = </span><span class="nx">jQuery</span><span class="p">(</span><span class="nx">@options</span><span class="p">.</span><span class="nx">toolbar</span><span class="p">).</span><span class="nx">offset</span><span class="p">().</span><span class="nx">top</span> <span class="o">-</span> <span class="nx">jQuery</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">scrollTop</span><span class="p">()</span> <span class="o">-</span> <span class="mi">29</span>
+            <span class="nx">@options</span><span class="p">.</span><span class="nx">dialog</span><span class="p">.</span><span class="nx">dialog</span><span class="p">(</span><span class="s2">&quot;option&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nx">xposition</span><span class="p">,</span> <span class="nx">yposition</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">loaded</span> <span class="o">is</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">suggestions</span>
+                <span class="nv">articleTags = </span><span class="p">[]</span>
+                <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;#activitySpinner&quot;</span><span class="p">).</span><span class="nx">show</span><span class="p">()</span>
+                <span class="nv">tmpArticleTags = </span><span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.inEditMode&quot;</span><span class="p">).</span><span class="nx">parent</span><span class="p">().</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;.articleTags input&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span>
+                <span class="nv">tmpArticleTags = </span><span class="nx">tmpArticleTags</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="nx">i</span> <span class="k">of</span> <span class="nx">tmpArticleTags</span>
+                    <span class="nv">tagType = </span><span class="k">typeof</span> <span class="nx">tmpArticleTags</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="s2">&quot;string&quot;</span> <span class="o">==</span> <span class="nx">tagType</span> <span class="o">&amp;&amp;</span> <span class="nx">tmpArticleTags</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">&quot;http&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span>
+                        <span class="nx">articleTags</span><span class="p">.</span><span class="nx">push</span> <span class="nx">tmpArticleTags</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+                <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.imageThumbnailContainer ul&quot;</span><span class="p">).</span><span class="nx">empty</span><span class="p">()</span>
+                <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">suggestions</span><span class="p">(</span><span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.inEditMode&quot;</span><span class="p">).</span><span class="nx">parent</span><span class="p">().</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;.articleTags input&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">(),</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">limit</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">showResults</span><span class="p">)</span>
+                <span class="nv">vie = </span><span class="k">new</span> <span class="nx">VIE</span><span class="p">()</span>
+                <span class="nx">vie</span><span class="p">.</span><span class="nx">use</span> <span class="k">new</span> <span class="nx">vie</span><span class="p">.</span><span class="nx">DBPediaService</span><span class="p">(</span>
+                    <span class="nv">url: </span><span class="s2">&quot;http://dev.iks-project.eu/stanbolfull&quot;</span>
+                    <span class="nv">proxyDisabled: </span><span class="kc">true</span>
+                <span class="p">)</span>
+                <span class="nv">thumbId = </span><span class="mi">1</span>
+                <span class="k">if</span> <span class="nx">articleTags</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
+                    <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;#activitySpinner&quot;</span><span class="p">).</span><span class="nx">html</span> <span class="s2">&quot;No images found.&quot;</span>
+                <span class="nx">jQuery</span><span class="p">(</span><span class="nx">articleTags</span><span class="p">).</span><span class="nx">each</span> <span class="o">-&gt;</span>
+                    <span class="nx">vie</span><span class="p">.</span><span class="nx">load</span><span class="p">(</span><span class="nv">entity: </span><span class="k">this</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="p">).</span><span class="nx">using</span><span class="p">(</span><span class="s2">&quot;dbpedia&quot;</span><span class="p">).</span><span class="nx">execute</span><span class="p">().</span><span class="nx">done</span> <span class="nf">(entity) -&gt;</span>
+                        <span class="nx">jQuery</span><span class="p">(</span><span class="nx">entity</span><span class="p">).</span><span class="nx">each</span> <span class="o">-&gt;</span>
+                            <span class="k">if</span> <span class="nx">@attributes</span><span class="p">[</span><span class="s2">&quot;&lt;http://dbpedia.org/ontology/thumbnail&gt;&quot;</span><span class="p">]</span>
+                                <span class="nv">responseType = </span><span class="k">typeof</span> <span class="p">(</span><span class="nx">@attributes</span><span class="p">[</span><span class="s2">&quot;&lt;http://dbpedia.org/ontology/thumbnail&gt;&quot;</span><span class="p">])</span>
+                                <span class="k">if</span> <span class="nx">responseType</span> <span class="o">is</span> <span class="s2">&quot;string&quot;</span>
+                                    <span class="nv">img = </span><span class="nx">@attributes</span><span class="p">[</span><span class="s2">&quot;&lt;http://dbpedia.org/ontology/thumbnail&gt;&quot;</span><span class="p">]</span>
+                                    <span class="nv">img = </span><span class="nx">img</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nx">img</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                                <span class="k">if</span> <span class="nx">responseType</span> <span class="o">is</span> <span class="s2">&quot;object&quot;</span>
+                                    <span class="nv">img = </span><span class="s2">&quot;&quot;</span>
+                                    <span class="nv">img = </span><span class="nx">@attributes</span><span class="p">[</span><span class="s2">&quot;&lt;http://dbpedia.org/ontology/thumbnail&gt;&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">].</span><span class="nx">value</span>
+                                <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.imageThumbnailContainer ul&quot;</span><span class="p">).</span><span class="nx">append</span> <span class="s2">&quot;&lt;li&gt;&lt;img id=\&quot;si-#{thumbId}\&quot; src=\&quot;#{img}\&quot; class=\&quot;imageThumbnail\&quot;&gt;&lt;/li&gt;&quot;</span>
+                                <span class="nx">thumbId</span><span class="o">++</span>
+                        <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;#activitySpinner&quot;</span><span class="p">).</span><span class="nx">hide</span><span class="p">()</span>
+
+            <span class="nx">cleanUp</span><span class="p">()</span>
+            <span class="nv">widget.options.loaded = </span><span class="mi">1</span>
+
+            <span class="nx">@options</span><span class="p">.</span><span class="nx">dialog</span><span class="p">.</span><span class="nx">dialog</span><span class="p">(</span><span class="s2">&quot;open&quot;</span><span class="p">)</span>
+
+        <span class="nv">_closeDialog: </span><span class="o">-&gt;</span>
+            <span class="nx">@options</span><span class="p">.</span><span class="nx">dialog</span><span class="p">.</span><span class="nx">dialog</span><span class="p">(</span><span class="s2">&quot;close&quot;</span><span class="p">)</span>
+
+        <span class="nv">_addGuiTabSuggestions: </span><span class="nf">(tabs, element) -&gt;</span>
+            <span class="nv">widget = </span><span class="k">this</span>
+            <span class="nx">tabs</span><span class="p">.</span><span class="nx">append</span> <span class="nx">jQuery</span> <span class="s2">&quot;&lt;li id=\&quot;#{@options.uuid}-tab-suggestions\&quot; class=\&quot;#{widget.widgetName}-tabselector #{widget.widgetName}-tab-suggestions\&quot;&gt;&lt;span&gt;Suggestions&lt;/span&gt;&lt;/li&gt;&quot;</span>
+            <span class="nx">element</span><span class="p">.</span><span class="nx">append</span> <span class="nx">jQuery</span> <span class="s2">&quot;&lt;div id=\&quot;#{@options.uuid}-tab-suggestions-content\&quot; class=\&quot;#{widget.widgetName}-tab tab-suggestions\&quot;&gt;</span>
+<span class="s2">                &lt;div class=\&quot;imageThumbnailContainer fixed\&quot;&gt;&lt;div id=\&quot;activitySpinner\&quot;&gt;Loading Images...&lt;/div&gt;&lt;ul&gt;&lt;li&gt;</span>
+<span class="s2">                    &lt;img src=\&quot;http://imagesus.homeaway.com/mda01/badf2e69babf2f6a0e4b680fc373c041c705b891\&quot; class=\&quot;imageThumbnail imageThumbnailActive\&quot; /&gt;</span>
+<span class="s2">                  &lt;/li&gt;&lt;/ul&gt;&lt;br style=\&quot;clear:both\&quot;/&gt;</span>
+<span class="s2">                &lt;/div&gt;</span>
+<span class="s2">                &lt;div class=\&quot;activeImageContainer\&quot;&gt;</span>
+<span class="s2">                    &lt;div class=\&quot;rotationWrapper\&quot;&gt;</span>
+<span class="s2">                        &lt;div class=\&quot;hintArrow\&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">                        &lt;img src=\&quot;\&quot; id=\&quot;#{@options.uuid}-sugg-activeImage\&quot; class=\&quot;activeImage\&quot; /&gt;</span>
+<span class="s2">                    &lt;/div&gt;</span>
+<span class="s2">                    &lt;img src=\&quot;\&quot; id=\&quot;#{@options.uuid}-sugg-activeImageBg\&quot; class=\&quot;activeImage activeImageBg\&quot; /&gt;</span>
+<span class="s2">                &lt;/div&gt;</span>
+<span class="s2">                &lt;div class=\&quot;metadata\&quot;&gt;</span>
+<span class="s2">                    &lt;label for=\&quot;caption-sugg\&quot;&gt;Caption&lt;/label&gt;&lt;input type=\&quot;text\&quot; id=\&quot;caption-sugg\&quot; /&gt;</span>
+<span class="s2">                &lt;/div&gt;</span>
+<span class="s2">            &lt;/div&gt;&quot;</span>
+
+        <span class="nv">_addGuiTabSearch: </span><span class="nf">(tabs, element) -&gt;</span>
+            <span class="nv">widget = </span><span class="k">this</span>
+            <span class="nv">dialogId = </span><span class="s2">&quot;#{@options.uuid}-image-dialog&quot;</span>
+
+            <span class="nx">tabs</span><span class="p">.</span><span class="nx">append</span> <span class="nx">jQuery</span> <span class="s2">&quot;&lt;li id=\&quot;#{@options.uuid}-tab-search\&quot; class=\&quot;#{widget.widgetName}-tabselector #{widget.widgetName}-tab-search\&quot;&gt;&lt;span&gt;Search&lt;/span&gt;&lt;/li&gt;&quot;</span>
+
+            <span class="nx">element</span><span class="p">.</span><span class="nx">append</span> <span class="nx">jQuery</span> <span class="s2">&quot;&lt;div id=\&quot;#{@options.uuid}-tab-search-content\&quot; class=\&quot;#{widget.widgetName}-tab tab-search\&quot;&gt;</span>
+<span class="s2">                &lt;form type=\&quot;get\&quot; id=\&quot;#{@options.uuid}-#{widget.widgetName}-searchForm\&quot;&gt;</span>
+<span class="s2">                    &lt;input type=\&quot;text\&quot; class=\&quot;searchInput\&quot; /&gt;&lt;input type=\&quot;submit\&quot; id=\&quot;#{@options.uuid}-#{widget.widgetName}-searchButton\&quot; class=\&quot;button searchButton\&quot; value=\&quot;OK\&quot;/&gt;</span>
+<span class="s2">                &lt;/form&gt;</span>
+<span class="s2">                &lt;div class=\&quot;searchResults imageThumbnailContainer\&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">                &lt;div id=\&quot;#{@options.uuid}-search-activeImageContainer\&quot; class=\&quot;search-activeImageContainer activeImageContainer\&quot;&gt;</span>
+<span class="s2">                    &lt;div class=\&quot;rotationWrapper\&quot;&gt;</span>
+<span class="s2">                        &lt;div class=\&quot;hintArrow\&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">                        &lt;img src=\&quot;\&quot; id=\&quot;#{@options.uuid}-search-activeImageBg\&quot; class=\&quot;activeImage\&quot; /&gt;</span>
+<span class="s2">                    &lt;/div&gt;</span>
+<span class="s2">                    &lt;img src=\&quot;\&quot; id=\&quot;#{@options.uuid}-search-activeImage\&quot; class=\&quot;activeImage activeImageBg\&quot; /&gt;</span>
+<span class="s2">                &lt;/div&gt;</span>
+<span class="s2">                &lt;div class=\&quot;metadata\&quot; id=\&quot;metadata-search\&quot; style=\&quot;display: none;\&quot;&gt;</span>
+<span class="s2">                    &lt;label for=\&quot;caption-search\&quot;&gt;Caption&lt;/label&gt;&lt;input type=\&quot;text\&quot; id=\&quot;caption-search\&quot; /&gt;</span>
+<span class="s2">                    &lt;!--&lt;button id=\&quot;#{@options.uuid}-#{widget.widgetName}-addimage\&quot;&gt;Add Image&lt;/button&gt;--&gt;</span>
+<span class="s2">                &lt;/div&gt;</span>
+<span class="s2">            &lt;/div&gt;&quot;</span>
+
+            <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.tab-search form&quot;</span><span class="p">,</span> <span class="nx">element</span><span class="p">).</span><span class="nx">submit</span> <span class="nf">(event) -&gt;</span>
+                <span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">()</span>
+                <span class="nv">that = </span><span class="k">this</span>
+
+                <span class="nv">showResults = </span><span class="nf">(response) -&gt;</span>
+                    <span class="nv">items = </span><span class="p">[]</span>
+                    <span class="nx">items</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s2">&quot;&lt;div class=\&quot;pager-prev\&quot; style=\&quot;display:none\&quot;&gt;&lt;/div&gt;&quot;</span><span class="p">);</span>
+                    <span class="nx">jQuery</span><span class="p">.</span><span class="nx">each</span> <span class="nx">response</span><span class="p">.</span><span class="nx">assets</span><span class="p">,</span> <span class="nf">(key, val) -&gt;</span>
+                        <span class="nx">items</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s2">&quot;&lt;img src=\&quot;#{val.url}\&quot; class=\&quot;imageThumbnail #{widget.widgetName}-search-imageThumbnail\&quot; /&gt; &quot;</span><span class="p">);</span>
+                    <span class="nx">items</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s2">&quot;&lt;div class=\&quot;pager-next\&quot; style=\&quot;display:none\&quot;&gt;&lt;/div&gt;&quot;</span><span class="p">);</span>
+
+                    <span class="nv">container = </span><span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;##{dialogId} .tab-search .searchResults&quot;</span><span class="p">)</span>
+                    <span class="nx">container</span><span class="p">.</span><span class="nx">html</span> <span class="nx">items</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></pre></div></td></tr><tr id="section-12"><td class="docs"><div class="pilwrap"><a href="#section-12" class="pilcrow">&#182;</a></div><p>handle pagers</p>
+</td><td class="code"><div class="highlight"><pre>                    <span class="k">if</span> <span class="nx">response</span><span class="p">.</span><span class="nx">offset</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                        <span class="nx">jQuery</span><span class="p">(</span><span class="s1">&#39;.pager-prev&#39;</span><span class="p">,</span> <span class="nx">container</span><span class="p">).</span><span class="nx">show</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="nx">response</span><span class="p">.</span><span class="nx">offset</span> <span class="o">&lt;</span> <span class="nx">response</span><span class="p">.</span><span class="nx">total</span>
+                        <span class="nx">jQuery</span><span class="p">(</span><span class="s1">&#39;.pager-next&#39;</span><span class="p">,</span> <span class="nx">container</span><span class="p">).</span><span class="nx">show</span><span class="p">()</span>
+
+                    <span class="nx">jQuery</span><span class="p">(</span><span class="s1">&#39;.pager-prev&#39;</span><span class="p">,</span> <span class="nx">container</span><span class="p">).</span><span class="nx">click</span> <span class="nf">(event) -&gt;</span>
+                        <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">search</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">limit</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">offset</span> <span class="o">-</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">limit</span><span class="p">,</span> <span class="nx">showResults</span><span class="p">)</span>
+                    <span class="nx">jQuery</span><span class="p">(</span><span class="s1">&#39;.pager-next&#39;</span><span class="p">,</span> <span class="nx">container</span><span class="p">).</span><span class="nx">click</span> <span class="nf">(event) -&gt;</span>
+                        <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">search</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">limit</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">offset</span> <span class="o">+</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">limit</span><span class="p">,</span> <span class="nx">showResults</span><span class="p">)</span></pre></div></td></tr><tr id="section-13"><td class="docs"><div class="pilwrap"><a href="#section-13" class="pilcrow">&#182;</a></div><p>Add action to image thumbnails</p>
+</td><td class="code"><div class="highlight"><pre>                    <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;##{widget.options.uuid}-search-activeImageContainer&quot;</span><span class="p">).</span><span class="nx">show</span><span class="p">()</span>
+                    <span class="nv">firstimage = </span><span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.#{widget.widgetName}-search-imageThumbnail&quot;</span><span class="p">).</span><span class="nx">first</span><span class="p">().</span><span class="nx">addClass</span> <span class="s2">&quot;imageThumbnailActive&quot;</span>
+                    <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;##{widget.options.uuid}-search-activeImage, ##{widget.options.uuid}-search-activeImageBg&quot;</span><span class="p">).</span><span class="nx">attr</span> <span class="s2">&quot;src&quot;</span><span class="p">,</span> <span class="nx">firstimage</span><span class="p">.</span><span class="nx">attr</span> <span class="s2">&quot;src&quot;</span>
+
+                    <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;#metadata-search&quot;</span><span class="p">).</span><span class="nx">show</span><span class="p">()</span>
+
+                <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">search</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">limit</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">showResults</span><span class="p">)</span>
+
+        <span class="nv">_prepareIframe: </span><span class="nf">(widget) -&gt;</span>
+          <span class="nv">widget.options.iframeName = </span><span class="s2">&quot;#{widget.options.uuid}-#{widget.widgetName}-postframe&quot;</span>  
+          <span class="nv">iframe = </span><span class="nx">jQuery</span> <span class="s2">&quot;&lt;iframe name=\&quot;#{widget.options.iframeName}\&quot; id=\&quot;#{widget.options.iframeName}\&quot; class=\&quot;hidden\&quot; src=\&quot;javascript:false;\&quot; style=\&quot;display:none\&quot; /&gt;&quot;</span>
+          <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;##{widget.options.uuid}-#{widget.widgetName}-iframe&quot;</span><span class="p">).</span><span class="nx">append</span> <span class="nx">iframe</span>
+          <span class="nx">iframe</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="nv">name = </span><span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">iframeName</span>
+
+        <span class="nv">_iframeUpload: </span><span class="nf">(data) -&gt;</span>
+          <span class="nv">widget = </span><span class="nx">data</span><span class="p">.</span><span class="nx">widget</span>
+          <span class="nx">widget</span><span class="p">.</span><span class="nx">_prepareIframe</span> <span class="nx">widget</span>
+
+          <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;##{widget.options.uuid}-#{widget.widgetName}-tags&quot;</span><span class="p">).</span><span class="nx">val</span> <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.inEditMode&quot;</span><span class="p">).</span><span class="nx">parent</span><span class="p">().</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;.articleTags input&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span>
+
+          <span class="nv">uploadForm = </span><span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;##{widget.options.uuid}-#{widget.widgetName}-uploadform&quot;</span><span class="p">)</span>
+          <span class="nx">uploadForm</span><span class="p">.</span><span class="nx">attr</span> <span class="s2">&quot;action&quot;</span><span class="p">,</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">uploadUrl</span>
+          <span class="nx">uploadForm</span><span class="p">.</span><span class="nx">attr</span> <span class="s2">&quot;method&quot;</span><span class="p">,</span> <span class="s2">&quot;post&quot;</span>
+          <span class="nx">uploadForm</span><span class="p">.</span><span class="nx">attr</span> <span class="s2">&quot;userfile&quot;</span><span class="p">,</span> <span class="nx">data</span><span class="p">.</span><span class="nx">file</span>
+          <span class="nx">uploadForm</span><span class="p">.</span><span class="nx">attr</span> <span class="s2">&quot;enctype&quot;</span><span class="p">,</span> <span class="s2">&quot;multipart/form-data&quot;</span>
+          <span class="nx">uploadForm</span><span class="p">.</span><span class="nx">attr</span> <span class="s2">&quot;encoding&quot;</span><span class="p">,</span> <span class="s2">&quot;multipart/form-data&quot;</span>
+          <span class="nx">uploadForm</span><span class="p">.</span><span class="nx">attr</span> <span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">iframeName</span>
+          <span class="nx">uploadForm</span><span class="p">.</span><span class="nx">submit</span><span class="p">()</span>
+          <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;##{widget.options.iframeName}&quot;</span><span class="p">).</span><span class="nx">load</span> <span class="o">-&gt;</span>
+              <span class="nx">data</span><span class="p">.</span><span class="nx">success</span> <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;##{widget.options.iframeName}&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">].</span><span class="nx">contentWindow</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span>
+
+        <span class="nv">_addGuiTabUpload: </span><span class="nf">(tabs, element) -&gt;</span>
+            <span class="nv">widget = </span><span class="k">this</span>
+            <span class="nx">tabs</span><span class="p">.</span><span class="nx">append</span> <span class="nx">jQuery</span> <span class="s2">&quot;&lt;li id=\&quot;#{@options.uuid}-tab-upload\&quot; class=\&quot;#{widget.widgetName}-tabselector #{widget.widgetName}-tab-upload\&quot;&gt;&lt;span&gt;Upload&lt;/span&gt;&lt;/li&gt;&quot;</span>
+            <span class="nx">element</span><span class="p">.</span><span class="nx">append</span> <span class="nx">jQuery</span> <span class="s2">&quot;&lt;div id=\&quot;#{@options.uuid}-tab-upload-content\&quot; class=\&quot;#{widget.widgetName}-tab tab-upload\&quot;&gt;</span>
+<span class="s2">                &lt;form id=\&quot;#{@options.uuid}-#{widget.widgetName}-uploadform\&quot;&gt;</span>
+<span class="s2">                    &lt;input id=\&quot;#{@options.uuid}-#{widget.widgetName}-file\&quot; name=\&quot;#{@options.uuid}-#{widget.widgetName}-file\&quot; type=\&quot;file\&quot; class=\&quot;file\&quot;&gt;</span>
+<span class="s2">                    &lt;input id=\&quot;#{@options.uuid}-#{widget.widgetName}-tags\&quot; name=\&quot;tags\&quot; type=\&quot;hidden\&quot; /&gt;</span>
+<span class="s2">                    &lt;br /&gt;</span>
+<span class="s2">                    &lt;input type=\&quot;submit\&quot; value=\&quot;Upload\&quot; id=\&quot;#{@options.uuid}-#{widget.widgetName}-upload\&quot;&gt;</span>
+<span class="s2">                &lt;/form&gt;</span>
+<span class="s2">                &lt;div id=\&quot;#{@options.uuid}-#{widget.widgetName}-iframe\&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">            &lt;/div&gt;&quot;</span>
+
+            <span class="nv">iframe = </span><span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;&lt;iframe name=\&quot;postframe\&quot; id=\&quot;postframe\&quot; class=\&quot;hidden\&quot; src=\&quot;about:none\&quot; style=\&quot;display:none\&quot; /&gt;&quot;</span><span class="p">)</span>
+
+            <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;##{widget.options.uuid}-#{widget.widgetName}-upload&quot;</span><span class="p">).</span><span class="nx">live</span> <span class="s2">&quot;click&quot;</span><span class="p">,</span> <span class="nf">(e) -&gt;</span>
+                  <span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">()</span>
+                  <span class="nv">userFile = </span><span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;##{widget.options.uuid}-#{widget.widgetName}-file&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span>
+                  <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">upload</span>
+                      <span class="nv">widget: </span><span class="nx">widget</span>
+                      <span class="nv">file: </span><span class="nx">userFile</span>
+                      <span class="nv">success: </span><span class="nf">(imageUrl) -&gt;</span>
+                          <span class="nv">imageID = </span><span class="s2">&quot;si&quot;</span> <span class="o">+</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="mi">400</span> <span class="o">-</span> <span class="mi">300</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">400</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;ab&quot;</span>
+                          <span class="k">if</span> <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.imageThumbnailContainer ul&quot;</span><span class="p">,</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">dialog</span><span class="p">).</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
+                            <span class="nv">list = </span><span class="nx">jQuery</span> <span class="s1">&#39;&lt;ul&gt;&lt;/ul&gt;&#39;</span>
+                            <span class="nx">jQuery</span><span class="p">(</span><span class="s1">&#39;.imageThumbnailContainer&#39;</span><span class="p">).</span><span class="nx">append</span> <span class="nx">list</span>
+                          <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.imageThumbnailContainer ul&quot;</span><span class="p">,</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">dialog</span><span class="p">).</span><span class="nx">append</span> <span class="s2">&quot;&lt;li&gt;&lt;img src=\&quot;#{imageUrl}\&quot; id=\&quot;#{imageID}\&quot; class=\&quot;imageThumbnail\&quot;&gt;&lt;/li&gt;&quot;</span> 
+                          <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;#&quot;</span> <span class="o">+</span> <span class="nx">imageID</span><span class="p">).</span><span class="nx">trigger</span> <span class="s2">&quot;click&quot;</span>
+                          <span class="nx">jQuery</span><span class="p">(</span><span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">dialog</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;.nav li&quot;</span><span class="p">).</span><span class="nx">first</span><span class="p">().</span><span class="nx">trigger</span> <span class="s2">&quot;click&quot;</span>
+                  <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+
+            <span class="nv">insertImage = </span><span class="nf">() -&gt;</span></pre></div></td></tr><tr id="section-14"><td class="docs"><div class="pilwrap"><a href="#section-14" class="pilcrow">&#182;</a></div><p>This may need to insert an image that does not have the same URL as the preview image, since it may be a different size</p>
+</td><td class="code"><div class="highlight"><pre></pre></div></td></tr><tr id="section-15"><td class="docs"><div class="pilwrap"><a href="#section-15" class="pilcrow">&#182;</a></div><p>Check if we have a selection and fall back to @lastSelection otherwise</p>
+</td><td class="code"><div class="highlight"><pre>                <span class="k">try</span>
+                    <span class="k">if</span> <span class="o">not</span> <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">editable</span><span class="p">.</span><span class="nx">getSelection</span><span class="p">()</span>
+                        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="s2">&quot;SelectionNotSet&quot;</span>
+                <span class="k">catch</span> <span class="nx">error</span>
+                    <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">editable</span><span class="p">.</span><span class="nx">restoreSelection</span><span class="p">(</span><span class="nx">widget</span><span class="p">.</span><span class="nx">lastSelection</span><span class="p">)</span>
+
+                <span class="nb">document</span><span class="p">.</span><span class="nx">execCommand</span> <span class="s2">&quot;insertImage&quot;</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">jQuery</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;src&#39;</span><span class="p">)</span>
+                <span class="nv">img = </span><span class="nb">document</span><span class="p">.</span><span class="nx">getSelection</span><span class="p">().</span><span class="nx">anchorNode</span><span class="p">.</span><span class="nx">firstChild</span>
+                <span class="nx">jQuery</span><span class="p">(</span><span class="nx">img</span><span class="p">).</span><span class="nx">attr</span> <span class="s2">&quot;alt&quot;</span><span class="p">,</span> <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.caption&quot;</span><span class="p">).</span><span class="nx">value</span>
+
+                <span class="nv">triggerModified = </span><span class="nf">() -&gt;</span>
+                    <span class="nx">widget</span><span class="p">.</span><span class="nx">element</span><span class="p">.</span><span class="nx">trigger</span> <span class="s2">&quot;hallomodified&quot;</span>
+                <span class="nb">window</span><span class="p">.</span><span class="nx">setTimeout</span> <span class="nx">triggerModified</span><span class="p">,</span> <span class="mi">100</span>
+                <span class="nx">widget</span><span class="p">.</span><span class="nx">_closeDialog</span><span class="p">()</span>
+
+            <span class="nx">@options</span><span class="p">.</span><span class="nx">dialog</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;.halloimage-activeImage, ##{widget.options.uuid}-#{widget.widgetName}-addimage&quot;</span><span class="p">).</span><span class="nx">click</span> <span class="nx">insertImage</span>
+
+        <span class="nv">_addDragnDrop: </span><span class="o">-&gt;</span>
+            <span class="nv">helper =</span></pre></div></td></tr><tr id="section-16"><td class="docs"><div class="pilwrap"><a href="#section-16" class="pilcrow">&#182;</a></div><p>Delay the execution of a function</p>
+</td><td class="code"><div class="highlight"><pre>                <span class="nv">delayAction: </span><span class="nf">(functionToCall, delay) -&gt;</span>
+                    <span class="nv">timer = </span><span class="nx">clearTimeout</span><span class="p">(</span><span class="nx">timer</span><span class="p">)</span>
+                    <span class="nv">timer = </span><span class="nx">setTimeout</span><span class="p">(</span><span class="nx">functionToCall</span><span class="p">,</span> <span class="nx">delay</span><span class="p">)</span>  <span class="nx">unless</span> <span class="nx">timer</span></pre></div></td></tr><tr id="section-17"><td class="docs"><div class="pilwrap"><a href="#section-17" class="pilcrow">&#182;</a></div><p>Calculate position on an initial drag</p>
+</td><td class="code"><div class="highlight"><pre>                <span class="nv">calcPosition: </span><span class="nf">(offset, event) -&gt;</span>
+                    <span class="nv">position = </span><span class="nx">offset</span><span class="p">.</span><span class="nx">left</span> <span class="o">+</span> <span class="nx">third</span>
+                    <span class="k">if</span> <span class="nx">event</span><span class="p">.</span><span class="nx">pageX</span> <span class="o">&gt;=</span> <span class="nx">position</span> <span class="o">and</span> <span class="nx">event</span><span class="p">.</span><span class="nx">pageX</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="nx">offset</span><span class="p">.</span><span class="nx">left</span> <span class="o">+</span> <span class="nx">third</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+                        <span class="s2">&quot;middle&quot;</span>
+                    <span class="k">else</span> <span class="k">if</span> <span class="nx">event</span><span class="p">.</span><span class="nx">pageX</span> <span class="o">&lt;</span> <span class="nx">position</span>
+                        <span class="s2">&quot;left&quot;</span>
+                    <span class="k">else</span> <span class="k">if</span> <span class="nx">event</span><span class="p">.</span><span class="nx">pageX</span> <span class="o">&gt;</span> <span class="p">(</span><span class="nx">offset</span><span class="p">.</span><span class="nx">left</span> <span class="o">+</span> <span class="nx">third</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+                        <span class="s2">&quot;right&quot;</span></pre></div></td></tr><tr id="section-18"><td class="docs"><div class="pilwrap"><a href="#section-18" class="pilcrow">&#182;</a></div><p>create image to be inserted</p>
+</td><td class="code"><div class="highlight"><pre>                <span class="nv">createInsertElement: </span><span class="nf">(image, tmp) -&gt;</span>
+                    <span class="nv">maxWidth = </span><span class="mi">250</span>
+                    <span class="nv">maxHeight = </span><span class="mi">250</span>
+                    <span class="nv">tmpImg = </span><span class="k">new</span> <span class="nx">Image</span><span class="p">()</span>
+                    <span class="nv">tmpImg.src = </span><span class="nx">image</span><span class="p">.</span><span class="nx">src</span>
+                    <span class="k">if</span> <span class="o">not</span> <span class="nx">tmp</span>
+                        <span class="k">if</span> <span class="nx">@startPlace</span><span class="p">.</span><span class="nx">parents</span><span class="p">(</span><span class="s2">&quot;.tab-suggestions&quot;</span><span class="p">).</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                            <span class="nv">altText = </span><span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;#caption-sugg&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span>
+                        <span class="k">else</span> <span class="k">if</span> <span class="nx">@startPlace</span><span class="p">.</span><span class="nx">parents</span><span class="p">(</span><span class="s2">&quot;.tab-search&quot;</span><span class="p">).</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                            <span class="nv">altText = </span><span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;#caption-search&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span>
+                        <span class="k">else</span>
+                            <span class="nv">altText = </span><span class="nx">jQuery</span><span class="p">(</span><span class="nx">image</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;alt&quot;</span><span class="p">)</span>
+                    <span class="nv">width = </span><span class="nx">tmpImg</span><span class="p">.</span><span class="nx">width</span>
+                    <span class="nv">height = </span><span class="nx">tmpImg</span><span class="p">.</span><span class="nx">height</span>
+                    <span class="k">if</span> <span class="nx">width</span> <span class="o">&gt;</span> <span class="nx">maxWidth</span> <span class="o">or</span> <span class="nx">height</span> <span class="o">&gt;</span> <span class="nx">maxHeight</span>
+                        <span class="k">if</span> <span class="nx">width</span> <span class="o">&gt;</span> <span class="nx">height</span>
+                            <span class="nv">ratio = </span><span class="p">(</span><span class="nx">tmpImg</span><span class="p">.</span><span class="nx">width</span> <span class="err">/ maxWidth).toFixed()</span>
+                        <span class="k">else</span>
+                            <span class="nv">ratio = </span><span class="p">(</span><span class="nx">tmpImg</span><span class="p">.</span><span class="nx">height</span> <span class="err">/ maxHeight).toFixed()</span>
+                        <span class="nv">width = </span><span class="p">(</span><span class="nx">tmpImg</span><span class="p">.</span><span class="nx">width</span> <span class="err">/ ratio).toFixed()</span>
+                        <span class="nv">height = </span><span class="p">(</span><span class="nx">tmpImg</span><span class="p">.</span><span class="nx">height</span> <span class="err">/ ratio).toFixed()</span>
+                    <span class="nv">imageInsert = </span><span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;&lt;img&gt;&quot;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span>
+                        <span class="nv">src: </span><span class="nx">tmpImg</span><span class="p">.</span><span class="nx">src</span>
+                        <span class="nv">width: </span><span class="nx">width</span>
+                        <span class="nv">height: </span><span class="nx">height</span>
+                        <span class="nv">alt: </span><span class="nx">altText</span>
+                        <span class="k">class</span><span class="o">:</span> <span class="p">(</span><span class="k">if</span> <span class="nx">tmp</span> <span class="k">then</span> <span class="s2">&quot;tmp&quot;</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                    <span class="p">).</span><span class="nx">show</span><span class="p">()</span>
+                    <span class="nx">imageInsert</span>
+
+                <span class="nv">createLineFeedbackElement: </span><span class="o">-&gt;</span>
+                    <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;&lt;div/&gt;&quot;</span><span class="p">).</span><span class="nx">addClass</span> <span class="s2">&quot;tmpLine&quot;</span>
+
+                <span class="nv">removeFeedbackElements: </span><span class="o">-&gt;</span>
+                    <span class="nx">jQuery</span><span class="p">(</span><span class="s1">&#39;.tmp, .tmpLine&#39;</span><span class="p">,</span> <span class="nx">editable</span><span class="p">).</span><span class="nx">remove</span><span class="p">()</span>
+
+                <span class="nv">removeCustomHelper: </span><span class="o">-&gt;</span>
+                    <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.customHelper&quot;</span><span class="p">).</span><span class="nx">remove</span><span class="p">()</span>
+
+                <span class="nv">showOverlay: </span><span class="nf">(position) -&gt;</span>
+                    <span class="nv">eHeight = </span><span class="nx">editable</span><span class="p">.</span><span class="nx">height</span><span class="p">()</span> <span class="o">+</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">editable</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s1">&#39;paddingTop&#39;</span><span class="p">))</span> <span class="o">+</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">editable</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s1">&#39;paddingBottom&#39;</span><span class="p">))</span>
+
+                    <span class="nx">overlay</span><span class="p">.</span><span class="nx">big</span><span class="p">.</span><span class="nx">css</span> <span class="nv">height: </span><span class="nx">eHeight</span>
+                    <span class="nx">overlay</span><span class="p">.</span><span class="nx">left</span><span class="p">.</span><span class="nx">css</span> <span class="nv">height: </span><span class="nx">eHeight</span>
+                    <span class="nx">overlay</span><span class="p">.</span><span class="nx">right</span><span class="p">.</span><span class="nx">css</span> <span class="nv">height: </span><span class="nx">eHeight</span>
+
+                    <span class="k">switch</span> <span class="nx">position</span>
+                        <span class="k">when</span> <span class="s2">&quot;left&quot;</span>
+                            <span class="nx">overlay</span><span class="p">.</span><span class="nx">big</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="s2">&quot;bigOverlayLeft&quot;</span><span class="p">).</span><span class="nx">removeClass</span><span class="p">(</span><span class="s2">&quot;bigOverlayRight&quot;</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="nv">left: </span><span class="nx">third</span><span class="p">).</span><span class="nx">show</span><span class="p">()</span>
+                            <span class="nx">overlay</span><span class="p">.</span><span class="nx">left</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span>
+                            <span class="nx">overlay</span><span class="p">.</span><span class="nx">right</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span>
+                        <span class="k">when</span> <span class="s2">&quot;middle&quot;</span>
+                            <span class="nx">overlay</span><span class="p">.</span><span class="nx">big</span><span class="p">.</span><span class="nx">removeClass</span> <span class="s2">&quot;bigOverlayLeft bigOverlayRight&quot;</span>
+                            <span class="nx">overlay</span><span class="p">.</span><span class="nx">big</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span>
+                            <span class="nx">overlay</span><span class="p">.</span><span class="nx">left</span><span class="p">.</span><span class="nx">show</span><span class="p">()</span>
+                            <span class="nx">overlay</span><span class="p">.</span><span class="nx">right</span><span class="p">.</span><span class="nx">show</span><span class="p">()</span>
+                        <span class="k">when</span> <span class="s2">&quot;right&quot;</span>
+                            <span class="nx">overlay</span><span class="p">.</span><span class="nx">big</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="s2">&quot;bigOverlayRight&quot;</span><span class="p">).</span><span class="nx">removeClass</span><span class="p">(</span><span class="s2">&quot;bigOverlayLeft&quot;</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="nv">left: </span><span class="mi">0</span><span class="p">).</span><span class="nx">show</span><span class="p">()</span>
+                            <span class="nx">overlay</span><span class="p">.</span><span class="nx">left</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span>
+                            <span class="nx">overlay</span><span class="p">.</span><span class="nx">right</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span>
+                        <span class="k">else</span></pre></div></td></tr><tr id="section-19"><td class="docs"><div class="pilwrap"><a href="#section-19" class="pilcrow">&#182;</a></div><p>check if the element was dragged into or within a contenteditable</p>
+</td><td class="code"><div class="highlight"><pre>                <span class="nv">checkOrigin: </span><span class="nf">(event) -&gt;</span>
+                    <span class="nx">unless</span> <span class="nx">jQuery</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">).</span><span class="nx">parents</span><span class="p">(</span><span class="s2">&quot;[contenteditable]&quot;</span><span class="p">).</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
+                        <span class="kc">true</span>
+                    <span class="k">else</span>
+                        <span class="kc">false</span>
+
+                <span class="nv">startPlace: </span><span class="s2">&quot;&quot;</span>
+
+            <span class="nv">dnd =</span>
+                <span class="nv">createTmpFeedback: </span><span class="nf">(image, position)-&gt;</span>
+                    <span class="k">if</span> <span class="nx">position</span> <span class="o">is</span> <span class="s1">&#39;middle&#39;</span>
+                        <span class="k">return</span> <span class="nx">helper</span><span class="p">.</span><span class="nx">createLineFeedbackElement</span><span class="p">()</span>
+                    <span class="k">else</span>
+                        <span class="nv">el = </span><span class="nx">helper</span><span class="p">.</span><span class="nx">createInsertElement</span><span class="p">(</span><span class="nx">image</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
+                        <span class="nx">el</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="s2">&quot;inlineImage-&quot;</span> <span class="o">+</span> <span class="nx">position</span><span class="p">)</span>
+
+                <span class="nv">handleOverEvent: </span><span class="nf">(event, ui) -&gt;</span>
+                    <span class="nv">postPone = </span><span class="o">-&gt;</span>
+                        <span class="nb">window</span><span class="p">.</span><span class="nv">waitWithTrash = </span><span class="nx">clearTimeout</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">waitWithTrash</span><span class="p">)</span>
+                        <span class="nv">position = </span><span class="nx">helper</span><span class="p">.</span><span class="nx">calcPosition</span><span class="p">(</span><span class="nx">offset</span><span class="p">,</span> <span class="nx">event</span><span class="p">)</span>
+
+                        <span class="nx">jQuery</span><span class="p">(</span><span class="s1">&#39;.trashcan&#39;</span><span class="p">,</span> <span class="nx">ui</span><span class="p">.</span><span class="nx">helper</span><span class="p">).</span><span class="nx">remove</span><span class="p">()</span>
+
+                        <span class="nx">editable</span><span class="p">.</span><span class="nx">append</span> <span class="nx">overlay</span><span class="p">.</span><span class="nx">big</span>
+                        <span class="nx">editable</span><span class="p">.</span><span class="nx">append</span> <span class="nx">overlay</span><span class="p">.</span><span class="nx">left</span>
+                        <span class="nx">editable</span><span class="p">.</span><span class="nx">append</span> <span class="nx">overlay</span><span class="p">.</span><span class="nx">right</span>
+
+                        <span class="nx">helper</span><span class="p">.</span><span class="nx">removeFeedbackElements</span><span class="p">()</span>
+                        <span class="nx">jQuery</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">).</span><span class="nx">prepend</span><span class="p">(</span><span class="nx">dnd</span><span class="p">.</span><span class="nx">createTmpFeedback</span> <span class="nx">ui</span><span class="p">.</span><span class="nx">draggable</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">position</span><span class="p">)</span></pre></div></td></tr><tr id="section-20"><td class="docs"><div class="pilwrap"><a href="#section-20" class="pilcrow">&#182;</a></div><p>already create the other feedback elements here, because we have a reference to the droppable</p>
+</td><td class="code"><div class="highlight"><pre>                        <span class="k">if</span> <span class="nx">position</span> <span class="o">is</span> <span class="s2">&quot;middle&quot;</span>
+                            <span class="nx">jQuery</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">).</span><span class="nx">prepend</span><span class="p">(</span><span class="nx">dnd</span><span class="p">.</span><span class="nx">createTmpFeedback</span> <span class="nx">ui</span><span class="p">.</span><span class="nx">draggable</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;right&#39;</span><span class="p">)</span>
+                            <span class="nx">jQuery</span><span class="p">(</span><span class="s1">&#39;.tmp&#39;</span><span class="p">,</span> <span class="nx">jQuery</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">)).</span><span class="nx">hide</span><span class="p">()</span>
+                        <span class="k">else</span>
+                            <span class="nx">jQuery</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">).</span><span class="nx">prepend</span><span class="p">(</span><span class="nx">dnd</span><span class="p">.</span><span class="nx">createTmpFeedback</span> <span class="nx">ui</span><span class="p">.</span><span class="nx">draggable</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;middle&#39;</span><span class="p">)</span>
+                            <span class="nx">jQuery</span><span class="p">(</span><span class="s1">&#39;.tmpLine&#39;</span><span class="p">,</span> <span class="nx">jQuery</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">)).</span><span class="nx">hide</span><span class="p">()</span>
+
+                        <span class="nx">helper</span><span class="p">.</span><span class="nx">showOverlay</span> <span class="nx">position</span></pre></div></td></tr><tr id="section-21"><td class="docs"><div class="pilwrap"><a href="#section-21" class="pilcrow">&#182;</a></div><p>we need to postpone the handleOverEvent execution of the function for a tiny bit to avoid
+the handleLeaveEvent to be fired after the handleOverEvent. Removing this timeout will break things</p>
+</td><td class="code"><div class="highlight"><pre>                    <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">postPone</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+
+                <span class="nv">handleDragEvent: </span><span class="nf">(event, ui) -&gt;</span>
+                    <span class="nv">position = </span><span class="nx">helper</span><span class="p">.</span><span class="nx">calcPosition</span><span class="p">(</span><span class="nx">offset</span><span class="p">,</span> <span class="nx">event</span><span class="p">)</span></pre></div></td></tr><tr id="section-22"><td class="docs"><div class="pilwrap"><a href="#section-22" class="pilcrow">&#182;</a></div><p>help perfs</p>
+</td><td class="code"><div class="highlight"><pre>                    <span class="k">if</span> <span class="nx">position</span> <span class="o">==</span> <span class="nx">dnd</span><span class="p">.</span><span class="nx">lastPositionDrag</span>
+                        <span class="k">return</span>
+
+                    <span class="nv">dnd.lastPositionDrag = </span><span class="nx">position</span>
+
+                    <span class="nv">tmpFeedbackLR = </span><span class="nx">jQuery</span><span class="p">(</span><span class="s1">&#39;.tmp&#39;</span><span class="p">,</span> <span class="nx">editable</span><span class="p">)</span>
+                    <span class="nv">tmpFeedbackMiddle = </span><span class="nx">jQuery</span><span class="p">(</span><span class="s1">&#39;.tmpLine&#39;</span><span class="p">,</span> <span class="nx">editable</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="nx">position</span> <span class="o">is</span> <span class="s2">&quot;middle&quot;</span>
+                        <span class="nx">tmpFeedbackMiddle</span><span class="p">.</span><span class="nx">show</span><span class="p">()</span>
+                        <span class="nx">tmpFeedbackLR</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span>
+                    <span class="k">else</span>
+                        <span class="nx">tmpFeedbackMiddle</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span>
+                        <span class="nx">tmpFeedbackLR</span><span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="s2">&quot;inlineImage-left inlineImage-right&quot;</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="s2">&quot;inlineImage-&quot;</span> <span class="o">+</span> <span class="nx">position</span><span class="p">).</span><span class="nx">show</span><span class="p">()</span>
+
+                    <span class="nx">helper</span><span class="p">.</span><span class="nx">showOverlay</span> <span class="nx">position</span>
+
+                <span class="nv">handleLeaveEvent: </span><span class="nf">(event, ui) -&gt;</span>
+                    <span class="nv">func = </span><span class="o">-&gt;</span>
+                        <span class="k">if</span> <span class="o">not</span> <span class="nx">jQuery</span><span class="p">(</span><span class="s1">&#39;div.trashcan&#39;</span><span class="p">,</span> <span class="nx">ui</span><span class="p">.</span><span class="nx">helper</span><span class="p">).</span><span class="nx">length</span>
+                            <span class="nx">jQuery</span><span class="p">(</span><span class="nx">ui</span><span class="p">.</span><span class="nx">helper</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">jQuery</span><span class="p">(</span><span class="s1">&#39;&lt;div class=&quot;trashcan&quot;&gt;&lt;/div&gt;&#39;</span><span class="p">))</span>
+                        <span class="nx">jQuery</span><span class="p">(</span><span class="s1">&#39;.bigOverlay, .smallOverlay&#39;</span><span class="p">).</span><span class="nx">remove</span><span class="p">()</span></pre></div></td></tr><tr id="section-23"><td class="docs"><div class="pilwrap"><a href="#section-23" class="pilcrow">&#182;</a></div><p>only remove the trash after being outside of an editable more than X milliseconds</p>
+</td><td class="code"><div class="highlight"><pre>                    <span class="nb">window</span><span class="p">.</span><span class="nv">waitWithTrash = </span><span class="nx">setTimeout</span><span class="p">(</span><span class="nx">func</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+                    <span class="nx">helper</span><span class="p">.</span><span class="nx">removeFeedbackElements</span><span class="p">()</span>
+
+                <span class="nv">handleStartEvent: </span><span class="nf">(event, ui) -&gt;</span>
+                    <span class="nv">internalDrop = </span><span class="nx">helper</span><span class="p">.</span><span class="nx">checkOrigin</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nx">internalDrop</span>
+                        <span class="nx">jQuery</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">).</span><span class="nx">remove</span><span class="p">()</span>
+
+                    <span class="nx">jQuery</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;startPreventSave&#39;</span><span class="p">)</span>
+                    <span class="nv">helper.startPlace = </span><span class="nx">jQuery</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">)</span>
+
+                <span class="nv">handleStopEvent: </span><span class="nf">(event, ui) -&gt;</span>
+                    <span class="nv">internalDrop = </span><span class="nx">helper</span><span class="p">.</span><span class="nx">checkOrigin</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nx">internalDrop</span>
+                        <span class="nx">jQuery</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">).</span><span class="nx">remove</span><span class="p">()</span>
+                    <span class="k">else</span>
+                        <span class="nx">editable</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;change&#39;</span><span class="p">)</span>
+
+                    <span class="nx">overlay</span><span class="p">.</span><span class="nx">big</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span>
+                    <span class="nx">overlay</span><span class="p">.</span><span class="nx">left</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span>
+                    <span class="nx">overlay</span><span class="p">.</span><span class="nx">right</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span>
+
+                    <span class="nx">jQuery</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;stopPreventSave&#39;</span><span class="p">);</span>
+
+                <span class="nv">handleDropEvent: </span><span class="nf">(event, ui) -&gt;</span></pre></div></td></tr><tr id="section-24"><td class="docs"><div class="pilwrap"><a href="#section-24" class="pilcrow">&#182;</a></div><p>check whether it is an internal drop or not</p>
+</td><td class="code"><div class="highlight"><pre>                    <span class="nv">internalDrop = </span><span class="nx">helper</span><span class="p">.</span><span class="nx">checkOrigin</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span>
+                    <span class="nv">position = </span><span class="nx">helper</span><span class="p">.</span><span class="nx">calcPosition</span><span class="p">(</span><span class="nx">offset</span><span class="p">,</span> <span class="nx">event</span><span class="p">)</span>
+                    <span class="nx">helper</span><span class="p">.</span><span class="nx">removeFeedbackElements</span><span class="p">()</span>
+                    <span class="nx">helper</span><span class="p">.</span><span class="nx">removeCustomHelper</span><span class="p">()</span>
+                    <span class="nv">imageInsert = </span><span class="nx">helper</span><span class="p">.</span><span class="nx">createInsertElement</span><span class="p">(</span><span class="nx">ui</span><span class="p">.</span><span class="nx">draggable</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">false</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="nx">position</span> <span class="o">is</span> <span class="s2">&quot;middle&quot;</span>
+                        <span class="nx">imageInsert</span><span class="p">.</span><span class="nx">show</span><span class="p">()</span>
+                        <span class="nx">imageInsert</span><span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="s2">&quot;inlineImage-middle inlineImage-left inlineImage-right&quot;</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="s2">&quot;inlineImage-&quot;</span> <span class="o">+</span> <span class="nx">position</span><span class="p">).</span><span class="nx">css</span>
+                          <span class="nv">position: </span><span class="s2">&quot;relative&quot;</span>
+                          <span class="nv">left: </span><span class="p">((</span><span class="nx">editable</span><span class="p">.</span><span class="nx">width</span><span class="p">()</span> <span class="o">+</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">editable</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s1">&#39;paddingLeft&#39;</span><span class="p">))</span> <span class="o">+</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">editable</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s1">&#39;paddingRight&#39;</span><span class="p">)))</span> <span class="o">-</span> <span class="nx">imageInsert</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;width&#39;</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span>
+                        <span class="nx">imageInsert</span><span class="p">.</span><span class="nx">insertBefore</span> <span class="nx">jQuery</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">)</span>
+                    <span class="k">else</span>
+                        <span class="nx">imageInsert</span><span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="s2">&quot;inlineImage-middle inlineImage-left inlineImage-right&quot;</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="s2">&quot;inlineImage-&quot;</span> <span class="o">+</span> <span class="nx">position</span><span class="p">).</span><span class="nx">css</span> <span class="s2">&quot;display&quot;</span><span class="p">,</span> <span class="s2">&quot;block&quot;</span>
+                        <span class="nx">jQuery</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">).</span><span class="nx">prepend</span> <span class="nx">imageInsert</span>
+
+                    <span class="nx">overlay</span><span class="p">.</span><span class="nx">big</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span>
+                    <span class="nx">overlay</span><span class="p">.</span><span class="nx">left</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span>
+                    <span class="nx">overlay</span><span class="p">.</span><span class="nx">right</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span></pre></div></td></tr><tr id="section-25"><td class="docs"><div class="pilwrap"><a href="#section-25" class="pilcrow">&#182;</a></div><p>Let the editor know we did a change</p>
+</td><td class="code"><div class="highlight"><pre>                    <span class="nx">editable</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;change&#39;</span><span class="p">)</span></pre></div></td></tr><tr id="section-26"><td class="docs"><div class="pilwrap"><a href="#section-26" class="pilcrow">&#182;</a></div><p>init the new image in the content</p>
+</td><td class="code"><div class="highlight"><pre>                    <span class="nx">dnd</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="nx">editable</span><span class="p">)</span>
+
+                <span class="nv">createHelper: </span><span class="nf">(event) -&gt;</span>
+                    <span class="nx">jQuery</span><span class="p">(</span><span class="s1">&#39;&lt;div&gt;&#39;</span><span class="p">).</span><span class="nx">css</span><span class="p">({</span>
+                        <span class="nv">backgroundImage: </span><span class="s2">&quot;url(&quot;</span> <span class="o">+</span> <span class="nx">jQuery</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">currentTarget</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;src&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
+                    <span class="p">}).</span><span class="nx">addClass</span><span class="p">(</span><span class="s1">&#39;customHelper&#39;</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">);</span></pre></div></td></tr><tr id="section-27"><td class="docs"><div class="pilwrap"><a href="#section-27" class="pilcrow">&#182;</a></div><p>initialize draggable and droppable elements in the page
+Safe to be called multiple times</p>
+</td><td class="code"><div class="highlight"><pre>                <span class="nv">init: </span><span class="nf">() -&gt;</span>
+                    <span class="nv">draggable = </span><span class="p">[]</span>
+
+                    <span class="nv">initDraggable = </span><span class="nf">(elem) -&gt;</span>
+                        <span class="k">if</span> <span class="o">not</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">jquery_draggable_initialized</span>
+                            <span class="nv">elem.jquery_draggable_initialized = </span><span class="kc">true</span>
+                            <span class="nx">jQuery</span><span class="p">(</span><span class="nx">elem</span><span class="p">).</span><span class="nx">draggable</span>
+                                <span class="nv">cursor: </span><span class="s2">&quot;move&quot;</span>
+                                <span class="nv">helper: </span><span class="nx">dnd</span><span class="p">.</span><span class="nx">createHelper</span>
+                                <span class="nv">drag: </span><span class="nx">dnd</span><span class="p">.</span><span class="nx">handleDragEvent</span>
+                                <span class="nv">start: </span><span class="nx">dnd</span><span class="p">.</span><span class="nx">handleStartEvent</span>
+                                <span class="nv">stop: </span><span class="nx">dnd</span><span class="p">.</span><span class="nx">handleStopEvent</span>
+                                <span class="nv">disabled: </span><span class="o">not</span> <span class="nx">editable</span><span class="p">.</span><span class="nx">hasClass</span><span class="p">(</span><span class="s1">&#39;inEditMode&#39;</span><span class="p">)</span>
+                                <span class="nv">cursorAt: </span><span class="p">{</span><span class="nv">top: </span><span class="mi">50</span><span class="p">,</span> <span class="nv">left: </span><span class="mi">50</span><span class="p">}</span>
+                        <span class="nx">draggables</span><span class="p">.</span><span class="nx">push</span> <span class="nx">elem</span>
+
+                    <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;.rotationWrapper img&quot;</span><span class="p">,</span> <span class="nx">widgetOptions</span><span class="p">.</span><span class="nx">dialog</span><span class="p">).</span><span class="nx">each</span> <span class="nf">(index, elem) -&gt;</span>
+                        <span class="nx">initDraggable</span><span class="p">(</span><span class="nx">elem</span><span class="p">)</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">jquery_draggable_initialized</span>
+
+                    <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;img&quot;</span><span class="p">,</span> <span class="nx">editable</span><span class="p">).</span><span class="nx">each</span> <span class="nf">(index, elem) -&gt;</span>
+                        <span class="nv">elem.contentEditable = </span><span class="kc">false</span>
+                        <span class="k">if</span> <span class="o">not</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">jquery_draggable_initialized</span>
+                            <span class="nx">initDraggable</span><span class="p">(</span><span class="nx">elem</span><span class="p">)</span>
+
+                    <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="nx">editable</span><span class="p">).</span><span class="nx">each</span> <span class="nf">(index, elem) -&gt;</span>
+                        <span class="k">if</span> <span class="o">not</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">jquery_droppable_initialized</span>
+                            <span class="nv">elem.jquery_droppable_initialized = </span><span class="kc">true</span>
+                            <span class="nx">jQuery</span><span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="nx">editable</span><span class="p">).</span><span class="nx">droppable</span>
+                                <span class="nv">tolerance: </span><span class="s2">&quot;pointer&quot;</span>
+                                <span class="nv">drop: </span><span class="nx">dnd</span><span class="p">.</span><span class="nx">handleDropEvent</span>
+                                <span class="nv">over: </span><span class="nx">dnd</span><span class="p">.</span><span class="nx">handleOverEvent</span>
+                                <span class="nv">out: </span><span class="nx">dnd</span><span class="p">.</span><span class="nx">handleLeaveEvent</span>
+
+                <span class="nv">enableDragging: </span><span class="nf">() -&gt;</span>
+                    <span class="nx">jQuery</span><span class="p">.</span><span class="nx">each</span> <span class="nx">draggables</span><span class="p">,</span> <span class="nf">(index, d) -&gt;</span>
+                        <span class="nx">jQuery</span><span class="p">(</span><span class="nx">d</span><span class="p">).</span><span class="nx">draggable</span><span class="p">(</span><span class="s1">&#39;option&#39;</span><span class="p">,</span> <span class="s1">&#39;disabled&#39;</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span>
+
+                <span class="nv">disableDragging: </span><span class="nf">() -&gt;</span>
+                    <span class="nx">jQuery</span><span class="p">.</span><span class="nx">each</span> <span class="nx">draggables</span><span class="p">,</span> <span class="nf">(index, d) -&gt;</span>
+                        <span class="nx">jQuery</span><span class="p">(</span><span class="nx">d</span><span class="p">).</span><span class="nx">draggable</span><span class="p">(</span><span class="s1">&#39;option&#39;</span><span class="p">,</span> <span class="s1">&#39;disabled&#39;</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
+
+            <span class="nv">draggables = </span><span class="p">[]</span>
+            <span class="nv">editable = </span><span class="nx">jQuery</span><span class="p">(</span><span class="nx">@options</span><span class="p">.</span><span class="nx">editable</span><span class="p">.</span><span class="nx">element</span><span class="p">)</span></pre></div></td></tr><tr id="section-28"><td class="docs"><div class="pilwrap"><a href="#section-28" class="pilcrow">&#182;</a></div><p>keep a reference of options for context changes</p>
+</td><td class="code"><div class="highlight"><pre>            <span class="nv">widgetOptions = </span><span class="nx">@options</span>
+
+            <span class="nv">offset = </span><span class="nx">editable</span><span class="p">.</span><span class="nx">offset</span><span class="p">()</span>
+            <span class="nv">third = </span><span class="nb">parseFloat</span><span class="p">(</span><span class="nx">editable</span><span class="p">.</span><span class="nx">width</span><span class="p">()</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="nv">overlayMiddleConfig =</span>
+                <span class="nv">width: </span><span class="nx">third</span>
+                <span class="nv">height: </span><span class="nx">editable</span><span class="p">.</span><span class="nx">height</span><span class="p">()</span>
+
+            <span class="nv">overlay =</span>
+                <span class="nv">big: </span><span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;&lt;div/&gt;&quot;</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="s2">&quot;bigOverlay&quot;</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span>
+                  <span class="nv">width: </span><span class="nx">third</span> <span class="o">*</span> <span class="mi">2</span>
+                  <span class="nv">height: </span><span class="nx">editable</span><span class="p">.</span><span class="nx">height</span><span class="p">()</span>
+                <span class="p">)</span>
+                <span class="nv">left: </span><span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;&lt;div/&gt;&quot;</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="s2">&quot;smallOverlay smallOverlayLeft&quot;</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="nx">overlayMiddleConfig</span><span class="p">)</span>
+                <span class="nv">right: </span><span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;&lt;div/&gt;&quot;</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="s2">&quot;smallOverlay smallOverlayRight&quot;</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="nx">overlayMiddleConfig</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="nx">third</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+
+            <span class="nx">dnd</span><span class="p">.</span><span class="nx">init</span><span class="p">()</span>
+
+            <span class="nx">editable</span><span class="p">.</span><span class="nx">bind</span> <span class="s1">&#39;halloactivated&#39;</span><span class="p">,</span> <span class="nx">dnd</span><span class="p">.</span><span class="nx">enableDragging</span>
+            <span class="nx">editable</span><span class="p">.</span><span class="nx">bind</span> <span class="s1">&#39;hallodeactivated&#39;</span><span class="p">,</span> <span class="nx">dnd</span><span class="p">.</span><span class="nx">disableDragging</span>
+<span class="p">)(</span><span class="nx">jQuery</span><span class="p">)</span>
+
+</pre></div></td></tr></tbody></table><div id="generated">generated Tue Mar 27 2012 14:05:37 GMT+0200 (CEST)  </div><div id="projectname"><a href="../../index.html">Hallo Editor</a></div></div></body></html>

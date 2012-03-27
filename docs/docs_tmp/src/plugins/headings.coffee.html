@@ -1,0 +1,64 @@
+<!DOCTYPE html><html><head><title>headings.coffee</title><meta http-equiv="Content-Type" content="text/html" charset="UTF-8"><link rel="stylesheet" media="all" href="../../docco.css"></head><body><div id="container"><div id="background"></div><div id="jump_to">Jump To &hellip;<div id="jump_wrapper"><div id="jump_page"><a href="../../index.html" class="source"><span class="file_name">README</span></a><a href="../../src/hallo.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">hallo.coffee</span></a><a href="../../src/plugins/lists.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">lists.coffee</span></a><a href="../../src/plugins/headings.coffee.html" class="source selected"><span class="base_path">src / plugins / </span><span class="file_name">headings.coffee</span></a><a href="../../src/plugins/overlay.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">overlay.coffee</span></a><a href="../../src/plugins/toolbarlinebreak.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">toolbarlinebreak.coffee</span></a><a href="../../src/plugins/image.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">image.coffee</span></a><a href="../../src/plugins/halloformat.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">halloformat.coffee</span></a><a href="../../src/plugins/reundo.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">reundo.coffee</span></a><a href="../../src/plugins/link.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">link.coffee</span></a><a href="../../src/plugins/justify.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">justify.coffee</span></a><a href="../../src/widgets/button.coffee.html" class="source "><span class="base_path">src / widgets / </span><span class="file_name">button.coffee</span></a></div></div></div><table cellpadding="0" cellspacing="0"><thead><tr><th class="docs"><h1>headings.coffee</h1><div class="filepath">src/plugins/</div></th><th class="code"></th></tr></thead><tbody><tr id="section-1"><td class="docs"><div class="pilwrap"><a href="#section-1" class="pilcrow">&#182;</a></div><pre><code>Hallo - a rich text editing jQuery UI widget
+(c) 2011 Henri Bergius, IKS Consortium
+Hallo may be freely distributed under the MIT license
+</code></pre>
+</td><td class="code"><div class="highlight"><pre><span class="p">(</span><span class="nf">(jQuery) -&gt;</span>
+    <span class="nx">jQuery</span><span class="p">.</span><span class="nx">widget</span> <span class="s2">&quot;IKS.halloheadings&quot;</span><span class="p">,</span>
+        <span class="nv">options:</span>
+            <span class="nv">editable: </span><span class="kc">null</span>
+            <span class="nv">toolbar: </span><span class="kc">null</span>
+            <span class="nv">uuid: </span><span class="s2">&quot;&quot;</span>
+            <span class="nv">headers: </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+
+        <span class="nv">_create: </span><span class="o">-&gt;</span>
+            <span class="nv">widget = </span><span class="k">this</span>
+            <span class="nv">buttonset = </span><span class="nx">jQuery</span> <span class="s2">&quot;&lt;span class=\&quot;#{widget.widgetName}\&quot;&gt;&lt;/span&gt;&quot;</span>
+            <span class="nv">id = </span><span class="s2">&quot;#{@options.uuid}-paragraph&quot;</span>
+            <span class="nv">label = </span><span class="s2">&quot;P&quot;</span>
+            <span class="nx">buttonset</span><span class="p">.</span><span class="nx">append</span> <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;&lt;input id=\&quot;#{id}\&quot; type=\&quot;radio\&quot; name=\&quot;#{widget.options.uuid}-headings\&quot;/&gt;&lt;label for=\&quot;#{id}\&quot; class=\&quot;p_button\&quot;&gt;#{label}&lt;/label&gt;&quot;</span><span class="p">).</span><span class="nx">button</span><span class="p">()</span>
+            <span class="nv">button = </span><span class="nx">jQuery</span> <span class="s2">&quot;##{id}&quot;</span><span class="p">,</span> <span class="nx">buttonset</span>
+            <span class="nx">button</span><span class="p">.</span><span class="nx">attr</span> <span class="s2">&quot;hallo-command&quot;</span><span class="p">,</span> <span class="s2">&quot;formatBlock&quot;</span>
+            <span class="nx">button</span><span class="p">.</span><span class="nx">bind</span> <span class="s2">&quot;change&quot;</span><span class="p">,</span> <span class="nf">(event) -&gt;</span>
+                <span class="nv">cmd = </span><span class="nx">jQuery</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span> <span class="s2">&quot;hallo-command&quot;</span>
+                <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">editable</span><span class="p">.</span><span class="nx">execute</span> <span class="nx">cmd</span><span class="p">,</span> <span class="s2">&quot;P&quot;</span>
+
+            <span class="nv">buttonize = </span><span class="p">(</span><span class="nx">headerSize</span><span class="p">)</span> <span class="o">=&gt;</span>
+                <span class="nv">label = </span><span class="s2">&quot;H&quot;</span> <span class="o">+</span> <span class="nx">headerSize</span>
+                <span class="nv">id = </span><span class="s2">&quot;#{@options.uuid}-#{headerSize}&quot;</span>
+                <span class="nx">buttonset</span><span class="p">.</span><span class="nx">append</span> <span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;&lt;input id=\&quot;#{id}\&quot; type=\&quot;radio\&quot; name=\&quot;#{widget.options.uuid}-headings\&quot;/&gt;&lt;label for=\&quot;#{id}\&quot; class=\&quot;h#{headerSize}_button\&quot;&gt;#{label}&lt;/label&gt;&quot;</span><span class="p">).</span><span class="nx">button</span><span class="p">()</span>
+                <span class="nv">button = </span><span class="nx">jQuery</span> <span class="s2">&quot;##{id}&quot;</span><span class="p">,</span> <span class="nx">buttonset</span>
+                <span class="nx">button</span><span class="p">.</span><span class="nx">attr</span> <span class="s2">&quot;hallo-size&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="o">+</span><span class="nx">headerSize</span>
+                <span class="nx">button</span><span class="p">.</span><span class="nx">bind</span> <span class="s2">&quot;change&quot;</span><span class="p">,</span> <span class="nf">(event) -&gt;</span>
+                    <span class="nv">size = </span><span class="nx">jQuery</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span> <span class="s2">&quot;hallo-size&quot;</span>
+                    <span class="nx">widget</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">editable</span><span class="p">.</span><span class="nx">execute</span> <span class="s2">&quot;formatBlock&quot;</span><span class="p">,</span> <span class="nx">size</span>
+
+            <span class="nx">buttonize</span> <span class="nx">header</span> <span class="k">for</span> <span class="nx">header</span> <span class="k">in</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">headers</span>
+
+            <span class="nx">buttonset</span><span class="p">.</span><span class="nx">buttonset</span><span class="p">()</span>
+
+            <span class="nx">@element</span><span class="p">.</span><span class="nx">bind</span> <span class="s2">&quot;keyup paste change mouseup&quot;</span><span class="p">,</span> <span class="nf">(event) -&gt;</span>
+                <span class="k">try</span> <span class="nv">format = </span><span class="nb">document</span><span class="p">.</span><span class="nx">queryCommandValue</span><span class="p">(</span><span class="s2">&quot;formatBlock&quot;</span><span class="p">).</span><span class="nx">toUpperCase</span><span class="p">()</span> <span class="k">catch</span> <span class="nx">e</span> <span class="k">then</span> <span class="nv">format = </span><span class="s1">&#39;&#39;</span>
+
+                <span class="k">if</span> <span class="nx">format</span> <span class="o">is</span> <span class="s2">&quot;P&quot;</span>
+                    <span class="nv">selectedButton = </span><span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;##{widget.options.uuid}-paragraph&quot;</span><span class="p">)</span>
+                <span class="k">else</span> <span class="k">if</span> <span class="nv">matches = </span><span class="nx">format</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/\d/</span><span class="p">)</span>
+                    <span class="nv">formatNumber = </span><span class="nx">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="nv">selectedButton = </span><span class="nx">jQuery</span><span class="p">(</span><span class="s2">&quot;##{widget.options.uuid}-#{formatNumber}&quot;</span><span class="p">)</span>
+
+                <span class="nv">labelParent = </span><span class="nx">jQuery</span><span class="p">(</span><span class="nx">buttonset</span><span class="p">)</span>
+                <span class="nx">labelParent</span><span class="p">.</span><span class="nx">children</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">).</span><span class="nx">attr</span> <span class="s2">&quot;checked&quot;</span><span class="p">,</span> <span class="kc">false</span>
+                <span class="nx">labelParent</span><span class="p">.</span><span class="nx">children</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">).</span><span class="nx">removeClass</span> <span class="s2">&quot;ui-state-clicked&quot;</span>
+                <span class="nx">labelParent</span><span class="p">.</span><span class="nx">children</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">).</span><span class="nx">button</span><span class="p">(</span><span class="s2">&quot;widget&quot;</span><span class="p">).</span><span class="nx">button</span> <span class="s2">&quot;refresh&quot;</span>
+
+                <span class="k">if</span> <span class="nx">selectedButton</span>
+                    <span class="nx">selectedButton</span><span class="p">.</span><span class="nx">attr</span> <span class="s2">&quot;checked&quot;</span><span class="p">,</span> <span class="kc">true</span>
+                    <span class="nx">selectedButton</span><span class="p">.</span><span class="nx">next</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">).</span><span class="nx">addClass</span> <span class="s2">&quot;ui-state-clicked&quot;</span>
+                    <span class="nx">selectedButton</span><span class="p">.</span><span class="nx">button</span> <span class="s2">&quot;refresh&quot;</span>
+
+            <span class="nx">@options</span><span class="p">.</span><span class="nx">toolbar</span><span class="p">.</span><span class="nx">append</span> <span class="nx">buttonset</span>
+
+        <span class="nv">_init: </span><span class="o">-&gt;</span>
+
+<span class="p">)(</span><span class="nx">jQuery</span><span class="p">)</span>
+
+</pre></div></td></tr></tbody></table><div id="generated">generated Tue Mar 27 2012 14:05:36 GMT+0200 (CEST)  </div><div id="projectname"><a href="../../index.html">Hallo Editor</a></div></div></body></html>
