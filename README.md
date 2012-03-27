@@ -36,8 +36,6 @@ Hallo itself only makes the selected DOM elements editable and doesn't provide a
 
 This example would enable the simple formatting plugin that provides functionality like _bold_ and _italic_. You can include as many Hallo plugins as you want, and if necessary pass them options.
 
-Please note that you need to load the plugin JavaScript files you want to use manually.
-
 Hallo has got more options you set when instantiating. See the hallo.coffee file for further documentation.
 
 ## Plugins
@@ -59,16 +57,21 @@ Hallo is written in [CoffeeScript](http://jashkenas.github.com/coffee-script/), 
 
     $ cake build
 
+If you want to also generate a minified version, run:
+
+    $ cake min
+
 Hallo development is coordinated using Git. Just fork the [Hallo repository on GitHub](https://github.com/bergie/hallo) and [send pull requests](http://help.github.com/pull-requests/).
 
 ### Writing plugins
 
 Hallo plugins are written as regular [jQuery UI widgets](http://semantic-interaction.org/blog/2011/03/01/jquery-ui-widget-factory/).
 
-When Hallo is loaded it will also load all the enabled plugins for the element, and pass them two additional options:
+When Hallo is loaded it will also load all the enabled plugins for the element, and pass them some additional options:
 
 * `editable`: The main Hallo widget instance
 * `toolbar`: Toolbar jQuery object for that Hallo instance
+* `uuid`: unique identifier of the Hallo instance, can be used for element IDs
 
 A simplistic plugin would look like the following:
 
@@ -77,17 +80,29 @@ A simplistic plugin would look like the following:
     #    Hallo may be freely distributed under the MIT license
     ((jQuery) ->
         jQuery.widget "IKS.halloformat",
-            bold: null
+            boldElement: null
 
             options:
+                uuid: ''
                 editable: null
                 toolbar: null
 
             _create: ->
-                @bold = jQuery("<button>Bold</button>").button()
-                @bold.click =>
-                    @options.editable.execute "bold"
-                @options.toolbar.append @bold
+                # Create an element for holding the button
+                @boldElement = jQuery '<span></span>'
+
+                # Use Hallo Button
+                @boldElement.hallobutton
+                  uuid: @options.uuid
+                  editable: @options.editable
+                  label: 'Bold'
+                  # Icons come from Font Awesome
+                  icon: 'icon-bold'
+                  # Commands are used for execCommand and queryCommandState
+                  command: 'bold'
+
+                # Append the button to toolbar
+                @options.toolbar.append @boldElement
 
             _init: ->
 
