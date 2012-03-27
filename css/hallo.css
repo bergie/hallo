@@ -63,9 +63,14 @@ div.hallotoolbar .dropdown-target .selected {
     background-color: #729fcf;
 }
 
+textarea#source {
+    width: 100%;
+    min-height: 400px;
+}
+
 footer {
+    margin-top: 1.5em;
     display: block;
-    position: fixed;
     background-color: #eeeeec;
     bottom: 0px;
 }
