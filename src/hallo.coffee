@@ -123,8 +123,6 @@ Hallo may be freely distributed under the MIT license
                 options["uuid"] = @id
                 jQuery(@element)[plugin] options
 
-            @_forceStructured() if @options.forceStructured
-
         _init: ->
             if @options.editable
                 @enable()
@@ -157,6 +155,8 @@ Hallo may be freely distributed under the MIT license
                 @element.bind "keyup mouseup", this, @_checkSelection
                 widget = this
                 @bound = true
+
+            @_forceStructured() if @options.forceStructured
 
             @_trigger "enabled", null
 

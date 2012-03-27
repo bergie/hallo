@@ -32,20 +32,21 @@
         forceStructured: true
       },
       _create: function() {
-        var options, plugin, _ref;
+        var options, plugin, _ref, _results;
         this.originalContent = this.getContents();
         this.id = this._generateUUID();
         this._prepareToolbar();
         _ref = this.options.plugins;
+        _results = [];
         for (plugin in _ref) {
           options = _ref[plugin];
           if (!jQuery.isPlainObject(options)) options = {};
           options["editable"] = this;
           options["toolbar"] = this.toolbar;
           options["uuid"] = this.id;
-          jQuery(this.element)[plugin](options);
+          _results.push(jQuery(this.element)[plugin](options));
         }
-        if (this.options.forceStructured) return this._forceStructured();
+        return _results;
       },
       _init: function() {
         if (this.options.editable) {
@@ -77,6 +78,7 @@
           widget = this;
           this.bound = true;
         }
+        if (this.options.forceStructured) this._forceStructured();
         return this._trigger("enabled", null);
       },
       activate: function() {
