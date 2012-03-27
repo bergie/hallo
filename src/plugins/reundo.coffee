@@ -18,6 +18,7 @@
                   label: label
                   icon: if cmd is 'undo' then 'icon-arrow-left' else 'icon-arrow-right'
                   command: cmd
+                  queryState: false
                 buttonset.append buttonElement
             buttonize "undo", "Undo"
             buttonize "redo", "Redo"
