@@ -1,7 +1,8 @@
 {
   "name": "hallo",
   "description": "Simple rich text editor",
-  "author": "Henri Bergius",
+  "author": "Henri Bergius <henri.bergius@iki.fi>",
+  "homepage": "http://bergie.github.com/hallo/",
   "version": "0.0.1",
   "dependencies": {},
   "devDependencies": {
