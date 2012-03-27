@@ -1,2 +1,4 @@
 src/
 docs/
+node_modules/
+docs_tmp/

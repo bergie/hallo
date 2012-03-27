@@ -1,0 +1,16 @@
+{
+  "name": "hallo",
+  "description": "Simple rich text editor",
+  "author": "Henri Bergius",
+  "version": "0.0.1",
+  "dependencies": {},
+  "devDependencies": {
+    "async": ">=0.1.18",
+    "docco-husky": ">=0.3.2",
+    "uglify-js": ">=1.2.6"
+  },
+  "docco_husky": {
+    "output_dir": "docs",
+    "project_name": "Hallo Editor"
+  }
+}
