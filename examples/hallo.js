@@ -1467,7 +1467,7 @@
       _prepareButton: function() {
         var button, buttonEl, id;
         id = "" + this.options.uuid + "-" + this.options.label;
-        buttonEl = jQuery("<input id=\"" + id + "\" type=\"checkbox\" />\n<label for=\"" + id + "\" class=\"btn " + this.options.command + "_button\">\n  <i class=\"" + this.options.icon + "\"></i>\n</label>");
+        buttonEl = jQuery("<input id=\"" + id + "\" type=\"checkbox\" />\n<label for=\"" + id + "\" class=\"btn " + this.options.command + "_button\" title=\"" + this.options.label + "\">\n  <i class=\"" + this.options.icon + "\"></i>\n</label>");
         button = buttonEl.button();
         button.data('hallo-command', this.options.command);
         return button;
@@ -1536,7 +1536,7 @@
       _prepareButton: function() {
         var button, buttonEl, id;
         id = "" + this.options.uuid + "-" + this.options.label;
-        buttonEl = jQuery("<button id=\"" + id + "\" data-toggle=\"dropdown\" data-target=\"" + this.options.target + "\">\n  <i class=\"" + this.options.icon + "\"></i>\n</button>");
+        buttonEl = jQuery("<button id=\"" + id + "\" data-toggle=\"dropdown\" data-target=\"" + this.options.target + "\" title=\"" + this.options.label + "\">\n  <i class=\"" + this.options.icon + "\"></i>\n</button>");
         button = buttonEl.button();
         return button;
       }

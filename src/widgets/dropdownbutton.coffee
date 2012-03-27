@@ -58,7 +58,7 @@
 
     _prepareButton: ->
       id = "#{@options.uuid}-#{@options.label}"
-      buttonEl = jQuery """<button id=\"#{id}\" data-toggle=\"dropdown\" data-target=\"#{@options.target}\">
+      buttonEl = jQuery """<button id=\"#{id}\" data-toggle=\"dropdown\" data-target=\"#{@options.target}\" title=\"#{@options.label}\">
           <i class=\"#{@options.icon}\"></i>
         </button>"""
 
