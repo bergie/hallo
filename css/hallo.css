@@ -37,6 +37,32 @@ a {
     font-weight: bold;
 }
 
+div.hallotoolbar {
+    border: 1px solid #babdb6;
+    padding: 2px;
+    background-color: #eeeeec;
+    border-radius: 6px;
+    font-size: 12pt;
+    line-height: 1.1em;
+    width: 260px;
+    z-index: 500;
+}
+
+div.hallotoolbar .dropdown-target {
+    width: "200px";
+    background-color: #eeeeec;
+    margin-top: -1px;
+    border-left: 1px solid #babdb6;
+    border-bottom: 1px solid #babdb6;
+    border-right: 1px solid #babdb6;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+div.hallotoolbar .dropdown-target .selected {
+    background-color: #729fcf;
+}
+
 footer {
     display: block;
     position: fixed;
