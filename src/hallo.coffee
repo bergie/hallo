@@ -303,6 +303,7 @@ Hallo may be freely distributed under the MIT license
                 @_updateToolbarPosition @_getToolbarPosition event
 
         _updateToolbarPosition: (position) ->
+            return unless position
             return unless position.top and position.left
             this.toolbar.css "top", position.top
             this.toolbar.css "left", position.left

@@ -25,6 +25,15 @@ div.hallotoolbar {
     padding: 1px;
 }
 
+.dropdown-target {
+    width: "200px";
+    background-color: #eeeeec;
+}
+
+.dropdown-target .selected {
+    background-color: #729fcf;
+}
+
 .bigOverlay, .smallOverlay {
     display: none;
     position: absolute;
