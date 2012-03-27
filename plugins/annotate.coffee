@@ -9,6 +9,9 @@
             vie: z
             editable: null
             toolbar: null
+            select: ->
+            decline: ->
+            remove: ->
 
         _create: ->
             widget = this
@@ -41,6 +44,10 @@
                 vie: @options.vie
                 debug: true
                 showTooltip: true
+                select: @options.select
+                remove: @options.remove
+                success: @options.success
+                error: @options.error
             # @buttons.acceptAll.hide()
         acceptAll: ->
             @options.editable.element.each ->
