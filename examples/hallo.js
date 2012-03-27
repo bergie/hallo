@@ -27,7 +27,8 @@
         unselected: function() {},
         enabled: function() {},
         disabled: function() {},
-        placeholder: ''
+        placeholder: '',
+        parentElement: 'body'
       },
       _create: function() {
         var options, plugin, _ref, _results;
@@ -69,9 +70,7 @@
         if (!this.element.html()) this.element.html(this.options.placeholder);
         if (!this.bound) {
           this.element.bind("focus", this, this._activated);
-          if (this.options.showAlways) {
-            this.element.bind("blur", this, this._deactivated);
-          }
+          this.element.bind("blur", this, this._deactivated);
           this.element.bind("keyup paste change", this, this._checkModified);
           this.element.bind("keyup", this, this._keys);
           this.element.bind("keyup mouseup", this, this._checkSelection);
@@ -194,45 +193,51 @@
         tmpSpan.remove();
         return position;
       },
+      _bindToolbarEventsFixed: function() {
+        var _this = this;
+        this.options.floating = false;
+        this.element.bind("halloactivated", function(event, data) {
+          _this._updateToolbarPosition(_this._getToolbarPosition(event));
+          return _this.toolbar.show();
+        });
+        return this.element.bind("hallodeactivated", function(event, data) {
+          return _this.toolbar.hide();
+        });
+      },
+      _bindToolbarEventsRegular: function() {
+        var _this = this;
+        this.element.bind("halloselected", function(event, data) {
+          var position;
+          position = _this._getToolbarPosition(data.originalEvent, data.selection);
+          if (!position) return;
+          _this._updateToolbarPosition(position);
+          return _this.toolbar.show();
+        });
+        this.element.bind("hallounselected", function(event, data) {
+          return _this.toolbar.hide();
+        });
+        return this.element.bind("hallodeactivated", function(event, data) {
+          return _this.toolbar.hide();
+        });
+      },
       _prepareToolbar: function() {
-        var that;
-        that = this;
+        var _this = this;
         this.toolbar = jQuery('<div class="hallotoolbar"></div>').hide();
         this.toolbar.css("position", "absolute");
         this.toolbar.css("top", this.element.offset().top - 20);
         this.toolbar.css("left", this.element.offset().left);
-        jQuery('body').append(this.toolbar);
+        jQuery(this.options.parentElement).append(this.toolbar);
         this.toolbar.bind("mousedown", function(event) {
           return event.preventDefault();
         });
-        if (this.options.showAlways) {
-          this.options.floating = false;
-          this.element.bind("halloactivated", function(event, data) {
-            that._updateToolbarPosition(that._getToolbarPosition(event));
-            return that.toolbar.show();
-          });
-          this.element.bind("hallodeactivated", function(event, data) {
-            return that.toolbar.hide();
-          });
-        } else {
-          this.element.bind("halloselected", function(event, data) {
-            var position, widget;
-            widget = data.editable;
-            position = widget._getToolbarPosition(data.originalEvent, data.selection);
-            if (position) {
-              that._updateToolbarPosition(position);
-              return that.toolbar.show();
-            }
-          });
-          this.element.bind("hallounselected", function(event, data) {
-            return data.editable.toolbar.hide();
-          });
-        }
+        if (this.options.showAlways) this._bindToolbarEventsFixed();
+        if (!this.options.showAlways) this._bindToolbarEventsRegular();
         return jQuery(window).resize(function(event) {
-          return that._updateToolbarPosition(that._getToolbarPosition(event));
+          return _this._updateToolbarPosition(_this._getToolbarPosition(event));
         });
       },
       _updateToolbarPosition: function(position) {
+        if (!(position.top && position.left)) return;
         this.toolbar.css("top", position.top);
         return this.toolbar.css("left", position.left);
       },
@@ -319,7 +324,6 @@
         return this._trigger("activated", this);
       },
       turnOff: function() {
-        this.toolbar.hide();
         jQuery(this.element).removeClass('inEditMode');
         this._trigger("deactivated", this);
         if (!this.getContents()) return this.setContents(this.options.placeholder);

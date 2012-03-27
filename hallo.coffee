@@ -107,6 +107,7 @@ Hallo may be freely distributed under the MIT license
             enabled: ->
             disabled: ->
             placeholder: ''
+            parentElement: 'body'
 
         _create: ->
             @originalContent = @getContents()
@@ -147,9 +148,7 @@ Hallo may be freely distributed under the MIT license
 
             if not @bound
                 @element.bind "focus", this, @_activated
-                # Only add the blur event when showAlways is set to true
-                if @options.showAlways
-                    @element.bind "blur", this, @_deactivated
+                @element.bind "blur", this, @_deactivated
                 @element.bind "keyup paste change", this, @_checkModified
                 @element.bind "keyup", this, @_keys
                 @element.bind "keyup mouseup", this, @_checkSelection
@@ -260,44 +259,51 @@ Hallo may be freely distributed under the MIT license
             tmpSpan.remove()
             return position
 
+        _bindToolbarEventsFixed: ->
+            @options.floating = false
+            # catch activate -> show
+            @element.bind "halloactivated", (event, data) =>
+                @_updateToolbarPosition @_getToolbarPosition event
+                @toolbar.show()
+
+            # catch deactivate -> hide
+            @element.bind "hallodeactivated", (event, data) =>
+                @toolbar.hide()
+
+        _bindToolbarEventsRegular: ->
+            # catch select -> show (and reposition?)
+            @element.bind "halloselected", (event, data) =>
+                position = @_getToolbarPosition data.originalEvent, data.selection
+                return unless position
+                @_updateToolbarPosition position
+                @toolbar.show()
+                # TO CHECK: Am I not showing in some case?
+
+            # catch deselect -> hide
+            @element.bind "hallounselected", (event, data) =>
+                @toolbar.hide()
+
+            @element.bind "hallodeactivated", (event, data) =>
+                @toolbar.hide()
+
         _prepareToolbar: ->
-            that = @
             @toolbar = jQuery('<div class="hallotoolbar"></div>').hide()
             @toolbar.css "position", "absolute"
             @toolbar.css "top", @element.offset().top - 20
             @toolbar.css "left", @element.offset().left
-            jQuery('body').append(@toolbar)
+            jQuery(@options.parentElement).append(@toolbar)
+
             @toolbar.bind "mousedown", (event) ->
                 event.preventDefault()
 
-            if @options.showAlways
-                @options.floating = false
-                # catch activate -> show
-                @element.bind "halloactivated", (event, data) ->
-                    that._updateToolbarPosition(that._getToolbarPosition(event))
-                    that.toolbar.show()
+            @_bindToolbarEventsFixed() if @options.showAlways
+            @_bindToolbarEventsRegular() unless @options.showAlways
 
-                # catch deactivate -> hide
-                @element.bind "hallodeactivated", (event, data) ->
-                    that.toolbar.hide()
-            else
-                # catch select -> show (and reposition?)
-                @element.bind "halloselected", (event, data) ->
-                    widget = data.editable
-                    position = widget._getToolbarPosition data.originalEvent, data.selection
-                    if position
-                        that._updateToolbarPosition position
-                        that.toolbar.show()
-                        # TO CHECK: Am I not showing in some case?
-
-                # catch deselect -> hide
-                @element.bind "hallounselected", (event, data) ->
-                    data.editable.toolbar.hide()
-
-            jQuery(window).resize (event) ->
-                    that._updateToolbarPosition that._getToolbarPosition(event)
+            jQuery(window).resize (event) =>
+                @_updateToolbarPosition @_getToolbarPosition event
 
         _updateToolbarPosition: (position) ->
+            return unless position.top and position.left
             this.toolbar.css "top", position.top
             this.toolbar.css "left", position.left
 
@@ -386,7 +392,6 @@ Hallo may be freely distributed under the MIT license
             @_trigger "activated", @
 
         turnOff: () ->
-            @toolbar.hide()
             jQuery(@element).removeClass 'inEditMode'
             @_trigger "deactivated", @
 
