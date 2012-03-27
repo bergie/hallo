@@ -15,6 +15,7 @@ mergeDirs = (k) ->
     (sh "mkdir -p src")
     (sh "cp *.coffee src/")
     (sh "cp plugins/*.coffee src/")
+    (sh "cp widgets/*.coffee src/")
   ], k
 
 task 'doc', 'generate documentation for *.coffee files', ->

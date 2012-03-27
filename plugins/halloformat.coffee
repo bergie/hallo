@@ -10,38 +10,20 @@
             formattings: 
                 bold: true
                 italic: true
-                strikeThrough: true
-                underline: true
+                strikeThrough: false
+                underline: false
 
         _create: ->
             widget = this
             buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
             buttonize = (format) =>
-                label = format.substr(0, 1).toUpperCase()
-                id = "#{@options.uuid}-#{format}"
-                buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\" class=\"#{format}_button\">#{label}</label>").button()
-                button = jQuery "##{id}", buttonset
-                button.attr "hallo-command", format
-                button.addClass format
-                button.bind "change", (event) ->
-                    format = jQuery(this).attr "hallo-command"
-                    widget.options.editable.execute format
-
-                queryState = (event) ->
-                    if document.queryCommandState format
-                        button.attr "checked", true
-                        button.next("label").addClass "ui-state-clicked"
-                        button.button "refresh"
-                    else
-                        button.attr "checked", false
-                        button.next("label").removeClass "ui-state-clicked"
-                        button.button "refresh"
-
-                element = @element
-                @element.bind "halloenabled", ->
-                    element.bind "keyup paste change mouseup", queryState
-                @element.bind "hallodisabled", ->
-                    element.unbind "keyup paste change mouseup", queryState
+                buttonHolder = jQuery '<span></span>'
+                buttonHolder.hallobutton
+                  label: format
+                  editable: @options.editable
+                  command: format
+                  uuid: @options.uuid
+                buttonset.append buttonHolder
             buttonize format for format, enabled of @options.formattings when enabled
 
             buttonset.buttonset()

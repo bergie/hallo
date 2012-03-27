@@ -6,43 +6,25 @@
         options:
             editable: null
             toolbar: null
-            uuid: ""
+            uuid: ''
 
         _create: ->
-            widget = this
-            buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
+            buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
             buttonize = (alignment) =>
-                id = "#{@options.uuid}-#{alignment}"
-                buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\" class=\"#{alignment}_button\" >#{alignment}</label>").button()
-                button = jQuery "##{id}", buttonset
-                button.attr "hallo-command", "justify" + alignment
-                button.bind "change", (event) ->
-                    justify = jQuery(this).attr "hallo-command"
-                    widget.options.editable.execute justify
-
-                queryState = (event) ->
-                    if document.queryCommandState "justify" + alignment
-                        button.attr "checked", true
-                        button.next("label").addClass "ui-state-clicked"
-                        button.button "refresh"
-                    else
-                        button.attr "checked", false
-                        button.next("label").removeClass "ui-state-clicked"
-                        button.button "refresh"
-
-                element = @element
-                element.bind "halloenabled", ->
-                    element.bind "keyup paste change mouseup", queryState
-                element.bind "hallodisabled", ->
-                    element.unbind "keyup paste change mouseup", queryState
-            
+                buttonElement = jQuery '<span></span>'
+                buttonElement.hallobutton
+                  uuid: @options.uuid
+                  editable: @options.editable
+                  label: alignment
+                  command: "justify#{alignment}"
+                  icon: "icon-align-#{alignment.toLowerCase()}"
+                buttonset.append buttonElement 
             buttonize "Left"
             buttonize "Center"
             buttonize "Right"
 
             buttonset.buttonset()
             @options.toolbar.append buttonset
-
         _init: ->
 
 )(jQuery)

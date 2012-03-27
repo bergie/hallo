@@ -6,20 +6,19 @@
         options:
             editable: null
             toolbar: null
-            uuid: ""
+            uuid: ''
 
         _create: ->
-            widget = this
-            buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
+            buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
             buttonize = (cmd, label) =>
-                id = "#{@options.uuid}-#{cmd}"
-                buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\">#{label}</label>").button()
-                button = jQuery "##{id}", buttonset
-                button.attr "hallo-command", cmd
-                button.bind "change", (event) ->
-                    cmd = jQuery(this).attr "hallo-command"
-                    widget.options.editable.execute cmd
-
+                buttonElement = jQuery '<span></span>'
+                buttonElement.hallobutton
+                  uuid: @options.uuid
+                  editable: @options.editable
+                  label: label
+                  icon: if cmd is 'undo' then 'icon-arrow-left' else 'icon-arrow-right'
+                  command: cmd
+                buttonset.append buttonElement
             buttonize "undo", "Undo"
             buttonize "redo", "Redo"
 
