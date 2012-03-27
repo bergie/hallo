@@ -20,7 +20,7 @@ task 'doc_copy', 'copy documentation to gh-pages branch', ->
     (sh "docco-husky src")
     (sh "mv docs docs_tmp")
     (sh "git checkout gh-pages")
-    (sh "mv docs_tmp docs")
+    (sh "mv docs_tmp/* docs")
     (sh "git add docs/*")
     (sh "git commit -m 'updating documentation from master'")
     (sh "git checkout master")
