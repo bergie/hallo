@@ -49,22 +49,6 @@
                     }
                 });
 
-                // Force browsers to use real bold and italic
-                // tags instead of styled spans. This works better
-                // in Markdown
-                try {
-                    document.execCommand('styleWithCSS', 0, false);
-                } catch (e) {
-                    try {
-                        document.execCommand('useCSS', 0, true);
-                    } catch (e) {
-                        try {
-                            document.execCommand('styleWithCSS', false, false);
-                        } catch (e) {
-                        }
-                    }
-                }
-
                 var markdownize = function(content) {
                     var html = content.split("\n").map($.trim).filter(function(line) { 
                         return line != "" }
