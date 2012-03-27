@@ -1,0 +1,130 @@
+<!DOCTYPE html><html><head><title>README</title><meta http-equiv="Content-Type" content="text/html" charset="UTF-8"><link rel="stylesheet" media="all" href="./docco.css"></head><body><div id="container"><div id="background"></div><div id="jump_to">Jump To &hellip;<div id="jump_wrapper"><div id="jump_page"><a href="./index.html" class="source"><span class="file_name">README</span></a><a href="./src/hallo.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">hallo.coffee</span></a><a href="./src/plugins/lists.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">lists.coffee</span></a><a href="./src/plugins/headings.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">headings.coffee</span></a><a href="./src/plugins/overlay.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">overlay.coffee</span></a><a href="./src/plugins/toolbarlinebreak.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">toolbarlinebreak.coffee</span></a><a href="./src/plugins/image.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">image.coffee</span></a><a href="./src/plugins/halloformat.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">halloformat.coffee</span></a><a href="./src/plugins/reundo.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">reundo.coffee</span></a><a href="./src/plugins/block.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">block.coffee</span></a><a href="./src/plugins/link.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">link.coffee</span></a><a href="./src/plugins/justify.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">justify.coffee</span></a><a href="./src/widgets/button.coffee.html" class="source "><span class="base_path">src / widgets / </span><span class="file_name">button.coffee</span></a><a href="./src/widgets/dropdownbutton.coffee.html" class="source "><span class="base_path">src / widgets / </span><span class="file_name">dropdownbutton.coffee</span></a></div></div></div><table cellpadding="0" cellspacing="0"><thead><tr><th class="docs"></th><th class="code"></th></tr></thead><tbody><tr id="section"><td class="docs"><h1><a href="http://bergie.github.com/hallo/">hallo
+</a></h1><p>Simple rich text editor</p><h3>Version</h3><p>0.0.1</p><h3>Author</h3><p><span class="gravatar"><img src="http://www.gravatar.com/avatar/995f27ce7205a79c55d4e44223cd6de0"/><span>Henri Bergius &lt;henri.bergius@iki.fi&gt;</span></span></p><h3>Dependencies </h3><ul></ul><p><h3>Stats</h3><pre class="code_stats">
+http://cloc.sourceforge.net v 1.55  T=0.5 s (26.0 files/s, 3274.0 lines/s)
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+CoffeeScript                    13            240            218           1179
+-------------------------------------------------------------------------------
+SUM:                            13            240            218           1179
+-------------------------------------------------------------------------------
+</pre></p></td><td id="content" class="code"><h1>Hallo - contentEditable for jQuery UI</h1>
+
+<p>Hallo is a very simple in-place rich text editor for web pages. It uses jQuery UI and the <a href="https://developer.mozilla.org/en/rich-text_editing_in_mozilla">HTML5 contentEditable functionality</a> to edit web content.</p>
+
+<p>The widget has been written as a simple and liberally licensed editor. It doesn't aim to replace popular editors like <a href="http://aloha-editor.org">Aloha</a>, but instead provide a smaller and less full-featured option. It is also intended to serve as a testbed for Aloha's <a href="https://github.com/alohaeditor/Aloha-Editor/issues/55">jQuery UI migration</a>, and so ideas and code from Hallo may flow back to the Aloha project.</p>
+
+<h2>Using the editor</h2>
+
+<p>You need jQuery and jQuery UI loaded. An easy way to do this is to use Google's JS service:</p>
+
+<pre><code>&lt;script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js"&gt;&lt;/script&gt;
+</code></pre>
+
+<p>The editor toolbar is using jQuery UI theming, so you'll probably also want to <a href="http://jqueryui.com/themeroller/">grab a theme</a> that fits your needs.</p>
+
+<p>Then include Hallo itself:</p>
+
+<pre><code>&lt;script src="hallo.js"&gt;&lt;/script&gt;
+</code></pre>
+
+<p>Editor activation is easy:</p>
+
+<pre><code>jQuery('p').hallo();
+</code></pre>
+
+<p>You can also deactivate the editor:</p>
+
+<pre><code>jQuery('p').hallo({editable: false});
+</code></pre>
+
+<p>Hallo itself only makes the selected DOM elements editable and doesn't provide any formatting tools. Formatting is accomplished by loading plugins when initializing Hallo:</p>
+
+<pre><code>jQuery('.editable').hallo({
+    plugins: {
+        'halloformat': {}
+    }
+});
+</code></pre>
+
+<p>This example would enable the simple formatting plugin that provides functionality like <em>bold</em> and <em>italic</em>. You can include as many Hallo plugins as you want, and if necessary pass them options.</p>
+
+<p>Hallo has got more options you set when instantiating. See the hallo.coffee file for further documentation.</p>
+
+<h2>Plugins</h2>
+
+<ul>
+<li>halloformat - Adds Bold, Italic, StrikeThrough and Underline support to the toolbar. (Enable/Disable with options: "formattings": {"bold": true, "italic": true, "strikeThough": true, "underline": false})</li>
+<li>halloheadings - Adds support for H1, H2, H3. You can pass a headings option key "headers" with an array of header sizes (i.e. headers: [1,2,5,6])</li>
+<li>hallojustify - Adds align left, center, right support</li>
+<li>hallolists - Adds support for ordered and unordered lists (Pick with options: "lists": {"ordered": false, "unordered": true})</li>
+<li>halloreundo - Adds support for undo and redo</li>
+<li>hallolink - Adds support to add links to a selection (currently not working)</li>
+</ul>
+
+<h2>Licensing</h2>
+
+<p>Hallo is free software available under the <a href="http://en.wikipedia.org/wiki/MIT_License">MIT license</a>.</p>
+
+<h2>Contributing</h2>
+
+<p>Hallo is written in <a href="http://jashkenas.github.com/coffee-script/">CoffeeScript</a>, a simple language that compiles into JavaScript. To generate the JavaScript code to <code>examples/hallo.js</code> from Hallo sources, run:</p>
+
+<pre><code>$ cake build
+</code></pre>
+
+<p>If you want to also generate a minified version, run:</p>
+
+<pre><code>$ cake min
+</code></pre>
+
+<p>Hallo development is coordinated using Git. Just fork the <a href="https://github.com/bergie/hallo">Hallo repository on GitHub</a> and <a href="http://help.github.com/pull-requests/">send pull requests</a>.</p>
+
+<h3>Writing plugins</h3>
+
+<p>Hallo plugins are written as regular <a href="http://semantic-interaction.org/blog/2011/03/01/jquery-ui-widget-factory/">jQuery UI widgets</a>.</p>
+
+<p>When Hallo is loaded it will also load all the enabled plugins for the element, and pass them some additional options:</p>
+
+<ul>
+<li><code>editable</code>: The main Hallo widget instance</li>
+<li><code>toolbar</code>: Toolbar jQuery object for that Hallo instance</li>
+<li><code>uuid</code>: unique identifier of the Hallo instance, can be used for element IDs</li>
+</ul>
+
+<p>A simplistic plugin would look like the following:</p>
+
+<pre><code>#    Formatting plugin for Hallo
+#    (c) 2011 Henri Bergius, IKS Consortium
+#    Hallo may be freely distributed under the MIT license
+((jQuery) -&gt;
+    jQuery.widget "IKS.halloformat",
+        boldElement: null
+
+        options:
+            uuid: ''
+            editable: null
+            toolbar: null
+
+        _create: -&gt;
+            # Create an element for holding the button
+            @boldElement = jQuery '&lt;span&gt;&lt;/span&gt;'
+
+            # Use Hallo Button
+            @boldElement.hallobutton
+              uuid: @options.uuid
+              editable: @options.editable
+              label: 'Bold'
+              # Icons come from Font Awesome
+              icon: 'icon-bold'
+              # Commands are used for execCommand and queryCommandState
+              command: 'bold'
+
+            # Append the button to toolbar
+            @options.toolbar.append @boldElement
+
+        _init: -&gt;
+
+)(jQuery)
+</code></pre>  </td></tr></tbody></table><div id="generated">generated Tue Mar 27 2012 16:14:06 GMT+0200 (CEST)  </div><div id="projectname"><a href="./index.html">Hallo Editor</a></div></div></body></html>

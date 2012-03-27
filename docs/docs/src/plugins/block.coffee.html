@@ -1,0 +1,65 @@
+<!DOCTYPE html><html><head><title>block.coffee</title><meta http-equiv="Content-Type" content="text/html" charset="UTF-8"><link rel="stylesheet" media="all" href="../../docco.css"></head><body><div id="container"><div id="background"></div><div id="jump_to">Jump To &hellip;<div id="jump_wrapper"><div id="jump_page"><a href="../../index.html" class="source"><span class="file_name">README</span></a><a href="../../src/hallo.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">hallo.coffee</span></a><a href="../../src/plugins/lists.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">lists.coffee</span></a><a href="../../src/plugins/headings.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">headings.coffee</span></a><a href="../../src/plugins/overlay.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">overlay.coffee</span></a><a href="../../src/plugins/toolbarlinebreak.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">toolbarlinebreak.coffee</span></a><a href="../../src/plugins/image.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">image.coffee</span></a><a href="../../src/plugins/halloformat.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">halloformat.coffee</span></a><a href="../../src/plugins/reundo.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">reundo.coffee</span></a><a href="../../src/plugins/block.coffee.html" class="source selected"><span class="base_path">src / plugins / </span><span class="file_name">block.coffee</span></a><a href="../../src/plugins/link.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">link.coffee</span></a><a href="../../src/plugins/justify.coffee.html" class="source "><span class="base_path">src / plugins / </span><span class="file_name">justify.coffee</span></a><a href="../../src/widgets/button.coffee.html" class="source "><span class="base_path">src / widgets / </span><span class="file_name">button.coffee</span></a><a href="../../src/widgets/dropdownbutton.coffee.html" class="source "><span class="base_path">src / widgets / </span><span class="file_name">dropdownbutton.coffee</span></a></div></div></div><table cellpadding="0" cellspacing="0"><thead><tr><th class="docs"><h1>block.coffee</h1><div class="filepath">src/plugins/</div></th><th class="code"></th></tr></thead><tbody><tr id="section-1"><td class="docs"><div class="pilwrap"><a href="#section-1" class="pilcrow">&#182;</a></div><pre><code>Hallo - a rich text editing jQuery UI widget
+(c) 2011 Henri Bergius, IKS Consortium
+Hallo may be freely distributed under the MIT license
+</code></pre>
+</td><td class="code"><div class="highlight"><pre><span class="p">(</span><span class="nf">(jQuery) -&gt;</span>
+  <span class="nx">jQuery</span><span class="p">.</span><span class="nx">widget</span> <span class="s1">&#39;IKS.halloblock&#39;</span><span class="p">,</span>
+    <span class="nv">options:</span>
+      <span class="nv">editable: </span><span class="kc">null</span>
+      <span class="nv">toolbar: </span><span class="kc">null</span>
+      <span class="nv">uuid: </span><span class="s1">&#39;&#39;</span>
+      <span class="nv">elements: </span><span class="p">[</span>
+        <span class="s1">&#39;h1&#39;</span>
+        <span class="s1">&#39;h2&#39;</span>
+        <span class="s1">&#39;h3&#39;</span>
+        <span class="s1">&#39;p&#39;</span>
+        <span class="s1">&#39;pre&#39;</span>
+        <span class="s1">&#39;blockquote&#39;</span>
+      <span class="p">]</span>
+
+    <span class="nv">_create: </span><span class="o">-&gt;</span>
+      <span class="nv">buttonset = </span><span class="nx">jQuery</span> <span class="s2">&quot;&lt;span class=\&quot;#{@widgetName}\&quot;&gt;&lt;/span&gt;&quot;</span>
+      <span class="nv">contentId = </span><span class="s2">&quot;#{@options.uuid}-#{@widgetName}-data&quot;</span>
+      <span class="nv">target = </span><span class="nx">@_prepareDropdown</span> <span class="nx">contentId</span>
+      <span class="nx">buttonset</span><span class="p">.</span><span class="nx">append</span> <span class="nx">target</span>
+      <span class="nx">buttonset</span><span class="p">.</span><span class="nx">append</span> <span class="nx">@_prepareButton</span> <span class="nx">target</span>
+      <span class="nx">@options</span><span class="p">.</span><span class="nx">toolbar</span><span class="p">.</span><span class="nx">append</span> <span class="nx">buttonset</span>
+
+    <span class="nv">_prepareDropdown: </span><span class="nf">(contentId) -&gt;</span>
+      <span class="nv">contentArea = </span><span class="nx">jQuery</span> <span class="s2">&quot;&lt;div id=\&quot;#{contentId}\&quot;&gt;&lt;/div&gt;&quot;</span>
+
+      <span class="nv">addElement = </span><span class="p">(</span><span class="nx">element</span><span class="p">)</span> <span class="o">=&gt;</span>
+        <span class="nv">el = </span><span class="nx">jQuery</span> <span class="s2">&quot;&lt;#{element}&gt;#{element}&lt;/#{element}&gt;&quot;</span>
+        <span class="nx">el</span><span class="p">.</span><span class="nx">bind</span> <span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="o">=&gt;</span>
+          <span class="nx">@options</span><span class="p">.</span><span class="nx">editable</span><span class="p">.</span><span class="nx">execute</span> <span class="s1">&#39;formatBlock&#39;</span><span class="p">,</span> <span class="nx">element</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">()</span>
+
+        <span class="nv">queryState = </span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span>
+          <span class="nv">block = </span><span class="nb">document</span><span class="p">.</span><span class="nx">queryCommandValue</span> <span class="s1">&#39;formatBlock&#39;</span>
+          <span class="k">if</span> <span class="nx">block</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">is</span> <span class="nx">element</span>
+            <span class="nx">el</span><span class="p">.</span><span class="nx">addClass</span> <span class="s1">&#39;selected&#39;</span>
+            <span class="k">return</span>
+          <span class="nx">el</span><span class="p">.</span><span class="nx">removeClass</span> <span class="s1">&#39;selected&#39;</span>
+
+        <span class="nx">@options</span><span class="p">.</span><span class="nx">editable</span><span class="p">.</span><span class="nx">element</span><span class="p">.</span><span class="nx">bind</span> <span class="s1">&#39;halloenabled&#39;</span><span class="p">,</span> <span class="o">=&gt;</span>
+          <span class="nx">@options</span><span class="p">.</span><span class="nx">editable</span><span class="p">.</span><span class="nx">element</span><span class="p">.</span><span class="nx">bind</span> <span class="s1">&#39;keyup paste change mouseup&#39;</span><span class="p">,</span> <span class="nx">queryState</span>
+        <span class="nx">@options</span><span class="p">.</span><span class="nx">editable</span><span class="p">.</span><span class="nx">element</span><span class="p">.</span><span class="nx">bind</span> <span class="s1">&#39;hallodisabled&#39;</span><span class="p">,</span> <span class="o">=&gt;</span>
+          <span class="nx">@options</span><span class="p">.</span><span class="nx">editable</span><span class="p">.</span><span class="nx">element</span><span class="p">.</span><span class="nx">bind</span> <span class="s1">&#39;keyup paste change mouseup&#39;</span><span class="p">,</span> <span class="nx">queryState</span>
+
+        <span class="nx">el</span>
+      <span class="k">for</span> <span class="nx">element</span> <span class="k">in</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">elements</span>
+        <span class="nx">contentArea</span><span class="p">.</span><span class="nx">append</span> <span class="nx">addElement</span> <span class="nx">element</span>
+      <span class="nx">contentArea</span>
+
+    <span class="nv">_prepareButton: </span><span class="nf">(target) -&gt;</span>
+      <span class="nv">buttonElement = </span><span class="nx">jQuery</span> <span class="s1">&#39;&lt;span&gt;&lt;/span&gt;&#39;</span>
+      <span class="nx">buttonElement</span><span class="p">.</span><span class="nx">hallodropdownbutton</span>
+        <span class="nv">uuid: </span><span class="nx">@options</span><span class="p">.</span><span class="nx">uuid</span>
+        <span class="nv">editable: </span><span class="nx">@options</span><span class="p">.</span><span class="nx">editable</span>
+        <span class="nv">label: </span><span class="s1">&#39;block&#39;</span>
+        <span class="nv">icon: </span><span class="s1">&#39;icon-text-height&#39;</span>
+        <span class="nv">target: </span><span class="nx">target</span>
+      <span class="nx">buttonElement</span>
+
+<span class="p">)(</span><span class="nx">jQuery</span><span class="p">)</span>
+
+</pre></div></td></tr></tbody></table><div id="generated">generated Tue Mar 27 2012 16:14:09 GMT+0200 (CEST)  </div><div id="projectname"><a href="../../index.html">Hallo Editor</a></div></div></body></html>
