@@ -339,15 +339,12 @@
         try {
           return document.execCommand('styleWithCSS', 0, false);
         } catch (e) {
-          console.log(1, e);
           try {
             return document.execCommand('useCSS', 0, true);
           } catch (e) {
-            console.log(2, e);
             try {
               return document.execCommand('styleWithCSS', false, false);
             } catch (e) {
-              console.log(3, e);
 
             }
           }
