@@ -31,12 +31,61 @@ h1, h2, h3, h4, h5, h6 {
   border-left: 1px solid #e5e5ee;
   z-index: -1;
 }
+#projectname {
+  top: 2px;
+  font-style: italic;
+  -webkit-box-shadow: 0 0 25px #777;
+  -moz-box-shadow: 0 0 25px #777;
+  padding: 5px 10px;
+  left: 0;
+  position: fixed;
+  font-size: 18px;
+  left: 50px;
+  background-color: white;      
+}
+  #projectname a {
+    text-decoration: none;
+  }
+    #projectname a:hover {
+      text-decoration: underline;
+    }
+#generated {
+  margin: 10px;
+  font-size: 80%;
+  float: right;
+}
+.gravatar img {
+  width: 30px;
+  margin-right: 5px;
+  vertical-align:middle;
+}
+#content {
+  padding: 10px 25px 1px 50px;
+}
+  #content pre {
+    margin: 1em 0;
+    font-size: 12px;
+    background-color: #EEE;
+    border: 1px solid #DDD;
+    padding: 5px;
+    color: #444;
+    overflow: auto;
+    -webkit-box-shadow: rgba(0,0,0,0.07) 0 1px 2px inset;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+  }
+    #content pre code {
+      padding: 0!important;
+      font-size: 12px!important;
+      background-color: #EEE!important;
+      border: none!important;
+    }
 #jump_to, #jump_page {
   background: white;
   -webkit-box-shadow: 0 0 25px #777; -moz-box-shadow: 0 0 25px #777;
   -webkit-border-bottom-left-radius: 5px; -moz-border-radius-bottomleft: 5px;
   font: 10px Arial;
-  text-transform: uppercase;
   cursor: pointer;
   text-align: right;
 }
@@ -55,6 +104,9 @@ h1, h2, h3, h4, h5, h6 {
     #jump_page {
       padding: 5px 0 3px;
       margin: 0 0 25px 25px;
+      height: 400px;
+      min-width: 150px;
+      overflow-y: auto;
     }
       #jump_page .source {
         display: block;
@@ -67,6 +119,21 @@ h1, h2, h3, h4, h5, h6 {
         }
         #jump_page .source:first-child {
         }
+        #jump_page .selected {
+          font-weight: bold;
+        }
+        #jump_page .source .base_path {
+          display: block;
+          text-align: left;
+          color: #8E8A96;
+        }
+        #jump_page .source .base_path .separator {
+          margin-right: 2px;
+          margin-leftl: 2px;
+        }
+#page {
+  padding-top:40px;
+}
 table td {
   border: 0;
   outline: 0;
@@ -80,9 +147,17 @@ table td {
     vertical-align: top;
     text-align: left;
   }
+    .docs .filepath {
+      margin-top: -10px;
+      margin-left: 25px;
+      color: #8E8A96;
+    }
     .docs pre {
       margin: 15px 0 15px;
       padding-left: 15px;
+    }
+    .docs pre.code_stats {
+      font-size: 60%;
     }
     .docs p tt, .docs p code {
       background: #f8f8ff;
@@ -90,6 +165,28 @@ table td {
       font-size: 12px;
       padding: 0 0.2em;
     }
+    .docs .dox {
+      border-top: #eee solid 1px;
+      padding-bottom:10px;
+    }
+      .docs .dox .details {
+        padding: 10px;
+        background-color: #F5F5FF;
+        border: 1px solid #E5E5EE;
+        margin-bottom: 10px;      
+      }
+      .docs .dox .dox_tag_title {
+        font-weight: bold;
+      }
+      .docs .dox .dox_tag_detail {
+        margin-left: 10px;
+      }
+        .docs .dox .dox_tag_detail span{
+          margin-right: 5px;
+        }
+      .docs .dox .dox_type {
+        font-style: italic;
+      }
     .pilwrap {
       position: relative;
     }
@@ -184,3 +281,4 @@ body .vc { color: #19469D }                     /* Name.Variable.Class */
 body .vg { color: #19469D }                     /* Name.Variable.Global */
 body .vi { color: #19469D }                     /* Name.Variable.Instance */
 body .il { color: #666666 }                     /* Literal.Number.Integer.Long */
+
