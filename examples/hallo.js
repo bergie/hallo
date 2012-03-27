@@ -28,24 +28,24 @@
         enabled: function() {},
         disabled: function() {},
         placeholder: '',
-        parentElement: 'body'
+        parentElement: 'body',
+        forceStructured: true
       },
       _create: function() {
-        var options, plugin, _ref, _results;
+        var options, plugin, _ref;
         this.originalContent = this.getContents();
         this.id = this._generateUUID();
         this._prepareToolbar();
         _ref = this.options.plugins;
-        _results = [];
         for (plugin in _ref) {
           options = _ref[plugin];
           if (!jQuery.isPlainObject(options)) options = {};
           options["editable"] = this;
           options["toolbar"] = this.toolbar;
           options["uuid"] = this.id;
-          _results.push(jQuery(this.element)[plugin](options));
+          jQuery(this.element)[plugin](options);
         }
-        return _results;
+        if (this.options.forceStructured) return this._forceStructured();
       },
       _init: function() {
         if (this.options.editable) {
@@ -334,6 +334,21 @@
       },
       _deactivated: function(event) {
         return event.data.turnOff();
+      },
+      _forceStructured: function(event) {
+        try {
+          return document.execCommand('styleWithCSS', 0, false);
+        } catch (e) {
+          try {
+            return document.execCommand('useCSS', 0, true);
+          } catch (e) {
+            try {
+              return document.execCommand('styleWithCSS', false, false);
+            } catch (e) {
+
+            }
+          }
+        }
       }
     });
   })(jQuery);

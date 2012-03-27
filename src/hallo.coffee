@@ -108,6 +108,7 @@ Hallo may be freely distributed under the MIT license
             disabled: ->
             placeholder: ''
             parentElement: 'body'
+            forceStructured: true
 
         _create: ->
             @originalContent = @getContents()
@@ -121,6 +122,8 @@ Hallo may be freely distributed under the MIT license
                 options["toolbar"] = @toolbar
                 options["uuid"] = @id
                 jQuery(@element)[plugin] options
+
+            @_forceStructured() if @options.forceStructured
 
         _init: ->
             if @options.editable
@@ -405,5 +408,15 @@ Hallo may be freely distributed under the MIT license
         _deactivated: (event) ->
             event.data.turnOff()
 
+        _forceStructured: (event) ->
+            try
+                document.execCommand 'styleWithCSS', 0, false
+            catch e
+                try
+                    document.execCommand 'useCSS', 0, true
+                catch e
+                    try
+                        document.execCommand 'styleWithCSS', false, false
+                    catch e
 
 )(jQuery)
