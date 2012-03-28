@@ -599,7 +599,7 @@
       instantiate: function() {
         return this.options.editable.element.annotate({
           vie: this.options.vie,
-          debug: true,
+          debug: false,
           showTooltip: true,
           select: this.options.select,
           remove: this.options.remove,

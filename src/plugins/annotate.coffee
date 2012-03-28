@@ -61,7 +61,7 @@
         instantiate: ->
             @options.editable.element.annotate
                 vie: @options.vie
-                debug: true
+                debug: false
                 showTooltip: true
                 select: @options.select
                 remove: @options.remove
