@@ -5,9 +5,19 @@
     <link rel="stylesheet" href="hallo.css" />
     <link rel="stylesheet" href="image.css" />
     <link rel="stylesheet" href="fontawesome/css/font-awesome.css" charset="utf-8" />
+    <link rel="stylesheet" href="annotate.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js"></script>
+
+    <script src="http://szabyg.github.com/annotate.js/lib/underscore-min.js"></script>
+    <script src="http://szabyg.github.com/annotate.js/lib/backbone-min.js"></script>
+    <script src="http://szabyg.github.com/annotate.js/lib/jquery.rdfquery.min.js"></script>
+
+    <script src="http://szabyg.github.com/annotate.js/lib/vie/vie-latest.js"></script>
+    <script src="http://szabyg.github.com/annotate.js/lib/annotate.js"></script>
+
     <script src="hallo.js"></script>
+
     <title>Hallo example</title>
   </head>
   <body>
@@ -18,19 +28,7 @@
 
     <h1 class="editable">Hello World</h1>
     <div class="editable">
-      <p>
-        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.
-      </p>
-      <p>
-        Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius.
-      </p>
-
-      <table>
-          <tr>
-              <td width="70%">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</td>
-              <td width="30%">Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius.</td>
-          </tr>
-      </table>
+Turkey, known officially as the Republic of Turkey, is a Eurasian country that stretches across the Anatolian peninsula in western Asia and Thrace in the Balkan region of southeastern Europe. Turkey is one of the six independent Turkic states. Turkey is bordered by eight countries: Bulgaria to the northwest; Greece to the west; Georgia to the northeast; Armenia, Azerbaijan and Iran to the east; and Iraq and Syria to the southeast. 
     </div>
 
     <script>
@@ -74,19 +72,12 @@
         jQuery('.editable').hallo({
           plugins: {
             'halloformat': {},
-            'halloheadings': {},
+            'halloblock': {},
             'hallojustify': {},
             'hallolists': {},
             'hallolink': {},
-            'halloreundo': {},
-            'halloimage': {
-                search: function(query, limit, offset, successCallback) {
-                    response = {offset: offset, total: limit + 1, assets: searchresult.slice(offset, offset+limit)};
-                    successCallback(response);
-                },
-                suggestions: null,
-                uploadUrl: '/some/example/url'
-            }
+            'halloannotate': {},
+            'halloreundo': {}
           },
           editable: true,
           showAlways: true
