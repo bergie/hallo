@@ -1,8 +1,10 @@
 ((jQuery) ->
-    z = new VIE
-    z.use new z.StanbolService
-        proxyDisabled: true
-        url : 'http://dev.iks-project.eu:8081',
+    z = null
+    if @VIE isnt undefined
+      z = new VIE
+      z.use new z.StanbolService
+          proxyDisabled: true
+          url : 'http://dev.iks-project.eu:8081',
 
     jQuery.widget 'IKS.halloannotate',
         options:

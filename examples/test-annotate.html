@@ -71,21 +71,13 @@ Turkey, known officially as the Republic of Turkey, is a Eurasian country that s
       jQuery('#enable').button().click(function() {
         jQuery('.editable').hallo({
           plugins: {
-            'halloannotate': {},
             'halloformat': {},
             'halloblock': {},
             'hallojustify': {},
             'hallolists': {},
             'hallolink': {},
-            'halloreundo': {},
-            'halloimage': {
-                search: function(query, limit, offset, successCallback) {
-                    response = {offset: offset, total: limit + 1, assets: searchresult.slice(offset, offset+limit)};
-                    successCallback(response);
-                },
-                suggestions: null,
-                uploadUrl: '/some/example/url'
-            }
+            'halloannotate': {},
+            'halloreundo': {}
           },
           editable: true,
           showAlways: true
