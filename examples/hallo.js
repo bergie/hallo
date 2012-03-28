@@ -20,9 +20,11 @@
           _this = this;
         if (!this.button) this.button = this._prepareButton();
         this.element.append(this.button);
-        this.button.bind('change', function(event) {
-          return _this.options.editable.execute(_this.options.command);
-        });
+        if (this.options.command) {
+          this.button.bind('change', function(event) {
+            return _this.options.editable.execute(_this.options.command);
+          });
+        }
         if (!this.options.queryState) return;
         editableElement = this.options.editable.element;
         queryState = function(event) {
@@ -43,11 +45,17 @@
           return editableElement.unbind('keyup paste change mouseup hallomodified', queryState);
         });
       },
+      enable: function() {
+        return this.button.button('enable');
+      },
+      disable: function() {
+        return this.button.button('disable');
+      },
       _prepareButton: function() {
-        var button, buttonEl, id;
+        var button, id;
         id = "" + this.options.uuid + "-" + this.options.label;
-        buttonEl = jQuery("<input id=\"" + id + "\" type=\"checkbox\" />\n<label for=\"" + id + "\" class=\"btn " + this.options.command + "_button\" title=\"" + this.options.label + "\">\n  <i class=\"" + this.options.icon + "\"></i>\n</label>");
-        button = buttonEl.button();
+        this.buttonEl = jQuery("<input id=\"" + id + "\" type=\"checkbox\" />\n<label for=\"" + id + "\" class=\"btn " + this.options.command + "_button\" title=\"" + this.options.label + "\">\n  <i class=\"" + this.options.icon + "\"></i>\n</label>");
+        button = this.buttonEl.button();
         button.data('hallo-command', this.options.command);
         return button;
       }
@@ -502,52 +510,64 @@
   })(jQuery);
 
   (function(jQuery) {
-<<<<<<< HEAD
     var z;
     z = new VIE;
     z.use(new z.StanbolService({
       proxyDisabled: true,
-      url: "http://dev.iks-project.eu:8081"
+      url: 'http://dev.iks-project.eu:8081'
     }));
-    return jQuery.widget("IKS.halloannotate", {
-=======
-    return jQuery.widget("Liip.hallotoolbarlinebreak", {
->>>>>>> master
+    return jQuery.widget('IKS.halloannotate', {
       options: {
         vie: z,
         editable: null,
         toolbar: null,
-<<<<<<< HEAD
+        uuid: '',
         select: function() {},
         decline: function() {},
         remove: function() {}
       },
       _create: function() {
-        var buttonize, buttonset, widget,
+        var buttonHolder, editableElement, queryState, widget,
           _this = this;
         widget = this;
-        widget.buttons = {};
-        buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
-        buttonize = function(cmd, label) {
-          var button, id;
-          id = "" + _this.options.uuid + "-" + cmd;
-          buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\">" + label + "</label>").button());
-          button = jQuery("#" + id, buttonset);
-          button.attr("hallo-command", cmd);
-          button.bind("change", function(event) {
-            cmd = jQuery(this).attr("hallo-command");
-            return widget[cmd]();
-          });
-          return widget.buttons[cmd] = button;
+        this.state = 'off';
+        buttonHolder = jQuery('<span></span>');
+        this.button = buttonHolder.hallobutton({
+          label: '',
+          icon: 'icon-tags',
+          editable: this.options.editable,
+          command: null,
+          uuid: this.options.uuid
+        });
+        buttonHolder.bind('change', function(event) {
+          console.info(_this, arguments);
+          switch (_this.state) {
+            case 'off':
+              return _this.enhance();
+            case 'on':
+              return _this.done();
+          }
+        });
+        this.options.toolbar.append(this.button);
+        this.instantiate();
+        editableElement = this.options.editable.element;
+        queryState = function(event) {
+          if (document.queryCommandState(_this.options.command)) {
+            _this.button.attr('checked', true);
+            _this.button.next('label').addClass('ui-state-clicked');
+            _this.button.button('refresh');
+            return;
+          }
+          _this.button.attr('checked', false);
+          _this.button.next('label').removeClass('ui-state-clicked');
+          return _this.button.button('refresh');
         };
-        buttonize("enhance", "Enhance");
-        buttonize("done", "Done");
-        buttonize("acceptAll", "Accept all");
-        buttonset.buttonset();
-        widget.buttons.done.button("disable");
-        widget.buttons.acceptAll.button("disable");
-        this.options.toolbar.append(buttonset);
-        return this.instantiate();
+        editableElement.bind('halloenabled', function() {
+          return editableElement.bind('keyup paste change mouseup hallomodified', queryState);
+        });
+        return editableElement.bind('hallodisabled', function() {
+          return editableElement.unbind('keyup paste change mouseup hallomodified', queryState);
+        });
       },
       instantiate: function() {
         return this.options.editable.element.annotate({
@@ -559,61 +579,29 @@
           success: this.options.success,
           error: this.options.error
         });
-=======
-        uuid: "",
-        breakAfter: []
-      },
-      _create: function() {
-        var buttonset, buttonsets, queuedButtonsets, row, rowcounter, _i, _j, _len, _len2, _ref;
-        buttonsets = jQuery('.ui-buttonset', this.options.toolbar);
-        queuedButtonsets = jQuery();
-        rowcounter = 0;
-        _ref = this.options.breakAfter;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          row = _ref[_i];
-          rowcounter++;
-          for (_j = 0, _len2 = buttonsets.length; _j < _len2; _j++) {
-            buttonset = buttonsets[_j];
-            queuedButtonsets = jQuery(queuedButtonsets).add(jQuery(buttonset));
-            if (jQuery(buttonset).hasClass(row)) {
-              queuedButtonsets.wrapAll('<div class="halloButtonrow halloButtonrow-' + rowcounter + '" />');
-              buttonsets = buttonsets.not(queuedButtonsets);
-              queuedButtonsets = jQuery();
-              break;
-            }
-          }
-        }
-        if (buttonsets.length > 0) {
-          rowcounter++;
-          return buttonsets.wrapAll('<div class="halloButtonrow halloButtonrow-' + rowcounter + '" />');
-        }
->>>>>>> master
       },
       acceptAll: function() {
         this.options.editable.element.each(function() {
-          return jQuery(this).annotate("acceptAll", function(report) {
-            return console.log("AcceptAll finished with the report:", report);
+          return jQuery(this).annotate('acceptAll', function(report) {
+            return console.log('AcceptAll finished with the report:', report);
           });
         });
-        return this.buttons.acceptAll.button("disable");
+        return this.buttons.acceptAll.button('disable');
       },
       enhance: function() {
-        var origLabel, widget,
+        var widget,
           _this = this;
         widget = this;
-        console.info(".content", this.options.editable.element);
-        origLabel = this.buttons.enhance.button("option", "label");
-        this.buttons.enhance.button("disable");
+        this.button.hallobutton("disable");
+        console.info('.content', this.options.editable.element);
         try {
-          return this.options.editable.element.annotate("enable", function(success) {
+          return this.options.editable.element.annotate('enable', function(success) {
             if (success) {
-              _this.buttons.enhance.button("enable");
-              _this.buttons.enhance.button("disable");
-              _this.buttons.done.button("enable");
-              _this.buttons.acceptAll.button("enable");
-              return console.log("done");
+              _this.state = "on";
+              _this.button.hallobutton("enable");
+              return console.log('done');
             } else {
-              return _this.buttons.enhance.show().button("enable").button("option", "label", "error, see the log.. Try to enhance again!");
+              return _this.buttons.enhance.show().button('enable').button('option', 'label', 'error, see the log.. Try to enhance again!');
             }
           });
         } catch (e) {
@@ -621,16 +609,13 @@
         }
       },
       done: function() {
-        this.options.editable.element.annotate("disable");
-        this.buttons.enhance.button("enable");
-        this.buttons.done.button("disable");
-        return this.buttons.acceptAll.button("disable");
+        this.options.editable.element.annotate('disable');
+        return this.state = 'off';
       }
     });
   })(jQuery);
 
   (function(jQuery) {
-<<<<<<< HEAD
     return jQuery.widget("Liip.hallotoolbarlinebreak", {
       options: {
         editable: null,
@@ -713,53 +698,6 @@
         };
         _ref = this.options.elements;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-=======
-    return jQuery.widget('IKS.halloblock', {
-      options: {
-        editable: null,
-        toolbar: null,
-        uuid: '',
-        elements: ['h1', 'h2', 'h3', 'p', 'pre', 'blockquote']
-      },
-      _create: function() {
-        var buttonset, contentId, target;
-        buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
-        contentId = "" + this.options.uuid + "-" + this.widgetName + "-data";
-        target = this._prepareDropdown(contentId);
-        buttonset.append(target);
-        buttonset.append(this._prepareButton(target));
-        return this.options.toolbar.append(buttonset);
-      },
-      _prepareDropdown: function(contentId) {
-        var addElement, contentArea, element, _i, _len, _ref,
-          _this = this;
-        contentArea = jQuery("<div id=\"" + contentId + "\"></div>");
-        addElement = function(element) {
-          var el, queryState;
-          el = jQuery("<" + element + ">" + element + "</" + element + ">");
-          el.bind('click', function() {
-            return _this.options.editable.execute('formatBlock', element.toUpperCase());
-          });
-          queryState = function(event) {
-            var block;
-            block = document.queryCommandValue('formatBlock');
-            if (block.toLowerCase() === element) {
-              el.addClass('selected');
-              return;
-            }
-            return el.removeClass('selected');
-          };
-          _this.options.editable.element.bind('halloenabled', function() {
-            return _this.options.editable.element.bind('keyup paste change mouseup', queryState);
-          });
-          _this.options.editable.element.bind('hallodisabled', function() {
-            return _this.options.editable.element.unbind('keyup paste change mouseup', queryState);
-          });
-          return el;
-        };
-        _ref = this.options.elements;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
->>>>>>> master
           element = _ref[_i];
           contentArea.append(addElement(element));
         }
