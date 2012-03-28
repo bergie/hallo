@@ -18,7 +18,7 @@
 
         _create: ->
           widget = @
-          if @VIE is undefined
+          if @options.vie is undefined
             throw 'The halloannotate plugin requires VIE to be loaded'
             return
 
