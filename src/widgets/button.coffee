@@ -23,8 +23,9 @@
       @button = @_prepareButton() unless @button
       @element.append @button
 
-      @button.bind 'change', (event) =>
-        @options.editable.execute @options.command
+      if @options.command
+        @button.bind 'change', (event) =>
+          @options.editable.execute @options.command
 
       return unless @options.queryState
 
@@ -39,9 +40,15 @@
         @button.next('label').removeClass 'ui-state-clicked'
         @button.button 'refresh'
       editableElement.bind 'halloenabled', =>
-        editableElement.bind 'keyup paste change mouseup', queryState
+        editableElement.bind 'keyup paste change mouseup hallomodified', queryState
       editableElement.bind 'hallodisabled', =>
-        editableElement.unbind 'keyup paste change mouseup', queryState
+        editableElement.unbind 'keyup paste change mouseup hallomodified', queryState
+
+    enable: ->
+      @button.button 'enable'
+
+    disable: ->
+      @button.button 'disable'
 
     _prepareButton: ->
       id = "#{@options.uuid}-#{@options.label}"
