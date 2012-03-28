@@ -38,9 +38,9 @@
         @button.next('label').removeClass 'ui-state-clicked'
         @button.button 'refresh'
       editableElement.bind 'halloenabled', =>
-        editableElement.bind 'keyup paste change mouseup', queryState
+        editableElement.bind 'keyup paste change mouseup hallomodified', queryState
       editableElement.bind 'hallodisabled', =>
-        editableElement.unbind 'keyup paste change mouseup', queryState
+        editableElement.unbind 'keyup paste change mouseup hallomodified', queryState
 
     _prepareButton: ->
       id = "#{@options.uuid}-#{@options.label}"

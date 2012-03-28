@@ -37,10 +37,10 @@
           return _this.button.button('refresh');
         };
         editableElement.bind('halloenabled', function() {
-          return editableElement.bind('keyup paste change mouseup', queryState);
+          return editableElement.bind('keyup paste change mouseup hallomodified', queryState);
         });
         return editableElement.bind('hallodisabled', function() {
-          return editableElement.unbind('keyup paste change mouseup', queryState);
+          return editableElement.unbind('keyup paste change mouseup hallomodified', queryState);
         });
       },
       _prepareButton: function() {
@@ -279,6 +279,19 @@
           return this.element.trigger("change");
         }
       },
+      protectFocusFrom: function(el) {
+        var widget;
+        widget = this;
+        return el.bind("mousedown", function(event) {
+          event.preventDefault();
+          console.info("_protectToolbarFocus = true");
+          widget._protectToolbarFocus = true;
+          return setTimeout(function() {
+            console.info("_protectToolbarFocus = false");
+            return widget._protectToolbarFocus = false;
+          }, 300);
+        });
+      },
       _generateUUID: function() {
         var S4;
         S4 = function() {
@@ -347,7 +360,8 @@
         });
       },
       _prepareToolbar: function() {
-        var _this = this;
+        var widget,
+          _this = this;
         this.toolbar = jQuery('<div class="hallotoolbar"></div>').hide();
         if (!this.options.fixed) {
           this.toolbar.css("position", "absolute");
@@ -355,14 +369,13 @@
           this.toolbar.css("left", this.element.offset().left);
         }
         jQuery(this.options.parentElement).append(this.toolbar);
-        this.toolbar.bind("mousedown", function(event) {
-          return event.preventDefault();
-        });
+        widget = this;
         if (this.options.showAlways) this._bindToolbarEventsFixed();
         if (!this.options.showAlways) this._bindToolbarEventsRegular();
-        return jQuery(window).resize(function(event) {
+        jQuery(window).resize(function(event) {
           return _this._updateToolbarPosition(_this._getToolbarPosition(event));
         });
+        return this.protectFocusFrom(this.toolbar);
       },
       _updateToolbarPosition: function(position) {
         if (this.options.fixed) return;
@@ -462,7 +475,13 @@
         return event.data.turnOn();
       },
       _deactivated: function(event) {
-        return event.data.turnOff();
+        if (event.data._protectToolbarFocus !== true) {
+          return event.data.turnOff();
+        } else {
+          return setTimeout(function() {
+            return jQuery(event.data.element).focus();
+          }, 300);
+        }
       },
       _forceStructured: function(event) {
         try {
@@ -483,6 +502,7 @@
   })(jQuery);
 
   (function(jQuery) {
+<<<<<<< HEAD
     var z;
     z = new VIE;
     z.use(new z.StanbolService({
@@ -490,10 +510,14 @@
       url: "http://dev.iks-project.eu:8081"
     }));
     return jQuery.widget("IKS.halloannotate", {
+=======
+    return jQuery.widget("Liip.hallotoolbarlinebreak", {
+>>>>>>> master
       options: {
         vie: z,
         editable: null,
         toolbar: null,
+<<<<<<< HEAD
         select: function() {},
         decline: function() {},
         remove: function() {}
@@ -535,6 +559,35 @@
           success: this.options.success,
           error: this.options.error
         });
+=======
+        uuid: "",
+        breakAfter: []
+      },
+      _create: function() {
+        var buttonset, buttonsets, queuedButtonsets, row, rowcounter, _i, _j, _len, _len2, _ref;
+        buttonsets = jQuery('.ui-buttonset', this.options.toolbar);
+        queuedButtonsets = jQuery();
+        rowcounter = 0;
+        _ref = this.options.breakAfter;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          row = _ref[_i];
+          rowcounter++;
+          for (_j = 0, _len2 = buttonsets.length; _j < _len2; _j++) {
+            buttonset = buttonsets[_j];
+            queuedButtonsets = jQuery(queuedButtonsets).add(jQuery(buttonset));
+            if (jQuery(buttonset).hasClass(row)) {
+              queuedButtonsets.wrapAll('<div class="halloButtonrow halloButtonrow-' + rowcounter + '" />');
+              buttonsets = buttonsets.not(queuedButtonsets);
+              queuedButtonsets = jQuery();
+              break;
+            }
+          }
+        }
+        if (buttonsets.length > 0) {
+          rowcounter++;
+          return buttonsets.wrapAll('<div class="halloButtonrow halloButtonrow-' + rowcounter + '" />');
+        }
+>>>>>>> master
       },
       acceptAll: function() {
         this.options.editable.element.each(function() {
@@ -577,6 +630,7 @@
   })(jQuery);
 
   (function(jQuery) {
+<<<<<<< HEAD
     return jQuery.widget("Liip.hallotoolbarlinebreak", {
       options: {
         editable: null,
@@ -659,6 +713,53 @@
         };
         _ref = this.options.elements;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+=======
+    return jQuery.widget('IKS.halloblock', {
+      options: {
+        editable: null,
+        toolbar: null,
+        uuid: '',
+        elements: ['h1', 'h2', 'h3', 'p', 'pre', 'blockquote']
+      },
+      _create: function() {
+        var buttonset, contentId, target;
+        buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
+        contentId = "" + this.options.uuid + "-" + this.widgetName + "-data";
+        target = this._prepareDropdown(contentId);
+        buttonset.append(target);
+        buttonset.append(this._prepareButton(target));
+        return this.options.toolbar.append(buttonset);
+      },
+      _prepareDropdown: function(contentId) {
+        var addElement, contentArea, element, _i, _len, _ref,
+          _this = this;
+        contentArea = jQuery("<div id=\"" + contentId + "\"></div>");
+        addElement = function(element) {
+          var el, queryState;
+          el = jQuery("<" + element + ">" + element + "</" + element + ">");
+          el.bind('click', function() {
+            return _this.options.editable.execute('formatBlock', element.toUpperCase());
+          });
+          queryState = function(event) {
+            var block;
+            block = document.queryCommandValue('formatBlock');
+            if (block.toLowerCase() === element) {
+              el.addClass('selected');
+              return;
+            }
+            return el.removeClass('selected');
+          };
+          _this.options.editable.element.bind('halloenabled', function() {
+            return _this.options.editable.element.bind('keyup paste change mouseup', queryState);
+          });
+          _this.options.editable.element.bind('hallodisabled', function() {
+            return _this.options.editable.element.unbind('keyup paste change mouseup', queryState);
+          });
+          return el;
+        };
+        _ref = this.options.elements;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+>>>>>>> master
           element = _ref[_i];
           contentArea.append(addElement(element));
         }

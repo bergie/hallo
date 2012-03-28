@@ -90,7 +90,8 @@
           },
           editable: true,
           showAlways: true
-        });
+        })
+        .hallo('protectFocusFrom', jQuery('#enable'));
         jQuery('.editable').bind('hallomodified', function(event, data) {
             jQuery('#modified').html("Editables modified");
         });
