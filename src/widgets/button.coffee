@@ -22,8 +22,9 @@
       @button = @_prepareButton() unless @button
       @element.append @button
 
-      @button.bind 'change', (event) =>
-        @options.editable.execute @options.command
+      if @options.command
+        @button.bind 'change', (event) =>
+          @options.editable.execute @options.command
 
       return unless @options.queryState
 
@@ -42,13 +43,19 @@
       editableElement.bind 'hallodisabled', =>
         editableElement.unbind 'keyup paste change mouseup hallomodified', queryState
 
+    enable: ->
+      @button.button 'enable'
+
+    disable: ->
+      @button.button 'disable'
+
     _prepareButton: ->
       id = "#{@options.uuid}-#{@options.label}"
-      buttonEl = jQuery """<input id=\"#{id}\" type=\"checkbox\" />
+      @buttonEl = jQuery """<input id=\"#{id}\" type=\"checkbox\" />
         <label for=\"#{id}\" class=\"btn #{@options.command}_button\" title=\"#{@options.label}\">
           <i class=\"#{@options.icon}\"></i>
         </label>"""
-      button = buttonEl.button()
+      button = @buttonEl.button()
       button.data 'hallo-command', @options.command
       button
 
