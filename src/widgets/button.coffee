@@ -52,12 +52,12 @@
 
     _prepareButton: ->
       id = "#{@options.uuid}-#{@options.label}"
-      @buttonEl = jQuery """<input id=\"#{id}\" type=\"checkbox\" />
+      buttonEl = jQuery """<input id=\"#{id}\" type=\"checkbox\" />
         <label for=\"#{id}\" class=\"#{@options.command}_button\" title=\"#{@options.label}\">
           <i class=\"#{@options.icon}\"></i>
         </label>"""
-      @buttonEl.addClass @options.cssClass if @options.cssClass
-      button = @buttonEl.button()
+      buttonEl.addClass @options.cssClass if @options.cssClass
+      button = buttonEl.button()
       button.data 'hallo-command', @options.command
       button
 
