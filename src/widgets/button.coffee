@@ -31,6 +31,7 @@
 
       editableElement = @options.editable.element
       queryState = (event) =>
+        return unless @options.command
         if document.queryCommandState @options.command
           @button.attr 'checked', true
           @button.next('label').addClass 'ui-state-clicked'

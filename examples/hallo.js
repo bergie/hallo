@@ -1634,6 +1634,7 @@
         if (!this.options.queryState) return;
         editableElement = this.options.editable.element;
         queryState = function(event) {
+          if (!_this.options.command) return;
           if (document.queryCommandState(_this.options.command)) {
             _this.button.attr('checked', true);
             _this.button.next('label').addClass('ui-state-clicked');
