@@ -299,10 +299,8 @@
         widget = this;
         return el.bind("mousedown", function(event) {
           event.preventDefault();
-          console.info("_protectToolbarFocus = true");
           widget._protectToolbarFocus = true;
           return setTimeout(function() {
-            console.info("_protectToolbarFocus = false");
             return widget._protectToolbarFocus = false;
           }, 300);
         });
@@ -567,7 +565,6 @@
           uuid: this.options.uuid
         });
         buttonHolder.bind('change', function(event) {
-          console.info(_this, arguments);
           switch (_this.state) {
             case 'off':
               return _this.enhance();
@@ -607,26 +604,16 @@
           error: this.options.error
         });
       },
-      acceptAll: function() {
-        this.options.editable.element.each(function() {
-          return jQuery(this).annotate('acceptAll', function(report) {
-            return console.log('AcceptAll finished with the report:', report);
-          });
-        });
-        return this.buttons.acceptAll.button('disable');
-      },
       enhance: function() {
         var widget,
           _this = this;
         widget = this;
         this.button.hallobutton("disable");
-        console.info('.content', this.options.editable.element);
         try {
           return this.options.editable.element.annotate('enable', function(success) {
             if (success) {
               _this.state = "on";
-              _this.button.hallobutton("enable");
-              return console.log('done');
+              return _this.button.hallobutton("enable");
             } else {
               return _this.buttons.enhance.show().button('enable').button('option', 'label', 'error, see the log.. Try to enhance again!');
             }

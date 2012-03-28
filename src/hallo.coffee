@@ -254,10 +254,8 @@ Hallo may be freely distributed under the MIT license
             widget = @
             el.bind "mousedown", (event) ->
                 event.preventDefault()
-                console.info "_protectToolbarFocus = true"
                 widget._protectToolbarFocus = true
                 setTimeout ->
-                  console.info "_protectToolbarFocus = false"
                   widget._protectToolbarFocus = false
                 , 300
 
