@@ -1,8 +1,10 @@
 ((jQuery) ->
-    z = new VIE
-    z.use new z.StanbolService
-        proxyDisabled: true
-        url : 'http://dev.iks-project.eu:8081',
+    z = null
+    if @VIE isnt undefined
+      z = new VIE
+      z.use new z.StanbolService
+          proxyDisabled: true
+          url : 'http://dev.iks-project.eu:8081',
 
     jQuery.widget 'IKS.halloannotate',
         options:
@@ -16,6 +18,10 @@
 
         _create: ->
           widget = @
+          if @VIE is undefined
+            throw 'The halloannotate plugin requires VIE to be loaded'
+            return
+
           # states are off, working, on
           @state = 'off'
 

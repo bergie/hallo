@@ -142,6 +142,7 @@
   (function(jQuery) {
     return jQuery.widget("IKS.hallo", {
       toolbar: null,
+      toolbarMoved: false,
       bound: false,
       originalContent: "",
       uuid: "",
@@ -186,6 +187,7 @@
         return _results;
       },
       _init: function() {
+        this._setToolbarPosition();
         if (this.options.editable) {
           return this.enable();
         } else {
@@ -372,15 +374,28 @@
           return _this.toolbar.hide();
         });
       },
+      _setToolbarPosition: function() {
+        if (this.options.fixed) {
+          this.toolbar.css('position', 'static');
+          if (this.toolbarMoved) {
+            jQuery(this.options.parentElement).append(this.toolbar);
+          }
+          this.toolbarMoved = false;
+          return;
+        }
+        if (this.options.parentElement !== 'body') {
+          jQuery('body').append(this.toolbar);
+          this.toolbarMoved = true;
+        }
+        this.toolbar.css('position', 'absolute');
+        this.toolbar.css('top', this.element.offset().top - 20);
+        return this.toolbar.css('left', this.element.offset().left);
+      },
       _prepareToolbar: function() {
         var widget,
           _this = this;
         this.toolbar = jQuery('<div class="hallotoolbar"></div>').hide();
-        if (!this.options.fixed) {
-          this.toolbar.css("position", "absolute");
-          this.toolbar.css("top", this.element.offset().top - 20);
-          this.toolbar.css("left", this.element.offset().left);
-        }
+        this._setToolbarPosition();
         jQuery(this.options.parentElement).append(this.toolbar);
         widget = this;
         if (this.options.showAlways) this._bindToolbarEventsFixed();
@@ -516,11 +531,14 @@
 
   (function(jQuery) {
     var z;
-    z = new VIE;
-    z.use(new z.StanbolService({
-      proxyDisabled: true,
-      url: 'http://dev.iks-project.eu:8081'
-    }));
+    z = null;
+    if (this.VIE !== void 0) {
+      z = new VIE;
+      z.use(new z.StanbolService({
+        proxyDisabled: true,
+        url: 'http://dev.iks-project.eu:8081'
+      }));
+    }
     return jQuery.widget('IKS.halloannotate', {
       options: {
         vie: z,
@@ -535,6 +553,10 @@
         var buttonHolder, editableElement, queryState, widget,
           _this = this;
         widget = this;
+        if (this.VIE === void 0) {
+          throw 'The halloannotate plugin requires VIE to be loaded';
+          return;
+        }
         this.state = 'off';
         buttonHolder = jQuery('<span></span>');
         this.button = buttonHolder.hallobutton({
