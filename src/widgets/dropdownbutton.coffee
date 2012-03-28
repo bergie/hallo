@@ -51,11 +51,9 @@
 
     _updateTargetPosition: ->
       target = jQuery @options.target
-      {top, left} = @element.offset()
-      {toolbarTop, toolbarLeft} = @options.editable.toolbar.offset()
-
-      target.css 'top', left - toolbarLeft
-      target.css 'left', top - toolbarTop
+      {bottom, left} = @element.position()
+      target.css 'top', bottom
+      target.css 'left', left - 20
 
     _prepareButton: ->
       id = "#{@options.uuid}-#{@options.label}"
