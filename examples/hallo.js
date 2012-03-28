@@ -553,6 +553,10 @@
         var buttonHolder, editableElement, queryState, widget,
           _this = this;
         widget = this;
+        if (this.VIE === void 0) {
+          throw 'The halloannotate plugin requires VIE to be loaded';
+          return;
+        }
         this.state = 'off';
         buttonHolder = jQuery('<span></span>');
         this.button = buttonHolder.hallobutton({

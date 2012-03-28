@@ -18,6 +18,10 @@
 
         _create: ->
           widget = @
+          if @VIE is undefined
+            throw 'The halloannotate plugin requires VIE to be loaded'
+            return
+
           # states are off, working, on
           @state = 'off'
 
