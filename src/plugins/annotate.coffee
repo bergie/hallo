@@ -15,6 +15,7 @@
             select: ->
             decline: ->
             remove: ->
+            buttonCssClass: ''
 
         _create: ->
           widget = @
@@ -22,21 +23,30 @@
             throw 'The halloannotate plugin requires VIE to be loaded'
             return
 
+          unless typeof @element.annotate is 'function'
+            throw 'The halloannotate plugin requires annotate.js to be loaded'
+            return
+
           # states are off, working, on
           @state = 'off'
 
-          buttonHolder = jQuery '<span></span>'
+          buttonHolder = jQuery "<span class=\"#{widget.widgetName}\"></span>"
           @button = buttonHolder.hallobutton
             label: ''
             icon: 'icon-tags'
             editable: @options.editable
             command: null
             uuid: @options.uuid
+            cssClass: @options.buttonCssClass
+            queryState: false
+ 
           buttonHolder.bind 'change', (event) =>
             console.info @, arguments
             switch @state
               when 'off' then @enhance()
               when 'on' then @done()
+
+          buttonHolder.buttonset()
 
           @options.toolbar.append @button
           @instantiate()

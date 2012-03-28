@@ -642,7 +642,8 @@
         uuid: '',
         select: function() {},
         decline: function() {},
-        remove: function() {}
+        remove: function() {},
+        buttonCssClass: ''
       },
       _create: function() {
         var buttonHolder, editableElement, queryState, widget;
@@ -652,14 +653,20 @@
           throw 'The halloannotate plugin requires VIE to be loaded';
           return;
         }
+        if (typeof this.element.annotate !== 'function') {
+          throw 'The halloannotate plugin requires annotate.js to be loaded';
+          return;
+        }
         this.state = 'off';
-        buttonHolder = jQuery('<span></span>');
+        buttonHolder = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         this.button = buttonHolder.hallobutton({
           label: '',
           icon: 'icon-tags',
           editable: this.options.editable,
           command: null,
-          uuid: this.options.uuid
+          uuid: this.options.uuid,
+          cssClass: this.options.buttonCssClass,
+          queryState: false
         });
         buttonHolder.bind('change', function(event) {
           console.info(_this, arguments);
@@ -670,6 +677,7 @@
               return _this.done();
           }
         });
+        buttonHolder.buttonset();
         this.options.toolbar.append(this.button);
         this.instantiate();
         editableElement = this.options.editable.element;
