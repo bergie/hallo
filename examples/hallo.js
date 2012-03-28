@@ -30,7 +30,8 @@
         disabled: function() {},
         placeholder: '',
         parentElement: 'body',
-        forceStructured: true
+        forceStructured: true,
+        buttonCssClass: null
       },
       _create: function() {
         var options, plugin, _ref, _results;
@@ -42,9 +43,10 @@
         for (plugin in _ref) {
           options = _ref[plugin];
           if (!jQuery.isPlainObject(options)) options = {};
-          options["editable"] = this;
-          options["toolbar"] = this.toolbar;
-          options["uuid"] = this.id;
+          options['editable'] = this;
+          options['toolbar'] = this.toolbar;
+          options['uuid'] = this.id;
+          options['buttonCssClass'] = this.options.buttonCssClass;
           _results.push(jQuery(this.element)[plugin](options));
         }
         return _results;
@@ -368,7 +370,8 @@
         lists: {
           ordered: false,
           unordered: true
-        }
+        },
+        buttonCssClass: null
       },
       _create: function() {
         var buttonize, buttonset;
@@ -382,7 +385,8 @@
             editable: _this.options.editable,
             label: label,
             command: "insert" + type + "List",
-            icon: 'icon-list'
+            icon: 'icon-list',
+            cssClass: _this.options.buttonCssClass
           });
           return buttonset.append(buttonElement);
         };
@@ -1167,7 +1171,8 @@
           italic: true,
           strikeThrough: false,
           underline: false
-        }
+        },
+        buttonCssClass: null
       },
       _create: function() {
         var buttonize, buttonset, enabled, format, widget, _ref;
@@ -1181,7 +1186,8 @@
             label: format,
             editable: _this.options.editable,
             command: format,
-            uuid: _this.options.uuid
+            uuid: _this.options.uuid,
+            cssClass: _this.options.buttonCssClass
           });
           return buttonset.append(buttonHolder);
         };
@@ -1202,7 +1208,8 @@
       options: {
         editable: null,
         toolbar: null,
-        uuid: ''
+        uuid: '',
+        buttonCssClass: null
       },
       _create: function() {
         var buttonize, buttonset;
@@ -1217,7 +1224,8 @@
             label: label,
             icon: cmd === 'undo' ? 'icon-arrow-left' : 'icon-arrow-right',
             command: cmd,
-            queryState: false
+            queryState: false,
+            cssClass: _this.options.buttonCssClass
           });
           return buttonset.append(buttonElement);
         };
@@ -1236,7 +1244,8 @@
         editable: null,
         toolbar: null,
         uuid: '',
-        elements: ['h1', 'h2', 'h3', 'p', 'pre', 'blockquote']
+        elements: ['h1', 'h2', 'h3', 'p', 'pre', 'blockquote'],
+        buttonCssClass: null
       },
       _create: function() {
         var buttonset, contentId, target;
@@ -1289,7 +1298,8 @@
           editable: this.options.editable,
           label: 'block',
           icon: 'icon-text-height',
-          target: target
+          target: target,
+          cssClass: this.options.buttonCssClass
         });
         return buttonElement;
       }
@@ -1397,7 +1407,8 @@
       options: {
         editable: null,
         toolbar: null,
-        uuid: ''
+        uuid: '',
+        buttonCssClass: null
       },
       _create: function() {
         var buttonize, buttonset;
@@ -1411,7 +1422,8 @@
             editable: _this.options.editable,
             label: alignment,
             command: "justify" + alignment,
-            icon: "icon-align-" + (alignment.toLowerCase())
+            icon: "icon-align-" + (alignment.toLowerCase()),
+            cssClass: _this.options.buttonCssClass
           });
           return buttonset.append(buttonElement);
         };
@@ -1434,7 +1446,8 @@
         icon: null,
         editable: null,
         command: null,
-        queryState: true
+        queryState: true,
+        cssClass: null
       },
       _create: function() {
         var _base, _ref;
@@ -1471,7 +1484,8 @@
       _prepareButton: function() {
         var button, buttonEl, id;
         id = "" + this.options.uuid + "-" + this.options.label;
-        buttonEl = jQuery("<input id=\"" + id + "\" type=\"checkbox\" />\n<label for=\"" + id + "\" class=\"btn " + this.options.command + "_button\" title=\"" + this.options.label + "\">\n  <i class=\"" + this.options.icon + "\"></i>\n</label>");
+        buttonEl = jQuery("<input id=\"" + id + "\" type=\"checkbox\" />\n<label for=\"" + id + "\" class=\"" + this.options.command + "_button\" title=\"" + this.options.label + "\">\n  <i class=\"" + this.options.icon + "\"></i>\n</label>");
+        if (this.options.cssClass) buttonEl.addClass(this.options.cssClass);
         button = buttonEl.button();
         button.data('hallo-command', this.options.command);
         return button;
@@ -1487,7 +1501,8 @@
         label: null,
         icon: null,
         editable: null,
-        target: ''
+        target: '',
+        cssClass: null
       },
       _create: function() {
         var _base, _ref;
@@ -1541,6 +1556,7 @@
         var button, buttonEl, id;
         id = "" + this.options.uuid + "-" + this.options.label;
         buttonEl = jQuery("<button id=\"" + id + "\" data-toggle=\"dropdown\" data-target=\"" + this.options.target + "\" title=\"" + this.options.label + "\">\n  <i class=\"" + this.options.icon + "\"></i>\n</button>");
+        if (this.options.cssClass) buttonEl.addClass(this.options.cssClass);
         button = buttonEl.button();
         return button;
       }

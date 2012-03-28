@@ -12,6 +12,7 @@
       editable: null
       command: null
       queryState: true
+      cssClass: null
 
     _create: ->
       # By default the icon is icon-command, but this doesn't
@@ -45,9 +46,10 @@
     _prepareButton: ->
       id = "#{@options.uuid}-#{@options.label}"
       buttonEl = jQuery """<input id=\"#{id}\" type=\"checkbox\" />
-        <label for=\"#{id}\" class=\"btn #{@options.command}_button\" title=\"#{@options.label}\">
+        <label for=\"#{id}\" class=\"#{@options.command}_button\" title=\"#{@options.label}\">
           <i class=\"#{@options.icon}\"></i>
         </label>"""
+      buttonEl.addClass @options.cssClass if @options.cssClass
       button = buttonEl.button()
       button.data 'hallo-command', @options.command
       button

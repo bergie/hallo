@@ -15,6 +15,7 @@
         'pre'
         'blockquote'
       ]
+      buttonCssClass: null
 
     _create: ->
       buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
@@ -57,6 +58,7 @@
         label: 'block'
         icon: 'icon-text-height'
         target: target
+        cssClass: @options.buttonCssClass
       buttonElement
 
 )(jQuery)

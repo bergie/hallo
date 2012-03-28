@@ -11,6 +11,7 @@
       icon: null
       editable: null
       target: ''
+      cssClass: null
 
     _create: ->
       @options.icon ?= "icon-#{@options.label.toLowerCase()}"
@@ -61,6 +62,7 @@
       buttonEl = jQuery """<button id=\"#{id}\" data-toggle=\"dropdown\" data-target=\"#{@options.target}\" title=\"#{@options.label}\">
           <i class=\"#{@options.icon}\"></i>
         </button>"""
+      buttonEl.addClass @options.cssClass if @options.cssClass
 
       button = buttonEl.button()
       button

@@ -120,6 +120,7 @@ Hallo may be freely distributed under the MIT license
             placeholder: ''
             parentElement: 'body'
             forceStructured: true
+            buttonCssClass: null
 
         _create: ->
             @originalContent = @getContents()
@@ -129,9 +130,10 @@ Hallo may be freely distributed under the MIT license
             for plugin, options of @options.plugins
                 if not jQuery.isPlainObject options
                     options = {}
-                options["editable"] = this
-                options["toolbar"] = @toolbar
-                options["uuid"] = @id
+                options['editable'] = this
+                options['toolbar'] = @toolbar
+                options['uuid'] = @id
+                options['buttonCssClass'] = @options.buttonCssClass
                 jQuery(@element)[plugin] options
 
         _init: ->
