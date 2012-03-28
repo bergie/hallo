@@ -35,6 +35,16 @@ Hallo may be freely distributed under the MIT license
     #       }
     #    });
     #
+    # In addition to floating mode, you can also show the toolbar in a
+    # fixed mode, where no positioning is applied to it. This is useful
+    # when you want to show the toolbar inside some DOM element. For
+    # example:
+    #
+    #     jQuery('selector').hallo({
+    #         fixed: true,
+    #         parentElement: jQuery('.my-custom-toolbar'),
+    #     });
+    #
     # Force the toolbar to be shown at all times when a contenteditable
     # element is focused:
     #
@@ -99,6 +109,7 @@ Hallo may be freely distributed under the MIT license
             plugins: {}
             floating: true
             offset: {x:0,y:0}
+            fixed: false
             showAlways: false
             activated: ->
             deactivated: ->
@@ -291,9 +302,11 @@ Hallo may be freely distributed under the MIT license
 
         _prepareToolbar: ->
             @toolbar = jQuery('<div class="hallotoolbar"></div>').hide()
-            @toolbar.css "position", "absolute"
-            @toolbar.css "top", @element.offset().top - 20
-            @toolbar.css "left", @element.offset().left
+            unless @options.fixed
+                @toolbar.css "position", "absolute"
+                @toolbar.css "top", @element.offset().top - 20
+                @toolbar.css "left", @element.offset().left
+
             jQuery(@options.parentElement).append(@toolbar)
 
             @toolbar.bind "mousedown", (event) ->
@@ -306,10 +319,11 @@ Hallo may be freely distributed under the MIT license
                 @_updateToolbarPosition @_getToolbarPosition event
 
         _updateToolbarPosition: (position) ->
+            return if @options.fixed
             return unless position
             return unless position.top and position.left
-            this.toolbar.css "top", position.top
-            this.toolbar.css "left", position.left
+            @toolbar.css "top", position.top
+            @toolbar.css "left", position.left
 
         _checkModified: (event) ->
             widget = event.data
