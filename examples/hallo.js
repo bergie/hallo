@@ -617,10 +617,11 @@
             return jQuery('.image_button').removeClass('ui-state-clicked');
           }
         },
-        dialog: null
+        dialog: null,
+        buttonCssClass: null
       },
       _create: function() {
-        var button, buttonset, dialogId, id, widget;
+        var button, buttonHolder, buttonset, dialogId, id, widget;
         widget = this;
         dialogId = "" + this.options.uuid + "-image-dialog";
         this.options.dialog = jQuery("<div id=\"" + dialogId + "\">                <div class=\"nav\">                    <ul class=\"tabs\">                    </ul>                    <div id=\"" + this.options.uuid + "-tab-activeIndicator\" class=\"tab-activeIndicator\" />                </div>                <div class=\"dialogcontent\">            </div>");
@@ -638,8 +639,18 @@
         }
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         id = "" + this.options.uuid + "-image";
-        buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\" class=\"image_button\" >Image</label>").button());
-        button = jQuery("#" + id, buttonset);
+        buttonHolder = jQuery('<span></span>');
+        buttonHolder.hallobutton({
+          label: 'Images',
+          icon: 'icon-picture',
+          editable: this.options.editable,
+          command: null,
+          queryState: false,
+          uuid: this.options.uuid,
+          cssClass: this.options.buttonCssClass
+        });
+        buttonset.append(buttonHolder);
+        button = buttonHolder.button();
         button.bind("change", function(event) {
           if (widget.options.dialog.dialog("isOpen")) {
             return widget._closeDialog();
@@ -1257,13 +1268,17 @@
         return this.options.toolbar.append(buttonset);
       },
       _prepareDropdown: function(contentId) {
-        var addElement, contentArea, element, _i, _len, _ref;
+        var addElement, containingElement, contentArea, element, _i, _len, _ref;
         var _this = this;
         contentArea = jQuery("<div id=\"" + contentId + "\"></div>");
+        containingElement = this.options.editable.element.get(0).tagName.toLowerCase();
         addElement = function(element) {
           var el, queryState;
-          el = jQuery("<" + element + ">" + element + "</" + element + ">");
+          el = jQuery("<" + element + " class=\"menu-item\">" + element + "</" + element + ">");
+          if (containingElement === element) el.addClass('selected');
+          if (containingElement !== 'div') el.addClass('disabled');
           el.bind('click', function() {
+            if (el.hasClass('disabled')) return;
             return _this.options.editable.execute('formatBlock', element.toUpperCase());
           });
           queryState = function(event) {
@@ -1513,7 +1528,7 @@
         var _this = this;
         target = jQuery(this.options.target);
         target.css('position', 'absolute');
-        target.addClass('dropdown-target');
+        target.addClass('dropdown-menu');
         target.hide();
         if (!this.button) this.button = this._prepareButton();
         this.button.bind('click', function() {
@@ -1555,7 +1570,7 @@
       _prepareButton: function() {
         var button, buttonEl, id;
         id = "" + this.options.uuid + "-" + this.options.label;
-        buttonEl = jQuery("<button id=\"" + id + "\" data-toggle=\"dropdown\" data-target=\"" + this.options.target + "\" title=\"" + this.options.label + "\">\n  <i class=\"" + this.options.icon + "\"></i>\n</button>");
+        buttonEl = jQuery("<button id=\"" + id + "\" data-toggle=\"dropdown\" data-target=\"#" + (this.options.target.attr('id')) + "\" title=\"" + this.options.label + "\">\n  <span class=\"ui-button-text\"><i class=\"" + this.options.icon + "\"></i></span>\n</button>");
         if (this.options.cssClass) buttonEl.addClass(this.options.cssClass);
         button = buttonEl.button();
         return button;

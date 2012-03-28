@@ -19,7 +19,7 @@
     _init: ->
       target = jQuery @options.target
       target.css 'position', 'absolute'
-      target.addClass 'dropdown-target'
+      target.addClass 'dropdown-menu'
 
       target.hide()
       @button = @_prepareButton() unless @button
@@ -59,7 +59,7 @@
 
     _prepareButton: ->
       id = "#{@options.uuid}-#{@options.label}"
-      buttonEl = jQuery """<button id=\"#{id}\" data-toggle=\"dropdown\" data-target=\"#{@options.target.id}\" title=\"#{@options.label}\">
+      buttonEl = jQuery """<button id=\"#{id}\" data-toggle=\"dropdown\" data-target=\"##{@options.target.attr('id')}\" title=\"#{@options.label}\">
           <span class="ui-button-text"><i class=\"#{@options.icon}\"></i></span>
         </button>"""
       buttonEl.addClass @options.cssClass if @options.cssClass

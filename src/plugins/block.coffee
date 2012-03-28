@@ -31,7 +31,7 @@
       containingElement = @options.editable.element.get(0).tagName.toLowerCase()  
 
       addElement = (element) =>
-        el = jQuery "<#{element}>#{element}</#{element}>"
+        el = jQuery "<#{element} class=\"menu-item\">#{element}</#{element}>"
         
         if containingElement is element
           el.addClass 'selected'
