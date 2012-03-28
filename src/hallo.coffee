@@ -413,7 +413,8 @@ Hallo may be freely distributed under the MIT license
             if range.collapsed
                 return true
             if range.isCollapsed
-                return range.isCollapsed()
+                return range.isCollapsed() if typeof range.isCollapsed is 'function'
+                return range.isCollapsed
 
             return false
 

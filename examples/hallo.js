@@ -337,7 +337,10 @@
       },
       _isEmptyRange: function(range) {
         if (range.collapsed) return true;
-        if (range.isCollapsed) return range.isCollapsed();
+        if (range.isCollapsed) {
+          if (typeof range.isCollapsed === 'function') return range.isCollapsed();
+          return range.isCollapsed;
+        }
         return false;
       },
       turnOn: function() {
@@ -1623,8 +1626,14 @@
         if (!this.options.queryState) return;
         editableElement = this.options.editable.element;
         queryState = function(event) {
+          var state;
           if (!_this.options.command) return;
-          if (document.queryCommandState(_this.options.command)) {
+          try {
+            state = document.queryCommandState(_this.options.command);
+          } catch (e) {
+            return;
+          }
+          if (state) {
             _this.button.attr('checked', true);
             _this.button.next('label').addClass('ui-state-clicked');
             _this.button.button('refresh');
