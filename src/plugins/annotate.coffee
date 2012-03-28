@@ -2,41 +2,54 @@
     z = new VIE
     z.use new z.StanbolService
         proxyDisabled: true
-        url : "http://dev.iks-project.eu:8081",
+        url : 'http://dev.iks-project.eu:8081',
 
-    jQuery.widget "IKS.halloannotate",
+    jQuery.widget 'IKS.halloannotate',
         options:
             vie: z
             editable: null
             toolbar: null
+            uuid: ''
             select: ->
             decline: ->
             remove: ->
 
         _create: ->
-            widget = this
-            widget.buttons = {}
+          widget = @
+          # states are off, working, on
+          @state = 'off'
 
-            buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
-            buttonize = (cmd, label) =>
-                id = "#{@options.uuid}-#{cmd}"
-                buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\">#{label}</label>").button()
-                button = jQuery "##{id}", buttonset
-                button.attr "hallo-command", cmd
-                button.bind "change", (event) ->
-                    cmd = jQuery(this).attr "hallo-command"
-                    do widget[cmd]
-                widget.buttons[cmd] = button
+          buttonHolder = jQuery '<span></span>'
+          @button = buttonHolder.hallobutton
+            label: ''
+            icon: 'icon-tags'
+            editable: @options.editable
+            command: null
+            uuid: @options.uuid
+          buttonHolder.bind 'change', (event) =>
+            console.info @, arguments
+            switch @state
+              when 'off' then @enhance()
+              when 'on' then @done()
 
-            buttonize "enhance", "Enhance"
-            buttonize "done", "Done"
-            buttonize "acceptAll", "Accept all"
-            buttonset.buttonset()
+          @options.toolbar.append @button
+          @instantiate()
 
-            widget.buttons.done.button "disable"
-            widget.buttons.acceptAll.button "disable"
-            @options.toolbar.append buttonset
-            @instantiate()
+          editableElement = @options.editable.element
+          queryState = (event) =>
+            if document.queryCommandState @options.command
+              @button.attr 'checked', true
+              @button.next('label').addClass 'ui-state-clicked'
+              @button.button 'refresh'
+              return
+            @button.attr 'checked', false
+            @button.next('label').removeClass 'ui-state-clicked'
+            @button.button 'refresh'
+
+          editableElement.bind 'halloenabled', =>
+            editableElement.bind 'keyup paste change mouseup hallomodified', queryState
+          editableElement.bind 'hallodisabled', =>
+            editableElement.unbind 'keyup paste change mouseup hallomodified', queryState
 
 
         instantiate: ->
@@ -51,36 +64,28 @@
             # @buttons.acceptAll.hide()
         acceptAll: ->
             @options.editable.element.each ->
-                jQuery(this).annotate "acceptAll", (report) ->
-                    console.log "AcceptAll finished with the report:", report
+                jQuery(this).annotate 'acceptAll', (report) ->
+                    console.log 'AcceptAll finished with the report:', report
 
-            @buttons.acceptAll.button "disable"
+            @buttons.acceptAll.button 'disable'
 
         enhance: ->
             widget = @
-            console.info ".content", @options.editable.element
-            origLabel = @buttons.enhance.button( "option", "label" )
-            @buttons.enhance.button("disable")
-#            .button "option", "label", "in progress..."
+            @button.hallobutton "disable"
+            console.info '.content', @options.editable.element
             try
-                @options.editable.element.annotate "enable", (success) =>
+                @options.editable.element.annotate 'enable', (success) =>
                     if success
-#                        @buttons.enhance.button("disable").button "option", "label", origLabel
-                        @buttons.enhance.button "enable"
-                        @buttons.enhance.button "disable"
-                        @buttons.done.button "enable"
-                        @buttons.acceptAll.button "enable"
-                        console.log "done"
+                        @state = "on"
+                        @button.hallobutton "enable"
+                        console.log 'done'
                     else
                         @buttons.enhance.show()
-                        .button("enable")
-                        .button "option", "label", "error, see the log.. Try to enhance again!"
+                        .button('enable')
+                        .button 'option', 'label', 'error, see the log.. Try to enhance again!'
             catch e
                 alert e
         done: ->
-            @options.editable.element.annotate "disable"
-            @buttons.enhance.button "enable"
-
-            @buttons.done.button "disable"
-            @buttons.acceptAll.button "disable"
+            @options.editable.element.annotate 'disable'
+            @state = 'off'
 )(jQuery)
