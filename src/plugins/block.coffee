@@ -42,7 +42,7 @@
         @options.editable.element.bind 'halloenabled', =>
           @options.editable.element.bind 'keyup paste change mouseup', queryState
         @options.editable.element.bind 'hallodisabled', =>
-          @options.editable.element.bind 'keyup paste change mouseup', queryState
+          @options.editable.element.unbind 'keyup paste change mouseup', queryState
 
         el
       for element in @options.elements

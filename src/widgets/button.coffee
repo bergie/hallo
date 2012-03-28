@@ -40,7 +40,7 @@
       editableElement.bind 'halloenabled', =>
         editableElement.bind 'keyup paste change mouseup', queryState
       editableElement.bind 'hallodisabled', =>
-        editableElement.bind 'keyup paste change mouseup', queryState
+        editableElement.unbind 'keyup paste change mouseup', queryState
 
     _prepareButton: ->
       id = "#{@options.uuid}-#{@options.label}"
