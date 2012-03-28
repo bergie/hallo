@@ -1,28 +1,41 @@
 fs = require 'fs'
 {exec, spawn} = require 'child_process'
+{series} = require 'async'
 
-# deal with errors from child processes
-exerr = (err, sout, serr)->
-  console.log err if err
-  console.log sout if sout
-  console.log serr if serr
-
-task 'mergedirs', 'Merge source files to one directory', ->
-  try
-    stat = fs.statSync "src"
-  catch e
-    fs.mkdirSync "src"
-  exec "cp *.coffee src/", exerr
-  exec "cp plugins/*.coffee src/", exerr
+sh = (command) -> (k) ->
+  console.log "Executing #{command}"
+  exec command, (err, sout, serr) ->
+    console.log err if err
+    console.log sout if sout
+    console.log serr if serr
+    do k
 
 task 'doc', 'generate documentation for *.coffee files', ->
-  invoke 'mergedirs'
-  exec "docco src/*.coffee", exerr
+  series [
+    (sh "docco-husky src")
+  ]
+
+task 'doc_copy', 'copy documentation to gh-pages branch', ->
+  series [
+    (sh "docco-husky src")
+    (sh "mv docs docs_tmp")
+    (sh "git checkout gh-pages")
+    (sh "mv docs_tmp/* docs")
+    (sh "git add docs/*")
+    (sh "git commit -m 'updating documentation from master'")
+    (sh "git checkout master")
+  ]
 
 task 'build', 'generate unified JavaScript file for whole Hallo', ->
-  invoke 'mergedirs'
-  exec "coffee -o examples -j hallo.js -c src/*.coffee", exerr
+  series [
+    (sh "coffee -o examples -j hallo.js -c `find src -type f -name '*.coffee'`")
+  ]
 
 task 'min', 'minify the generated JavaScript file', ->
-  invoke 'build'
-  exec "uglifyjs examples/hallo.js > examples/hallo-min.js", exerr
+  series [
+    (sh "coffee -o examples -j hallo.js -c `find src -type f -name '*.coffee'`")
+    (sh "uglifyjs examples/hallo.js > examples/hallo-min.js")
+  ]
+
+task 'bam', 'build and minify Hallo', ->
+  invoke 'min'

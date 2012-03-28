@@ -1,6 +1,7 @@
-###     Hallo - a rich text editing jQuery UI widget
-#     (c) 2011 Henri Bergius, IKS Consortium
-#     Hallo may be freely distributed under the MIT license
+###
+Hallo - a rich text editing jQuery UI widget
+(c) 2011 Henri Bergius, IKS Consortium
+Hallo may be freely distributed under the MIT license
 ###
 ((jQuery) ->
     # Hallo provides a jQuery UI widget `hallo`. Usage:
@@ -33,6 +34,16 @@
     #         'y' : 0
     #       }
     #    });
+    #
+    # In addition to floating mode, you can also show the toolbar in a
+    # fixed mode, where no positioning is applied to it. This is useful
+    # when you want to show the toolbar inside some DOM element. For
+    # example:
+    #
+    #     jQuery('selector').hallo({
+    #         fixed: true,
+    #         parentElement: jQuery('.my-custom-toolbar'),
+    #     });
     #
     # Force the toolbar to be shown at all times when a contenteditable
     # element is focused:
@@ -98,6 +109,7 @@
             plugins: {}
             floating: true
             offset: {x:0,y:0}
+            fixed: false
             showAlways: false
             activated: ->
             deactivated: ->
@@ -106,6 +118,8 @@
             enabled: ->
             disabled: ->
             placeholder: ''
+            parentElement: 'body'
+            forceStructured: true
 
         _create: ->
             @originalContent = @getContents()
@@ -146,14 +160,14 @@
 
             if not @bound
                 @element.bind "focus", this, @_activated
-                # Only add the blur event when showAlways is set to true
-                if @options.showAlways
-                    @element.bind "blur", this, @_deactivated
+                @element.bind "blur", this, @_deactivated
                 @element.bind "keyup paste change", this, @_checkModified
                 @element.bind "keyup", this, @_keys
                 @element.bind "keyup mouseup", this, @_checkSelection
                 widget = this
                 @bound = true
+
+            @_forceStructured() if @options.forceStructured
 
             @_trigger "enabled", null
 
@@ -259,46 +273,57 @@
             tmpSpan.remove()
             return position
 
+        _bindToolbarEventsFixed: ->
+            @options.floating = false
+            # catch activate -> show
+            @element.bind "halloactivated", (event, data) =>
+                @_updateToolbarPosition @_getToolbarPosition event
+                @toolbar.show()
+
+            # catch deactivate -> hide
+            @element.bind "hallodeactivated", (event, data) =>
+                @toolbar.hide()
+
+        _bindToolbarEventsRegular: ->
+            # catch select -> show (and reposition?)
+            @element.bind "halloselected", (event, data) =>
+                position = @_getToolbarPosition data.originalEvent, data.selection
+                return unless position
+                @_updateToolbarPosition position
+                @toolbar.show()
+                # TO CHECK: Am I not showing in some case?
+
+            # catch deselect -> hide
+            @element.bind "hallounselected", (event, data) =>
+                @toolbar.hide()
+
+            @element.bind "hallodeactivated", (event, data) =>
+                @toolbar.hide()
+
         _prepareToolbar: ->
-            that = @
             @toolbar = jQuery('<div class="hallotoolbar"></div>').hide()
-            @toolbar.css "position", "absolute"
-            @toolbar.css "top", @element.offset().top - 20
-            @toolbar.css "left", @element.offset().left
-            jQuery('body').append(@toolbar)
+            unless @options.fixed
+                @toolbar.css "position", "absolute"
+                @toolbar.css "top", @element.offset().top - 20
+                @toolbar.css "left", @element.offset().left
+
+            jQuery(@options.parentElement).append(@toolbar)
+
             @toolbar.bind "mousedown", (event) ->
                 event.preventDefault()
 
-            if @options.showAlways
-                @options.floating = false
-                # catch activate -> show
-                @element.bind "halloactivated", (event, data) ->
-                    that._updateToolbarPosition(that._getToolbarPosition(event))
-                    that.toolbar.show()
+            @_bindToolbarEventsFixed() if @options.showAlways
+            @_bindToolbarEventsRegular() unless @options.showAlways
 
-                # catch deactivate -> hide
-                @element.bind "hallodeactivated", (event, data) ->
-                    that.toolbar.hide()
-            else
-                # catch select -> show (and reposition?)
-                @element.bind "halloselected", (event, data) ->
-                    widget = data.editable
-                    position = widget._getToolbarPosition data.originalEvent, data.selection
-                    if position
-                        that._updateToolbarPosition position
-                        that.toolbar.show()
-                        # TO CHECK: Am I not showing in some case?
-
-                # catch deselect -> hide
-                @element.bind "hallounselected", (event, data) ->
-                    data.editable.toolbar.hide()
-
-            jQuery(window).resize (event) ->
-                    that._updateToolbarPosition that._getToolbarPosition(event)
+            jQuery(window).resize (event) =>
+                @_updateToolbarPosition @_getToolbarPosition event
 
         _updateToolbarPosition: (position) ->
-            this.toolbar.css "top", position.top
-            this.toolbar.css "left", position.left
+            return if @options.fixed
+            return unless position
+            return unless position.top and position.left
+            @toolbar.css "top", position.top
+            @toolbar.css "left", position.left
 
         _checkModified: (event) ->
             widget = event.data
@@ -385,7 +410,6 @@
             @_trigger "activated", @
 
         turnOff: () ->
-            @toolbar.hide()
             jQuery(@element).removeClass 'inEditMode'
             @_trigger "deactivated", @
 
@@ -398,5 +422,15 @@
         _deactivated: (event) ->
             event.data.turnOff()
 
+        _forceStructured: (event) ->
+            try
+                document.execCommand 'styleWithCSS', 0, false
+            catch e
+                try
+                    document.execCommand 'useCSS', 0, true
+                catch e
+                    try
+                        document.execCommand 'styleWithCSS', false, false
+                    catch e
 
 )(jQuery)

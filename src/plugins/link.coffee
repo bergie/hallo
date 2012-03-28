@@ -52,7 +52,7 @@
             buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
             buttonize = (type) =>
                 id = "#{@options.uuid}-#{type}"
-                buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\" class=\"anchor_button\" >#{type}</label>").button()
+                buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\" class=\"btn anchor_button\" ><i class=\"icon-bookmark\"></i></label>").button()
                 button = jQuery "##{id}", buttonset
                 button.bind "change", (event) ->
                     # we need to save the current selection because we will lose focus
