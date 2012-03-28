@@ -99,6 +99,7 @@ Hallo may be freely distributed under the MIT license
     #
     jQuery.widget "IKS.hallo",
         toolbar: null
+        toolbarMoved: false
         bound: false
         originalContent: ""
         uuid: ""
@@ -137,6 +138,7 @@ Hallo may be freely distributed under the MIT license
                 jQuery(@element)[plugin] options
 
         _init: ->
+            @_setToolbarPosition()
             if @options.editable
                 @enable()
             else
@@ -302,14 +304,25 @@ Hallo may be freely distributed under the MIT license
             @element.bind "hallodeactivated", (event, data) =>
                 @toolbar.hide()
 
+        _setToolbarPosition: ->
+            if @options.fixed
+              @toolbar.css 'position', 'static'
+              jQuery(@options.parentElement).append @toolbar if @toolbarMoved
+              @toolbarMoved = false
+              return
+
+            # Floating toolbar, move to body
+            unless @options.parentElement is 'body'
+                jQuery('body').append @toolbar
+                @toolbarMoved = true
+            @toolbar.css 'position', 'absolute'
+            @toolbar.css 'top', @element.offset().top - 20
+            @toolbar.css 'left', @element.offset().left
+
         _prepareToolbar: ->
             @toolbar = jQuery('<div class="hallotoolbar"></div>').hide()
-            unless @options.fixed
-                @toolbar.css "position", "absolute"
-                @toolbar.css "top", @element.offset().top - 20
-                @toolbar.css "left", @element.offset().left
-
-            jQuery(@options.parentElement).append(@toolbar)
+            @_setToolbarPosition()
+            jQuery(@options.parentElement).append @toolbar
 
             @toolbar.bind "mousedown", (event) ->
                 event.preventDefault()
