@@ -7,6 +7,7 @@
             editable: null
             toolbar: null
             uuid: ''
+            buttonCssClass: null
 
         _create: ->
             buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
@@ -19,6 +20,7 @@
                   icon: if cmd is 'undo' then 'icon-arrow-left' else 'icon-arrow-right'
                   command: cmd
                   queryState: false
+                  cssClass: @options.buttonCssClass
                 buttonset.append buttonElement
             buttonize "undo", "Undo"
             buttonize "redo", "Redo"

@@ -11,6 +11,7 @@
       icon: null
       editable: null
       target: ''
+      cssClass: null
 
     _create: ->
       @options.icon ?= "icon-#{@options.label.toLowerCase()}"
@@ -18,7 +19,7 @@
     _init: ->
       target = jQuery @options.target
       target.css 'position', 'absolute'
-      target.addClass 'dropdown-target'
+      target.addClass 'dropdown-menu'
 
       target.hide()
       @button = @_prepareButton() unless @button
@@ -50,17 +51,16 @@
 
     _updateTargetPosition: ->
       target = jQuery @options.target
-      {top, left} = @element.offset()
-      {toolbarTop, toolbarLeft} = @options.editable.toolbar.offset()
-
-      target.css 'top', left - toolbarLeft
-      target.css 'left', top - toolbarTop
+      {bottom, left} = @element.position()
+      target.css 'top', bottom
+      target.css 'left', left - 20
 
     _prepareButton: ->
       id = "#{@options.uuid}-#{@options.label}"
-      buttonEl = jQuery """<button id=\"#{id}\" data-toggle=\"dropdown\" data-target=\"#{@options.target}\" title=\"#{@options.label}\">
-          <i class=\"#{@options.icon}\"></i>
+      buttonEl = jQuery """<button id=\"#{id}\" data-toggle=\"dropdown\" data-target=\"##{@options.target.attr('id')}\" title=\"#{@options.label}\">
+          <span class="ui-button-text"><i class=\"#{@options.icon}\"></i></span>
         </button>"""
+      buttonEl.addClass @options.cssClass if @options.cssClass
 
       button = buttonEl.button()
       button
