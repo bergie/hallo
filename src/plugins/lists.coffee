@@ -10,6 +10,7 @@
             lists: 
                 ordered: false
                 unordered: true
+            buttonCssClass: null
 
         _create: ->
             buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
@@ -21,6 +22,7 @@
                   label: label
                   command: "insert#{type}List"
                   icon: 'icon-list'
+                  cssClass: @options.buttonCssClass
                 buttonset.append buttonElement
 
             buttonize "Ordered", "OL" if @options.lists.ordered

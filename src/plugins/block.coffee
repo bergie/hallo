@@ -15,6 +15,7 @@
         'pre'
         'blockquote'
       ]
+      buttonCssClass: null
 
     _create: ->
       buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
@@ -27,11 +28,21 @@
     _prepareDropdown: (contentId) ->
       contentArea = jQuery "<div id=\"#{contentId}\"></div>"
 
-      addElement = (element) =>
-        el = jQuery "<#{element}>#{element}</#{element}>"
-        el.bind 'click', =>
-          @options.editable.execute 'formatBlock', element.toUpperCase()
+      containingElement = @options.editable.element.get(0).tagName.toLowerCase()  
 
+      addElement = (element) =>
+        el = jQuery "<#{element} class=\"menu-item\">#{element}</#{element}>"
+        
+        if containingElement is element
+          el.addClass 'selected'
+
+        unless containingElement is 'div'
+          el.addClass 'disabled'
+
+        el.bind 'click', =>
+          if el.hasClass 'disabled'
+            return
+          @options.editable.execute 'formatBlock', element.toUpperCase()
         queryState = (event) =>
           block = document.queryCommandValue 'formatBlock'
           if block.toLowerCase() is element
@@ -45,6 +56,7 @@
           @options.editable.element.unbind 'keyup paste change mouseup', queryState
 
         el
+
       for element in @options.elements
         contentArea.append addElement element
       contentArea
@@ -57,6 +69,7 @@
         label: 'block'
         icon: 'icon-text-height'
         target: target
+        cssClass: @options.buttonCssClass
       buttonElement
 
 )(jQuery)

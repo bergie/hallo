@@ -7,6 +7,7 @@
             editable: null
             toolbar: null
             uuid: ''
+            buttonCssClass: null
 
         _create: ->
             buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
@@ -18,6 +19,7 @@
                   label: alignment
                   command: "justify#{alignment}"
                   icon: "icon-align-#{alignment.toLowerCase()}"
+                  cssClass: @options.buttonCssClass
                 buttonset.append buttonElement 
             buttonize "Left"
             buttonize "Center"

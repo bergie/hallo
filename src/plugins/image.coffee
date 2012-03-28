@@ -43,6 +43,7 @@
                 close: (ev, ui) ->
                     jQuery('.image_button').removeClass('ui-state-clicked')
             dialog: null
+            buttonCssClass: null
 
         _create: ->
             widget = this
@@ -69,8 +70,18 @@
             buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
 
             id = "#{@options.uuid}-image"
-            buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\" class=\"image_button\" >Image</label>").button()
-            button = jQuery "##{id}", buttonset
+            buttonHolder = jQuery '<span></span>'
+            buttonHolder.hallobutton
+                label: 'Images'
+                icon: 'icon-picture'
+                editable: @options.editable
+                command: null
+                queryState: false
+                uuid: @options.uuid
+                cssClass: @options.buttonCssClass
+            buttonset.append buttonHolder
+
+            button = buttonHolder.button();
             button.bind "change", (event) ->
                 if widget.options.dialog.dialog "isOpen"
                     widget._closeDialog()

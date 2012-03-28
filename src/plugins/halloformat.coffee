@@ -12,6 +12,7 @@
                 italic: true
                 strikeThrough: false
                 underline: false
+            buttonCssClass: null
 
         _create: ->
             widget = this
@@ -23,6 +24,7 @@
                   editable: @options.editable
                   command: format
                   uuid: @options.uuid
+                  cssClass: @options.buttonCssClass
                 buttonset.append buttonHolder
             buttonize format for format, enabled of @options.formattings when enabled
 
