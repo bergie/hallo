@@ -246,6 +246,17 @@ Hallo may be freely distributed under the MIT license
             if document.execCommand command, false, value
                 @element.trigger "change"
 
+        protectFocusFrom: (el) ->
+            widget = @
+            el.bind "mousedown", (event) ->
+                event.preventDefault()
+                console.info "_protectToolbarFocus = true"
+                widget._protectToolbarFocus = true
+                setTimeout ->
+                  console.info "_protectToolbarFocus = false"
+                  widget._protectToolbarFocus = false
+                , 300
+
         _generateUUID: ->
             S4 = ->
                 ((1 + Math.random()) * 0x10000|0).toString(16).substring 1
@@ -309,14 +320,17 @@ Hallo may be freely distributed under the MIT license
 
             jQuery(@options.parentElement).append(@toolbar)
 
-            @toolbar.bind "mousedown", (event) ->
-                event.preventDefault()
+            # clicking on the toolbar would blur the editable
+            # In order to keep focus on it we need to put it back later.
+            widget = @
 
             @_bindToolbarEventsFixed() if @options.showAlways
             @_bindToolbarEventsRegular() unless @options.showAlways
 
             jQuery(window).resize (event) =>
                 @_updateToolbarPosition @_getToolbarPosition event
+
+            @protectFocusFrom @toolbar
 
         _updateToolbarPosition: (position) ->
             return if @options.fixed
@@ -420,7 +434,12 @@ Hallo may be freely distributed under the MIT license
             event.data.turnOn()
 
         _deactivated: (event) ->
-            event.data.turnOff()
+            unless event.data._protectToolbarFocus is true
+              event.data.turnOff()
+            else
+              setTimeout ->
+                jQuery(event.data.element).focus()
+              , 300
 
         _forceStructured: (event) ->
             try
