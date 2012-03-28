@@ -1,10 +1,13 @@
 <html>
   <head>
-    <link rel="stylesheet" href="Aristo/jquery-ui-1.8.7.custom.css" />
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="jquery-ui-bootstrap/css/custom-theme/jquery-ui-1.8.16.custom.css" />
     <link rel="stylesheet" href="hallo.css" />
+    <link rel="stylesheet" href="image.css" />
+    <link rel="stylesheet" href="fontawesome/css/font-awesome.css" charset="utf-8" />
     <link rel="stylesheet" href="annotate.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js"></script>
 
     <script src="underscoreJS/underscore.min.js"></script>
     <script src="backboneJS/backbone.min.js"></script>
@@ -12,6 +15,7 @@
 
     <script src="vie-latest.js"></script>
     <script src="vie-annotate.js"></script>
+
     <script src="hallo.js"></script>
 
     <title>Hallo example</title>
@@ -28,20 +32,65 @@ Turkey, known officially as the Republic of Turkey, is a Eurasian country that s
     </div>
 
     <script>
+        searchresult = [];
+        searchresult.push({
+            url: 'http://www.perfectoutdoorweddings.com/wp-content/uploads/2011/06/beach.jpg',
+            alt: 'Crazy beach, but no girls'
+        });
+        searchresult.push({
+            url: 'http://www.photosnewportbeach.com/artwork/newport-beach-sunset.jpg',
+            alt: 'Sunset from my balconey'
+        });
+        searchresult.push({
+            url: 'http://www.capetowndailyphoto.com/uploaded_images/Beach_Girl_IMG_3563-761741.jpg',
+            alt: 'My sister in Capetown'
+        });
+        searchresult.push({
+            url: 'http://news.fullorissa.com/wp-content/uploads/2011/06/PuriBeach.jpg',
+            alt: 'New Dehli chatting'
+        });
+        searchresult.push({
+            url: 'http://www.hotelplan.ch/CMS/1/1823506/4/ferien_auf_den_malediven.jpg',
+        });
+        searchresult.push({
+            url: 'http://stuckincustoms.smugmug.com/Portfolio-The-Best/your-favorites/3410783929310572ed16o/742619149_CYkrj-750x750.jpg',
+            alt: 'Blue mountains'
+        });
+        searchresult.push({
+            url: 'http://media.smashingmagazine.com/images/fantastic-hdr-pictures/hdr-10.jpg',
+            alt: 'Sun, Clouds, Stuff'
+        });
+        searchresult.push({
+            url: 'http://farm3.static.flickr.com/2139/1524795919_62631ab870.jpg',
+            alt: 'Two lone trees'
+        });
+        searchresult.push({
+            url: 'http://www.bigpicture.in/wp-content/uploads/2010/12/HDR-Photography-By-Paul-21-660x494.jpg',
+            alt: 'Bridge'
+        });
       jQuery('#enable').button().click(function() {
         jQuery('.editable').hallo({
           plugins: {
             'halloannotate': {},
             'halloformat': {},
-            'halloheadings': {},
+            'halloblock': {},
             'hallojustify': {},
             'hallolists': {},
             'hallolink': {},
-            'halloreundo': {}
+            'halloreundo': {},
+            'halloimage': {
+                search: function(query, limit, offset, successCallback) {
+                    response = {offset: offset, total: limit + 1, assets: searchresult.slice(offset, offset+limit)};
+                    successCallback(response);
+                },
+                suggestions: null,
+                uploadUrl: '/some/example/url'
+            }
           },
           editable: true,
           showAlways: true
-        });
+        })
+        .hallo('protectFocusFrom', jQuery('#enable'));
         jQuery('.editable').bind('hallomodified', function(event, data) {
             jQuery('#modified').html("Editables modified");
         });
@@ -50,9 +99,6 @@ Turkey, known officially as the Republic of Turkey, is a Eurasian country that s
         });
         jQuery('.editable').bind('hallounselected', function(event, data) {
             jQuery('#modified').html("Selection removed");
-        });
-        jQuery('.editable').bind('hallorestored', function(event, data) {
-            jQuery('#modified').html("restored");
         });
       });
       jQuery('#disable').button().click(function() {
