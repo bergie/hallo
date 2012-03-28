@@ -165,10 +165,8 @@
         widget = this;
         return el.bind("mousedown", function(event) {
           event.preventDefault();
-          console.info("_protectToolbarFocus = true");
           widget._protectToolbarFocus = true;
           return setTimeout(function() {
-            console.info("_protectToolbarFocus = false");
             return widget._protectToolbarFocus = false;
           }, 300);
         });
