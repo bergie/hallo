@@ -239,11 +239,17 @@ Hallo may be freely distributed under the MIT license
 
         # Check whether the editable has been modified
         isModified: ->
-           @originalContent isnt @getContents()
+            @originalContent isnt @getContents()
 
         # Set the editable as unmodified
         setUnmodified: ->
-           @originalContent = @getContents()
+            @originalContent = @getContents()
+
+        # Set the editable as modified
+        setModified: ->
+            @._trigger 'modified', null,
+                editable: @
+                content: @getContents()
 
         # Restore the content original
         restoreOriginalContent: () ->
@@ -358,10 +364,7 @@ Hallo may be freely distributed under the MIT license
 
         _checkModified: (event) ->
             widget = event.data
-            if widget.isModified()
-                widget._trigger "modified", null,
-                    editable: widget
-                    content: widget.getContents()
+            widget.setModified() if widget.isModified()
 
         _keys: (event) ->
             widget = event.data
