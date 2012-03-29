@@ -1,3 +1,150 @@
+(function() {
+
+  (function(jQuery) {
+    return jQuery.widget('IKS.hallobutton', {
+      button: null,
+      options: {
+        uuid: '',
+        label: null,
+        icon: null,
+        editable: null,
+        command: null,
+        queryState: true,
+        cssClass: null
+      },
+      _create: function() {
+        var id, _base;
+        if ((_base = this.options).icon == null) {
+          _base.icon = "icon-" + (this.options.label.toLowerCase());
+        }
+        id = "" + this.options.uuid + "-" + this.options.label;
+        this.element.append(this._createButton(id, this.options.command));
+        this.element.append(this._createLabel(id, this.options.command, this.options.label, this.options.icon));
+        if (this.options.cssClass) {
+          this.element.find('label').addClass(this.options.cssClass);
+        }
+        this.button = this.element.find('input');
+        this.button.button();
+        if (this.options.cssClass) this.button.addClass(this.options.cssClass);
+        return this.button.data('hallo-command', this.options.command);
+      },
+      _init: function() {
+        var editableElement, queryState,
+          _this = this;
+        if (!this.button) this.button = this._prepareButton();
+        this.element.append(this.button);
+        if (this.options.command) {
+          this.button.bind('change', function(event) {
+            return _this.options.editable.execute(_this.options.command);
+          });
+        }
+        if (!this.options.queryState) return;
+        editableElement = this.options.editable.element;
+        queryState = function(event) {
+          if (!_this.options.command) return;
+          try {
+            return _this.checked(document.queryCommandState(_this.options.command));
+          } catch (e) {
+
+          }
+        };
+        editableElement.bind('halloenabled', function() {
+          return editableElement.bind('keyup paste change mouseup hallomodified', queryState);
+        });
+        return editableElement.bind('hallodisabled', function() {
+          return editableElement.unbind('keyup paste change mouseup hallomodified', queryState);
+        });
+      },
+      enable: function() {
+        return this.button.button('enable');
+      },
+      disable: function() {
+        return this.button.button('disable');
+      },
+      refresh: function() {
+        return this.button.button('refresh');
+      },
+      checked: function(checked) {
+        this.button.attr('checked', checked);
+        return this.refresh();
+      },
+      _createButton: function(id) {
+        return jQuery("<input id=\"" + id + "\" type=\"checkbox\" />");
+      },
+      _createLabel: function(id, command, label, icon) {
+        return jQuery("<label for=\"" + id + "\" class=\"" + command + "_button\" title=\"" + label + "\"><i class=\"" + icon + "\"></i></label>");
+      }
+    });
+  })(jQuery);
+
+  (function(jQuery) {
+    return jQuery.widget('IKS.hallodropdownbutton', {
+      button: null,
+      options: {
+        uuid: '',
+        label: null,
+        icon: null,
+        editable: null,
+        target: '',
+        cssClass: null
+      },
+      _create: function() {
+        var _base, _ref;
+        return (_ref = (_base = this.options).icon) != null ? _ref : _base.icon = "icon-" + (this.options.label.toLowerCase());
+      },
+      _init: function() {
+        var target,
+          _this = this;
+        target = jQuery(this.options.target);
+        target.css('position', 'absolute');
+        target.addClass('dropdown-menu');
+        target.hide();
+        if (!this.button) this.button = this._prepareButton();
+        this.button.bind('click', function() {
+          if (target.hasClass('open')) {
+            _this._hideTarget();
+            return;
+          }
+          return _this._showTarget();
+        });
+        target.bind('click', function() {
+          return _this._hideTarget();
+        });
+        this.options.editable.element.bind('hallodeactivated', function() {
+          return _this._hideTarget();
+        });
+        return this.element.append(this.button);
+      },
+      _showTarget: function() {
+        var target;
+        target = jQuery(this.options.target);
+        this._updateTargetPosition();
+        target.addClass('open');
+        return target.show();
+      },
+      _hideTarget: function() {
+        var target;
+        target = jQuery(this.options.target);
+        target.removeClass('open');
+        return target.hide();
+      },
+      _updateTargetPosition: function() {
+        var bottom, left, target, _ref;
+        target = jQuery(this.options.target);
+        _ref = this.element.position(), bottom = _ref.bottom, left = _ref.left;
+        target.css('top', bottom);
+        return target.css('left', left - 20);
+      },
+      _prepareButton: function() {
+        var button, buttonEl, id;
+        id = "" + this.options.uuid + "-" + this.options.label;
+        buttonEl = jQuery("<button id=\"" + id + "\" data-toggle=\"dropdown\" data-target=\"#" + (this.options.target.attr('id')) + "\" title=\"" + this.options.label + "\">\n  <span class=\"ui-button-text\"><i class=\"" + this.options.icon + "\"></i></span>\n</button>");
+        if (this.options.cssClass) buttonEl.addClass(this.options.cssClass);
+        button = buttonEl.button();
+        return button;
+      }
+    });
+  })(jQuery);
 
   /*
   Hallo - a rich text editing jQuery UI widget
@@ -8,6 +155,7 @@
   (function(jQuery) {
     return jQuery.widget("IKS.hallo", {
       toolbar: null,
+      toolbarMoved: false,
       bound: false,
       originalContent: "",
       uuid: "",
@@ -20,6 +168,7 @@
           x: 0,
           y: 0
         },
+        fixed: false,
         showAlways: false,
         activated: function() {},
         deactivated: function() {},
@@ -29,24 +178,29 @@
         disabled: function() {},
         placeholder: '',
         parentElement: 'body',
-        forceStructured: true
+        forceStructured: true,
+        buttonCssClass: null
       },
       _create: function() {
-        var options, plugin, _ref;
+        var options, plugin, _ref, _results;
         this.originalContent = this.getContents();
         this.id = this._generateUUID();
         this._prepareToolbar();
         _ref = this.options.plugins;
+        _results = [];
         for (plugin in _ref) {
           options = _ref[plugin];
           if (!jQuery.isPlainObject(options)) options = {};
-          options["editable"] = this;
-          options["toolbar"] = this.toolbar;
-          options["uuid"] = this.id;
-          jQuery(this.element)[plugin](options);
+          options['editable'] = this;
+          options['toolbar'] = this.toolbar;
+          options['uuid'] = this.id;
+          options['buttonCssClass'] = this.options.buttonCssClass;
+          _results.push(jQuery(this.element)[plugin](options));
         }
+        return _results;
       },
       _init: function() {
+        this._setToolbarPosition();
         if (this.options.editable) {
           return this.enable();
         } else {
@@ -134,7 +288,12 @@
         }
       },
       getContents: function() {
-        return this.element.html();
+        var contentClone, plugin;
+        contentClone = this.element.clone();
+        for (plugin in this.options.plugins) {
+          jQuery(this.element)[plugin]('cleanupContentClone', contentClone);
+        }
+        return contentClone.html();
       },
       setContents: function(contents) {
         return this.element.html(contents);
@@ -145,6 +304,12 @@
       setUnmodified: function() {
         return this.originalContent = this.getContents();
       },
+      setModified: function() {
+        return this._trigger('modified', null, {
+          editable: this,
+          content: this.getContents()
+        });
+      },
       restoreOriginalContent: function() {
         return this.element.html(this.originalContent);
       },
@@ -152,6 +317,17 @@
         if (document.execCommand(command, false, value)) {
           return this.element.trigger("change");
         }
+      },
+      protectFocusFrom: function(el) {
+        var widget;
+        widget = this;
+        return el.bind("mousedown", function(event) {
+          event.preventDefault();
+          widget._protectToolbarFocus = true;
+          return setTimeout(function() {
+            return widget._protectToolbarFocus = false;
+          }, 300);
+        });
       },
       _generateUUID: function() {
         var S4;
@@ -220,23 +396,39 @@
           return _this.toolbar.hide();
         });
       },
+      _setToolbarPosition: function() {
+        if (this.options.fixed) {
+          this.toolbar.css('position', 'static');
+          if (this.toolbarMoved) {
+            jQuery(this.options.parentElement).append(this.toolbar);
+          }
+          this.toolbarMoved = false;
+          return;
+        }
+        if (this.options.parentElement !== 'body') {
+          jQuery('body').append(this.toolbar);
+          this.toolbarMoved = true;
+        }
+        this.toolbar.css('position', 'absolute');
+        this.toolbar.css('top', this.element.offset().top - 20);
+        return this.toolbar.css('left', this.element.offset().left);
+      },
       _prepareToolbar: function() {
-        var _this = this;
+        var widget,
+          _this = this;
         this.toolbar = jQuery('<div class="hallotoolbar"></div>').hide();
-        this.toolbar.css("position", "absolute");
-        this.toolbar.css("top", this.element.offset().top - 20);
-        this.toolbar.css("left", this.element.offset().left);
+        this._setToolbarPosition();
         jQuery(this.options.parentElement).append(this.toolbar);
-        this.toolbar.bind("mousedown", function(event) {
-          return event.preventDefault();
-        });
+        widget = this;
         if (this.options.showAlways) this._bindToolbarEventsFixed();
         if (!this.options.showAlways) this._bindToolbarEventsRegular();
-        return jQuery(window).resize(function(event) {
+        jQuery(window).resize(function(event) {
           return _this._updateToolbarPosition(_this._getToolbarPosition(event));
         });
+        return this.protectFocusFrom(this.toolbar);
       },
       _updateToolbarPosition: function(position) {
+        if (this.options.fixed) return;
         if (!position) return;
         if (!(position.top && position.left)) return;
         this.toolbar.css("top", position.top);
@@ -245,12 +437,7 @@
       _checkModified: function(event) {
         var widget;
         widget = event.data;
-        if (widget.isModified()) {
-          return widget._trigger("modified", null, {
-            editable: widget,
-            content: widget.getContents()
-          });
-        }
+        if (widget.isModified()) return widget.setModified();
       },
       _keys: function(event) {
         var old, widget;
@@ -303,7 +490,10 @@
       },
       _isEmptyRange: function(range) {
         if (range.collapsed) return true;
-        if (range.isCollapsed) return range.isCollapsed();
+        if (range.isCollapsed) {
+          if (typeof range.isCollapsed === 'function') return range.isCollapsed();
+          return range.isCollapsed;
+        }
         return false;
       },
       turnOn: function() {
@@ -333,9 +523,15 @@
         return event.data.turnOn();
       },
       _deactivated: function(event) {
-        return event.data.turnOff();
+        if (event.data._protectToolbarFocus !== true) {
+          return event.data.turnOff();
+        } else {
+          return setTimeout(function() {
+            return jQuery(event.data.element).focus();
+          }, 300);
+        }
       },
-      _forceStructured: function() {
+      _forceStructured: function(event) {
         try {
           return document.execCommand('styleWithCSS', 0, false);
         } catch (e) {
@@ -354,193 +550,117 @@
   })(jQuery);
 
   (function(jQuery) {
-    return jQuery.widget("IKS.hallolists", {
+    var z;
+    z = null;
+    if (this.VIE !== void 0) {
+      z = new VIE;
+      z.use(new z.StanbolService({
+        proxyDisabled: true,
+        url: 'http://dev.iks-project.eu:8081'
+      }));
+    }
+    return jQuery.widget('IKS.halloannotate', {
       options: {
+        vie: z,
         editable: null,
         toolbar: null,
         uuid: '',
-        lists: {
-          ordered: false,
-          unordered: true
-        }
+        select: function() {},
+        decline: function() {},
+        remove: function() {},
+        buttonCssClass: null
       },
       _create: function() {
-        var buttonize, buttonset;
-        var _this = this;
-        buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
-        buttonize = function(type, label) {
-          var buttonElement;
-          buttonElement = jQuery('<span></span>');
-          buttonElement.hallobutton({
-            uuid: _this.options.uuid,
-            editable: _this.options.editable,
-            label: label,
-            command: "insert" + type + "List",
-            icon: 'icon-list'
-          });
-          return buttonset.append(buttonElement);
-        };
-        if (this.options.lists.ordered) buttonize("Ordered", "OL");
-        if (this.options.lists.unordered) buttonize("Unordered", "UL");
-        buttonset.buttonset();
-        return this.options.toolbar.append(buttonset);
-      },
-      _init: function() {}
-    });
-  })(jQuery);
-
-  (function(jQuery) {
-    return jQuery.widget("IKS.halloheadings", {
-      options: {
-        editable: null,
-        toolbar: null,
-        uuid: "",
-        headers: [1, 2, 3]
-      },
-      _create: function() {
-        var button, buttonize, buttonset, header, id, label, widget, _i, _len, _ref;
-        var _this = this;
+        var buttonHolder, editableElement, turnOffAnnotate, widget,
+          _this = this;
         widget = this;
-        buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
-        id = "" + this.options.uuid + "-paragraph";
-        label = "P";
-        buttonset.append(jQuery("<input id=\"" + id + "\" type=\"radio\" name=\"" + widget.options.uuid + "-headings\"/><label for=\"" + id + "\" class=\"p_button\">" + label + "</label>").button());
-        button = jQuery("#" + id, buttonset);
-        button.attr("hallo-command", "formatBlock");
-        button.bind("change", function(event) {
-          var cmd;
-          cmd = jQuery(this).attr("hallo-command");
-          return widget.options.editable.execute(cmd, "P");
-        });
-        buttonize = function(headerSize) {
-          label = "H" + headerSize;
-          id = "" + _this.options.uuid + "-" + headerSize;
-          buttonset.append(jQuery("<input id=\"" + id + "\" type=\"radio\" name=\"" + widget.options.uuid + "-headings\"/><label for=\"" + id + "\" class=\"h" + headerSize + "_button\">" + label + "</label>").button());
-          button = jQuery("#" + id, buttonset);
-          button.attr("hallo-size", "H" + headerSize);
-          return button.bind("change", function(event) {
-            var size;
-            size = jQuery(this).attr("hallo-size");
-            return widget.options.editable.execute("formatBlock", size);
-          });
-        };
-        _ref = this.options.headers;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          header = _ref[_i];
-          buttonize(header);
+        if (this.options.vie === void 0) {
+          throw 'The halloannotate plugin requires VIE to be loaded';
+          return;
         }
-        buttonset.buttonset();
-        this.element.bind("keyup paste change mouseup", function(event) {
-          var format, formatNumber, labelParent, matches, selectedButton;
-          try {
-            format = document.queryCommandValue("formatBlock").toUpperCase();
-          } catch (e) {
-            format = '';
-          }
-          if (format === "P") {
-            selectedButton = jQuery("#" + widget.options.uuid + "-paragraph");
-          } else if (matches = format.match(/\d/)) {
-            formatNumber = matches[0];
-            selectedButton = jQuery("#" + widget.options.uuid + "-" + formatNumber);
-          }
-          labelParent = jQuery(buttonset);
-          labelParent.children("input").attr("checked", false);
-          labelParent.children("label").removeClass("ui-state-clicked");
-          labelParent.children("input").button("widget").button("refresh");
-          if (selectedButton) {
-            selectedButton.attr("checked", true);
-            selectedButton.next("label").addClass("ui-state-clicked");
-            return selectedButton.button("refresh");
-          }
+        if (typeof this.element.annotate !== 'function') {
+          throw 'The halloannotate plugin requires annotate.js to be loaded';
+          return;
+        }
+        this.state = 'off';
+        buttonHolder = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
+        this.button = buttonHolder.hallobutton({
+          label: 'Annotate',
+          icon: 'icon-tags',
+          editable: this.options.editable,
+          command: null,
+          uuid: this.options.uuid,
+          cssClass: this.options.buttonCssClass,
+          queryState: false
         });
-        return this.options.toolbar.append(buttonset);
+        buttonHolder.bind('change', function(event) {
+          if (_this.state === "pending") return;
+          if (_this.state === "off") return _this.turnOn();
+          return _this.turnOff();
+        });
+        buttonHolder.buttonset();
+        this.options.toolbar.append(this.button);
+        this.instantiate();
+        turnOffAnnotate = function() {
+          var editable;
+          editable = this;
+          return jQuery(editable).halloannotate('turnOff');
+        };
+        editableElement = this.options.editable.element;
+        return editableElement.bind('hallodisabled', turnOffAnnotate);
       },
-      _init: function() {}
-    });
-  })(jQuery);
-
-  (function(jQuery) {
-    return jQuery.widget("Liip.hallooverlay", {
-      options: {
-        editable: null,
-        toolbar: null,
-        uuid: "",
-        overlay: null,
-        padding: 10,
-        background: null
+      cleanupContentClone: function(el) {
+        if (this.state === 'on') {
+          return el.find(".entity:not([about])").each(function() {
+            return jQuery(this).replaceWith(jQuery(this).html());
+          });
+        }
       },
-      _create: function() {
+      instantiate: function() {
         var widget;
         widget = this;
-        if (!this.options.bound) {
-          this.options.bound = true;
-          widget.options.editable.element.bind("halloactivated", function(event, data) {
-            widget.options.currentEditable = jQuery(event.target);
-            if (!widget.options.visible) return widget.showOverlay();
-          });
-          widget.options.editable.element.bind("hallomodified", function(event, data) {
-            widget.options.currentEditable = jQuery(event.target);
-            if (widget.options.visible) return widget.resizeOverlay();
-          });
-          return widget.options.editable.element.bind("hallodeactivated", function(event, data) {
-            widget.options.currentEditable = jQuery(event.target);
-            if (widget.options.visible) return widget.hideOverlay();
-          });
-        }
-      },
-      _init: function() {},
-      showOverlay: function() {
-        this.options.visible = true;
-        if (this.options.overlay === null) {
-          if (jQuery("#halloOverlay").length > 0) {
-            this.options.overlay = jQuery("#halloOverlay");
-          } else {
-            this.options.overlay = jQuery('<div id="halloOverlay" class="halloOverlay">');
-            jQuery(document.body).append(this.options.overlay);
-          }
-          this.options.overlay.bind('click', jQuery.proxy(this.options.editable.turnOff, this.options.editable));
-        }
-        this.options.overlay.show();
-        if (this.options.background === null) {
-          if (jQuery("#halloBackground").length > 0) {
-            this.options.background = jQuery("#halloBackground");
-          } else {
-            this.options.background = jQuery('<div id="halloBackground" class="halloBackground">');
-            jQuery(document.body).append(this.options.background);
-          }
-        }
-        this.resizeOverlay();
-        this.options.background.show();
-        if (!this.options.originalZIndex) {
-          this.options.originalZIndex = this.options.currentEditable.css("z-index");
-        }
-        return this.options.currentEditable.css('z-index', '350');
-      },
-      resizeOverlay: function() {
-        var offset;
-        offset = this.options.currentEditable.offset();
-        this.options.background.css({
-          top: offset.top - this.options.padding,
-          left: offset.left - this.options.padding
+        return this.options.editable.element.annotate({
+          vie: this.options.vie,
+          debug: false,
+          showTooltip: true,
+          select: this.options.select,
+          remove: this.options.remove,
+          success: this.options.success,
+          error: this.options.error
+        }).bind('annotateselect', function() {
+          return widget.options.editable.setModified();
+        }).bind('annotateremove', function() {
+          return jQuery.noop();
         });
-        this.options.background.width(this.options.currentEditable.width() + 2 * this.options.padding);
-        return this.options.background.height(this.options.currentEditable.height() + 2 * this.options.padding);
       },
-      hideOverlay: function() {
-        this.options.visible = false;
-        this.options.overlay.hide();
-        this.options.background.hide();
-        return this.options.currentEditable.css('z-index', this.options.originalZIndex);
+      turnPending: function() {
+        this.state = 'pending';
+        this.button.hallobutton('checked', false);
+        return this.button.hallobutton('disable');
       },
-      _findBackgroundColor: function(jQueryfield) {
-        var color;
-        color = jQueryfield.css("background-color");
-        if (color !== 'rgba(0, 0, 0, 0)' && color !== 'transparent') return color;
-        if (jQueryfield.is("body")) {
-          return "white";
-        } else {
-          return this._findBackgroundColor(jQueryfield.parent());
+      turnOn: function() {
+        var widget,
+          _this = this;
+        this.turnPending();
+        widget = this;
+        try {
+          return this.options.editable.element.annotate('enable', function(success) {
+            if (success) {
+              _this.state = 'on';
+              _this.button.hallobutton('checked', true);
+              return _this.button.hallobutton('enable');
+            }
+          });
+        } catch (e) {
+          return alert(e);
         }
+      },
+      turnOff: function() {
+        this.options.editable.element.annotate('disable');
+        this.button.attr('checked', false);
+        this.button.find("label").removeClass("ui-state-clicked");
+        this.button.button('refresh');
+        return this.state = 'off';
       }
     });
   })(jQuery);
@@ -583,6 +703,78 @@
   })(jQuery);
 
   (function(jQuery) {
+    return jQuery.widget('IKS.halloblock', {
+      options: {
+        editable: null,
+        toolbar: null,
+        uuid: '',
+        elements: ['h1', 'h2', 'h3', 'p', 'pre', 'blockquote'],
+        buttonCssClass: null
+      },
+      _create: function() {
+        var buttonset, contentId, target;
+        buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
+        contentId = "" + this.options.uuid + "-" + this.widgetName + "-data";
+        target = this._prepareDropdown(contentId);
+        buttonset.append(target);
+        buttonset.append(this._prepareButton(target));
+        return this.options.toolbar.append(buttonset);
+      },
+      _prepareDropdown: function(contentId) {
+        var addElement, containingElement, contentArea, element, _i, _len, _ref,
+          _this = this;
+        contentArea = jQuery("<div id=\"" + contentId + "\"></div>");
+        containingElement = this.options.editable.element.get(0).tagName.toLowerCase();
+        addElement = function(element) {
+          var el, queryState;
+          el = jQuery("<" + element + " class=\"menu-item\">" + element + "</" + element + ">");
+          if (containingElement === element) el.addClass('selected');
+          if (containingElement !== 'div') el.addClass('disabled');
+          el.bind('click', function() {
+            if (el.hasClass('disabled')) return;
+            return _this.options.editable.execute('formatBlock', element.toUpperCase());
+          });
+          queryState = function(event) {
+            var block;
+            block = document.queryCommandValue('formatBlock');
+            if (block.toLowerCase() === element) {
+              el.addClass('selected');
+              return;
+            }
+            return el.removeClass('selected');
+          };
+          _this.options.editable.element.bind('halloenabled', function() {
+            return _this.options.editable.element.bind('keyup paste change mouseup', queryState);
+          });
+          _this.options.editable.element.bind('hallodisabled', function() {
+            return _this.options.editable.element.unbind('keyup paste change mouseup', queryState);
+          });
+          return el;
+        };
+        _ref = this.options.elements;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          element = _ref[_i];
+          contentArea.append(addElement(element));
+        }
+        return contentArea;
+      },
+      _prepareButton: function(target) {
+        var buttonElement;
+        buttonElement = jQuery('<span></span>');
+        buttonElement.hallodropdownbutton({
+          uuid: this.options.uuid,
+          editable: this.options.editable,
+          label: 'block',
+          icon: 'icon-text-height',
+          target: target,
+          cssClass: this.options.buttonCssClass
+        });
+        return buttonElement;
+      }
+    });
+  })(jQuery);
+
+  (function(jQuery) {
     return jQuery.widget("Liip.halloimage", {
       options: {
         editable: null,
@@ -607,10 +799,11 @@
             return jQuery('.image_button').removeClass('ui-state-clicked');
           }
         },
-        dialog: null
+        dialog: null,
+        buttonCssClass: null
       },
       _create: function() {
-        var button, buttonset, dialogId, id, widget;
+        var button, buttonHolder, buttonset, dialogId, id, widget;
         widget = this;
         dialogId = "" + this.options.uuid + "-image-dialog";
         this.options.dialog = jQuery("<div id=\"" + dialogId + "\">                <div class=\"nav\">                    <ul class=\"tabs\">                    </ul>                    <div id=\"" + this.options.uuid + "-tab-activeIndicator\" class=\"tab-activeIndicator\" />                </div>                <div class=\"dialogcontent\">            </div>");
@@ -628,8 +821,18 @@
         }
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         id = "" + this.options.uuid + "-image";
-        buttonset.append(jQuery("<input id=\"" + id + "\" type=\"checkbox\" /><label for=\"" + id + "\" class=\"image_button\" >Image</label>").button());
-        button = jQuery("#" + id, buttonset);
+        buttonHolder = jQuery('<span></span>');
+        buttonHolder.hallobutton({
+          label: 'Images',
+          icon: 'icon-picture',
+          editable: this.options.editable,
+          command: null,
+          queryState: false,
+          uuid: this.options.uuid,
+          cssClass: this.options.buttonCssClass
+        });
+        buttonset.append(buttonHolder);
+        button = buttonHolder.button();
         button.bind("change", function(event) {
           if (widget.options.dialog.dialog("isOpen")) {
             return widget._closeDialog();
@@ -1151,56 +1354,16 @@
   })(jQuery);
 
   (function(jQuery) {
-    return jQuery.widget("IKS.halloformat", {
-      options: {
-        editable: null,
-        toolbar: null,
-        uuid: "",
-        formattings: {
-          bold: true,
-          italic: true,
-          strikeThrough: false,
-          underline: false
-        }
-      },
-      _create: function() {
-        var buttonize, buttonset, enabled, format, widget, _ref;
-        var _this = this;
-        widget = this;
-        buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
-        buttonize = function(format) {
-          var buttonHolder;
-          buttonHolder = jQuery('<span></span>');
-          buttonHolder.hallobutton({
-            label: format,
-            editable: _this.options.editable,
-            command: format,
-            uuid: _this.options.uuid
-          });
-          return buttonset.append(buttonHolder);
-        };
-        _ref = this.options.formattings;
-        for (format in _ref) {
-          enabled = _ref[format];
-          if (enabled) buttonize(format);
-        }
-        buttonset.buttonset();
-        return this.options.toolbar.append(buttonset);
-      },
-      _init: function() {}
-    });
-  })(jQuery);
-
-  (function(jQuery) {
     return jQuery.widget("IKS.halloreundo", {
       options: {
         editable: null,
         toolbar: null,
-        uuid: ''
+        uuid: '',
+        buttonCssClass: null
       },
       _create: function() {
-        var buttonize, buttonset;
-        var _this = this;
+        var buttonize, buttonset,
+          _this = this;
         buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
         buttonize = function(cmd, label) {
           var buttonElement;
@@ -1211,7 +1374,8 @@
             label: label,
             icon: cmd === 'undo' ? 'icon-arrow-left' : 'icon-arrow-right',
             command: cmd,
-            queryState: false
+            queryState: false,
+            cssClass: _this.options.buttonCssClass
           });
           return buttonset.append(buttonElement);
         };
@@ -1225,68 +1389,158 @@
   })(jQuery);
 
   (function(jQuery) {
-    return jQuery.widget('IKS.halloblock', {
+    return jQuery.widget("Liip.hallooverlay", {
       options: {
         editable: null,
         toolbar: null,
-        uuid: '',
-        elements: ['h1', 'h2', 'h3', 'p', 'pre', 'blockquote']
+        uuid: "",
+        overlay: null,
+        padding: 10,
+        background: null
       },
       _create: function() {
-        var buttonset, contentId, target;
-        buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
-        contentId = "" + this.options.uuid + "-" + this.widgetName + "-data";
-        target = this._prepareDropdown(contentId);
-        buttonset.append(target);
-        buttonset.append(this._prepareButton(target));
+        var widget;
+        widget = this;
+        if (!this.options.bound) {
+          this.options.bound = true;
+          widget.options.editable.element.bind("halloactivated", function(event, data) {
+            widget.options.currentEditable = jQuery(event.target);
+            if (!widget.options.visible) return widget.showOverlay();
+          });
+          widget.options.editable.element.bind("hallomodified", function(event, data) {
+            widget.options.currentEditable = jQuery(event.target);
+            if (widget.options.visible) return widget.resizeOverlay();
+          });
+          return widget.options.editable.element.bind("hallodeactivated", function(event, data) {
+            widget.options.currentEditable = jQuery(event.target);
+            if (widget.options.visible) return widget.hideOverlay();
+          });
+        }
+      },
+      _init: function() {},
+      showOverlay: function() {
+        this.options.visible = true;
+        if (this.options.overlay === null) {
+          if (jQuery("#halloOverlay").length > 0) {
+            this.options.overlay = jQuery("#halloOverlay");
+          } else {
+            this.options.overlay = jQuery('<div id="halloOverlay" class="halloOverlay">');
+            jQuery(document.body).append(this.options.overlay);
+          }
+          this.options.overlay.bind('click', jQuery.proxy(this.options.editable.turnOff, this.options.editable));
+        }
+        this.options.overlay.show();
+        if (this.options.background === null) {
+          if (jQuery("#halloBackground").length > 0) {
+            this.options.background = jQuery("#halloBackground");
+          } else {
+            this.options.background = jQuery('<div id="halloBackground" class="halloBackground">');
+            jQuery(document.body).append(this.options.background);
+          }
+        }
+        this.resizeOverlay();
+        this.options.background.show();
+        if (!this.options.originalZIndex) {
+          this.options.originalZIndex = this.options.currentEditable.css("z-index");
+        }
+        return this.options.currentEditable.css('z-index', '350');
+      },
+      resizeOverlay: function() {
+        var offset;
+        offset = this.options.currentEditable.offset();
+        this.options.background.css({
+          top: offset.top - this.options.padding,
+          left: offset.left - this.options.padding
+        });
+        this.options.background.width(this.options.currentEditable.width() + 2 * this.options.padding);
+        return this.options.background.height(this.options.currentEditable.height() + 2 * this.options.padding);
+      },
+      hideOverlay: function() {
+        this.options.visible = false;
+        this.options.overlay.hide();
+        this.options.background.hide();
+        return this.options.currentEditable.css('z-index', this.options.originalZIndex);
+      },
+      _findBackgroundColor: function(jQueryfield) {
+        var color;
+        color = jQueryfield.css("background-color");
+        if (color !== 'rgba(0, 0, 0, 0)' && color !== 'transparent') return color;
+        if (jQueryfield.is("body")) {
+          return "white";
+        } else {
+          return this._findBackgroundColor(jQueryfield.parent());
+        }
+      }
+    });
+  })(jQuery);
+
+  (function(jQuery) {
+    return jQuery.widget("IKS.halloheadings", {
+      options: {
+        editable: null,
+        toolbar: null,
+        uuid: "",
+        headers: [1, 2, 3]
+      },
+      _create: function() {
+        var button, buttonize, buttonset, header, id, label, widget, _i, _len, _ref,
+          _this = this;
+        widget = this;
+        buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
+        id = "" + this.options.uuid + "-paragraph";
+        label = "P";
+        buttonset.append(jQuery("<input id=\"" + id + "\" type=\"radio\" name=\"" + widget.options.uuid + "-headings\"/><label for=\"" + id + "\" class=\"p_button\">" + label + "</label>").button());
+        button = jQuery("#" + id, buttonset);
+        button.attr("hallo-command", "formatBlock");
+        button.bind("change", function(event) {
+          var cmd;
+          cmd = jQuery(this).attr("hallo-command");
+          return widget.options.editable.execute(cmd, "P");
+        });
+        buttonize = function(headerSize) {
+          label = "H" + headerSize;
+          id = "" + _this.options.uuid + "-" + headerSize;
+          buttonset.append(jQuery("<input id=\"" + id + "\" type=\"radio\" name=\"" + widget.options.uuid + "-headings\"/><label for=\"" + id + "\" class=\"h" + headerSize + "_button\">" + label + "</label>").button());
+          button = jQuery("#" + id, buttonset);
+          button.attr("hallo-size", "H" + headerSize);
+          return button.bind("change", function(event) {
+            var size;
+            size = jQuery(this).attr("hallo-size");
+            return widget.options.editable.execute("formatBlock", size);
+          });
+        };
+        _ref = this.options.headers;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          header = _ref[_i];
+          buttonize(header);
+        }
+        buttonset.buttonset();
+        this.element.bind("keyup paste change mouseup", function(event) {
+          var format, formatNumber, labelParent, matches, selectedButton;
+          try {
+            format = document.queryCommandValue("formatBlock").toUpperCase();
+          } catch (e) {
+            format = '';
+          }
+          if (format === "P") {
+            selectedButton = jQuery("#" + widget.options.uuid + "-paragraph");
+          } else if (matches = format.match(/\d/)) {
+            formatNumber = matches[0];
+            selectedButton = jQuery("#" + widget.options.uuid + "-" + formatNumber);
+          }
+          labelParent = jQuery(buttonset);
+          labelParent.children("input").attr("checked", false);
+          labelParent.children("label").removeClass("ui-state-clicked");
+          labelParent.children("input").button("widget").button("refresh");
+          if (selectedButton) {
+            selectedButton.attr("checked", true);
+            selectedButton.next("label").addClass("ui-state-clicked");
+            return selectedButton.button("refresh");
+          }
+        });
         return this.options.toolbar.append(buttonset);
       },
-      _prepareDropdown: function(contentId) {
-        var addElement, contentArea, element, _i, _len, _ref;
-        var _this = this;
-        contentArea = jQuery("<div id=\"" + contentId + "\"></div>");
-        addElement = function(element) {
-          var el, queryState;
-          el = jQuery("<" + element + ">" + element + "</" + element + ">");
-          el.bind('click', function() {
-            return _this.options.editable.execute('formatBlock', element.toUpperCase());
-          });
-          queryState = function(event) {
-            var block;
-            block = document.queryCommandValue('formatBlock');
-            if (block.toLowerCase() === element) {
-              el.addClass('selected');
-              return;
-            }
-            return el.removeClass('selected');
-          };
-          _this.options.editable.element.bind('halloenabled', function() {
-            return _this.options.editable.element.bind('keyup paste change mouseup', queryState);
-          });
-          _this.options.editable.element.bind('hallodisabled', function() {
-            return _this.options.editable.element.bind('keyup paste change mouseup', queryState);
-          });
-          return el;
-        };
-        _ref = this.options.elements;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          element = _ref[_i];
-          contentArea.append(addElement(element));
-        }
-        return contentArea;
-      },
-      _prepareButton: function(target) {
-        var buttonElement;
-        buttonElement = jQuery('<span></span>');
-        buttonElement.hallodropdownbutton({
-          uuid: this.options.uuid,
-          editable: this.options.editable,
-          label: 'block',
-          icon: 'icon-text-height',
-          target: target
-        });
-        return buttonElement;
-      }
+      _init: function() {}
     });
   })(jQuery);
 
@@ -1311,8 +1565,8 @@
         }
       },
       _create: function() {
-        var buttonize, buttonset, dialog, dialogId, dialogSubmitCb, urlInput, widget;
-        var _this = this;
+        var buttonize, buttonset, dialog, dialogId, dialogSubmitCb, urlInput, widget,
+          _this = this;
         widget = this;
         dialogId = "" + this.options.uuid + "-dialog";
         dialog = jQuery("<div id=\"" + dialogId + "\"><form action=\"#\" method=\"post\" class=\"linkForm\"><input class=\"url\" type=\"text\" name=\"url\" value=\"" + this.options.defaultUrl + "\" /><input type=\"submit\" id=\"addlinkButton\" value=\"Insert\" /></form></div>");
@@ -1391,11 +1645,12 @@
       options: {
         editable: null,
         toolbar: null,
-        uuid: ''
+        uuid: '',
+        buttonCssClass: null
       },
       _create: function() {
-        var buttonize, buttonset;
-        var _this = this;
+        var buttonize, buttonset,
+          _this = this;
         buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
         buttonize = function(alignment) {
           var buttonElement;
@@ -1405,7 +1660,8 @@
             editable: _this.options.editable,
             label: alignment,
             command: "justify" + alignment,
-            icon: "icon-align-" + (alignment.toLowerCase())
+            icon: "icon-align-" + (alignment.toLowerCase()),
+            cssClass: _this.options.buttonCssClass
           });
           return buttonset.append(buttonElement);
         };
@@ -1420,123 +1676,84 @@
   })(jQuery);
 
   (function(jQuery) {
-    return jQuery.widget('IKS.hallobutton', {
-      button: null,
+    return jQuery.widget("IKS.halloformat", {
       options: {
-        uuid: '',
-        label: null,
-        icon: null,
         editable: null,
-        command: null,
-        queryState: true
+        toolbar: null,
+        uuid: "",
+        formattings: {
+          bold: true,
+          italic: true,
+          strikeThrough: false,
+          underline: false
+        },
+        buttonCssClass: null
       },
       _create: function() {
-        var _base, _ref;
-        return (_ref = (_base = this.options).icon) != null ? _ref : _base.icon = "icon-" + (this.options.label.toLowerCase());
-      },
-      _init: function() {
-        var editableElement, queryState;
-        var _this = this;
-        if (!this.button) this.button = this._prepareButton();
-        this.element.append(this.button);
-        this.button.bind('change', function(event) {
-          return _this.options.editable.execute(_this.options.command);
-        });
-        if (!this.options.queryState) return;
-        editableElement = this.options.editable.element;
-        queryState = function(event) {
-          if (document.queryCommandState(_this.options.command)) {
-            _this.button.attr('checked', true);
-            _this.button.next('label').addClass('ui-state-clicked');
-            _this.button.button('refresh');
-            return;
-          }
-          _this.button.attr('checked', false);
-          _this.button.next('label').removeClass('ui-state-clicked');
-          return _this.button.button('refresh');
+        var buttonize, buttonset, enabled, format, widget, _ref,
+          _this = this;
+        widget = this;
+        buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
+        buttonize = function(format) {
+          var buttonHolder;
+          buttonHolder = jQuery('<span></span>');
+          buttonHolder.hallobutton({
+            label: format,
+            editable: _this.options.editable,
+            command: format,
+            uuid: _this.options.uuid,
+            cssClass: _this.options.buttonCssClass
+          });
+          return buttonset.append(buttonHolder);
         };
-        editableElement.bind('halloenabled', function() {
-          return editableElement.bind('keyup paste change mouseup', queryState);
-        });
-        return editableElement.bind('hallodisabled', function() {
-          return editableElement.bind('keyup paste change mouseup', queryState);
-        });
+        _ref = this.options.formattings;
+        for (format in _ref) {
+          enabled = _ref[format];
+          if (enabled) buttonize(format);
+        }
+        buttonset.buttonset();
+        return this.options.toolbar.append(buttonset);
       },
-      _prepareButton: function() {
-        var button, buttonEl, id;
-        id = "" + this.options.uuid + "-" + this.options.label;
-        buttonEl = jQuery("<input id=\"" + id + "\" type=\"checkbox\" />\n<label for=\"" + id + "\" class=\"btn " + this.options.command + "_button\">\n  <i class=\"" + this.options.icon + "\"></i>\n</label>");
-        button = buttonEl.button();
-        button.data('hallo-command', this.options.command);
-        return button;
-      }
+      _init: function() {}
     });
   })(jQuery);
 
   (function(jQuery) {
-    return jQuery.widget('IKS.hallodropdownbutton', {
-      button: null,
+    return jQuery.widget("IKS.hallolists", {
       options: {
-        uuid: '',
-        label: null,
-        icon: null,
         editable: null,
-        target: ''
+        toolbar: null,
+        uuid: '',
+        lists: {
+          ordered: false,
+          unordered: true
+        },
+        buttonCssClass: null
       },
       _create: function() {
-        var _base, _ref;
-        return (_ref = (_base = this.options).icon) != null ? _ref : _base.icon = "icon-" + (this.options.label.toLowerCase());
+        var buttonize, buttonset,
+          _this = this;
+        buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
+        buttonize = function(type, label) {
+          var buttonElement;
+          buttonElement = jQuery('<span></span>');
+          buttonElement.hallobutton({
+            uuid: _this.options.uuid,
+            editable: _this.options.editable,
+            label: label,
+            command: "insert" + type + "List",
+            icon: 'icon-list',
+            cssClass: _this.options.buttonCssClass
+          });
+          return buttonset.append(buttonElement);
+        };
+        if (this.options.lists.ordered) buttonize("Ordered", "OL");
+        if (this.options.lists.unordered) buttonize("Unordered", "UL");
+        buttonset.buttonset();
+        return this.options.toolbar.append(buttonset);
       },
-      _init: function() {
-        var target;
-        var _this = this;
-        target = jQuery(this.options.target);
-        target.css('position', 'absolute');
-        target.addClass('dropdown-target');
-        target.hide();
-        if (!this.button) this.button = this._prepareButton();
-        this.button.bind('click', function() {
-          if (target.hasClass('open')) {
-            _this._hideTarget();
-            return;
-          }
-          return _this._showTarget();
-        });
-        target.bind('click', function() {
-          return _this._hideTarget();
-        });
-        this.options.editable.element.bind('hallodeactivated', function() {
-          return _this._hideTarget();
-        });
-        return this.element.append(this.button);
-      },
-      _showTarget: function() {
-        var target;
-        target = jQuery(this.options.target);
-        this._updateTargetPosition();
-        target.addClass('open');
-        return target.show();
-      },
-      _hideTarget: function() {
-        var target;
-        target = jQuery(this.options.target);
-        target.removeClass('open');
-        return target.hide();
-      },
-      _updateTargetPosition: function() {
-        var left, target, toolbarLeft, toolbarTop, top, _ref, _ref2;
-        target = jQuery(this.options.target);
-        _ref = this.element.offset(), top = _ref.top, left = _ref.left;
-        _ref2 = this.options.editable.toolbar.offset(), toolbarTop = _ref2.toolbarTop, toolbarLeft = _ref2.toolbarLeft;
-        target.css('top', left - toolbarLeft);
-        return target.css('left', top - toolbarTop);
-      },
-      _prepareButton: function() {
-        var button, buttonEl, id;
-        id = "" + this.options.uuid + "-" + this.options.label;
-        buttonEl = jQuery("<button id=\"" + id + "\" data-toggle=\"dropdown\" data-target=\"" + this.options.target + "\">\n  <i class=\"" + this.options.icon + "\"></i>\n</button>");
-        button = buttonEl.button();
-        return button;
-      }
+      _init: function() {}
     });
   })(jQuery);
+
+}).call(this);
