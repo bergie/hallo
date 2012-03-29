@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Hallo &mdash; Distraction-free writing for the Web</title>
+        <link rel="stylesheet" href="css/hallo.css" />
+        <link href="css/font-awesome/css/font-awesome.css" rel="stylesheet" />
+		    <link type="text/css" href="css/jquery-ui-bootstrap/jquery-ui-1.8.16.custom.css" rel="stylesheet" />
+		    <script type="text/javascript" src="js/jquery-1.5.1.min.js"></script>
+        <script type="text/javascript" src="js/jquery-ui-1.8.14.custom.min.js"></script>
+        <script type="text/javascript" src="js/annotate/jquery.rdfquery.min.js"></script>
+        <script type="text/javascript" src="js/annotate/underscore-min.js"></script>
+        <script type="text/javascript" src="js/annotate/backbone-min.js"></script>
+        <script type="text/javascript" src="js/annotate/vie-min.js"></script>
+        <script type="text/javascript" src="js/annotate/annotate-min.js"></script>
+        <script type="text/javascript" src="js/hallo.js"></script>
+    </head>
+    <body>
+        <header>
+            <a href="https://github.com/bergie/hallo" rel="doap:homepage"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://d3nwyuy0nl342s.cloudfront.net/img/71eeaab9d563c2b3c590319b398dd35683265e85/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub"></a>
+        </header>
+        <article>
+            <h1>Hallo &mdash; annotating content with Linked Data</h1>
+
+            <div class="editable">
+              <p>The Hitchhiker's Guide to the Galaxy is a science fiction comedy series created by Douglas Adams. Originally a radio comedy broadcast on BBC Radio 4 in 1978, it was later adapted to other formats, and over several years it gradually became an international multi-media phenomenon. Adaptations have included stage shows, a "trilogy" of five books published between 1979 and 1992, a sixth novel penned by Eoin Colfer in 2009, a 1981 TV series, a 1984 computer game, and three series of three-part comic book adaptations of the first three novels published by DC Comics between 1993 and 1996. There were also two series of towels, produced by Beer-Davies, that are considered by some fans to be an "official version" of The Hitchhiker's Guide to the Galaxy, as they include text from the first novel. A Hollywood-funded film version, produced and filmed in the UK, was released in April 2005, and radio adaptations of the third, fourth, and fifth novels were broadcast from 2004 to 2005. Many of these adaptations, including the novels, the TV series, the computer game, and the earliest drafts of the Hollywood film's screenplay, were done by Adams himself, and some of the stage shows introduced new material written by Adams.</p>
+
+              <p>The title is the name of a fictional, eccentric, electronic travel guide, The Hitchhiker's Guide to the Galaxy, prominently featured in the series.</p>
+              <p>Text from <a href="https://en.wikipedia.org/wiki/The_Hitchhiker%27s_Guide_to_the_Galaxy">Wikipedia</a>.</p>
+            </div>
+        </article>
+        <footer>
+            <p>Hallo is <a href="http://www.opensource.org/licenses/mit-license.php">free software</a> developed by <a href="http://bergie.iki.fi/">Henri Bergius</a> for the <a href="http://iks-project.eu/">IKS Project</a> and co-funded by the European Union</p>
+        </footer>
+
+        <script>
+            jQuery('.editable').hallo({
+                plugins: {
+                    'halloformat': {},
+                    'halloblock': {},
+                    'hallojustify': {},
+                    'hallolists': {},
+                    'halloannotate': {}
+                  },
+                  showAlways: true
+            });
+        </script>
+    </body>
+</html>

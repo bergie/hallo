@@ -48,7 +48,7 @@ div.hallotoolbar {
     z-index: 500;
 }
 
-div.hallotoolbar .dropdown-target {
+div.hallotoolbar .dropdown-menu {
     width: "200px";
     background-color: #eeeeec;
     margin-top: -1px;
@@ -59,7 +59,7 @@ div.hallotoolbar .dropdown-target {
     border-bottom-right-radius: 6px;
 }
 
-div.hallotoolbar .dropdown-target .selected {
+div.hallotoolbar .dropdown-menu .selected {
     background-color: #729fcf;
 }
 
@@ -71,6 +71,33 @@ textarea#source {
     border: none;
     border-radius: 8px;
     font-weight: bold;
+}
+
+[contenteditable="true"].inEditMode {
+    outline-style: auto;
+    outline-width: 3px;
+    outline-color: #111111;
+}
+
+/* ANNOTATIONS */
+.inEditMode .entity, .inEditMode a[typeof][about] {
+	  border-bottom: 1px #729fcf dotted;
+}
+.inEditMode .entity.withSuggestions {
+    border-color: #73d216;
+    border-bottom-style: double;
+}
+
+.inEditMode .entity.person, .inEditMode a[typeof][about].person {
+    border-color: #e9b96e;
+}
+
+.inEditMode .entity.place, .inEditMode a[typeof][about].place {
+    border-color: #c17d11;
+}
+
+.inEditMode .entity.organisation, .inEditMode a[typeof][about].organisation {
+    border-color: #8f5902;
 }
 
 footer {
