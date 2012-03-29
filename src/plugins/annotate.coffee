@@ -15,7 +15,7 @@
             select: ->
             decline: ->
             remove: ->
-            buttonCssClass: ''
+            buttonCssClass: null
 
         _create: ->
           widget = @
@@ -32,7 +32,7 @@
 
           buttonHolder = jQuery "<span class=\"#{widget.widgetName}\"></span>"
           @button = buttonHolder.hallobutton
-            label: ''
+            label: 'Annotate'
             icon: 'icon-tags'
             editable: @options.editable
             command: null

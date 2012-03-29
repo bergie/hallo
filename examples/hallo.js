@@ -646,7 +646,7 @@
         select: function() {},
         decline: function() {},
         remove: function() {},
-        buttonCssClass: ''
+        buttonCssClass: null
       },
       _create: function() {
         var buttonHolder, widget;
@@ -663,7 +663,7 @@
         this.state = 'off';
         buttonHolder = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         this.button = buttonHolder.hallobutton({
-          label: '',
+          label: 'Annotate',
           icon: 'icon-tags',
           editable: this.options.editable,
           command: null,
