@@ -30,7 +30,7 @@
           # states are off, working, on
           @state = 'off'
 
-          buttonHolder = jQuery '<span class="#{widget.widgetName}"></span>'
+          buttonHolder = jQuery "<span class=\"#{widget.widgetName}\"></span>"
           @button = buttonHolder.hallobutton
             label: ''
             icon: 'icon-tags'
@@ -41,10 +41,10 @@
             queryState: false
  
           buttonHolder.bind 'change', (event) =>
-            switch @state
-              when 'off' then @enhance()
-              when 'on' then @done()
-
+            return if @state is "pending"
+            return @turnOn() if @state is "off"
+            @turnOff()
+            
           buttonHolder.buttonset()
 
           @options.toolbar.append @button
@@ -52,7 +52,7 @@
 
           turnOffAnnotate = ->
             editable = @
-            jQuery(editable).halloannotate 'done'
+            jQuery(editable).halloannotate 'turnOff'
           editableElement = @options.editable.element
           editableElement.bind 'hallodisabled', turnOffAnnotate
 
@@ -77,22 +77,26 @@
               jQuery.noop()
               # console.info @, arguments
 
-        enhance: ->
-            widget = @
+        turnPending: ->
+            @state = 'pending'
+            @button.hallobutton 'checked', false
             @button.hallobutton 'disable'
+        turnOn: ->
+            @turnPending()
+            widget = @
             try
                 @options.editable.element.annotate 'enable', (success) =>
                     if success
                         @state = 'on'
+                        @button.hallobutton 'checked', true
                         @button.hallobutton 'enable'
-                    else
-                        @buttons.enhance.show()
-                        .button('enable')
-                        .button 'option', 'label', 'error, see the log.. Try to enhance again!'
             catch e
                 alert e
 
-        done: ->
+        turnOff: ->
             @options.editable.element.annotate 'disable'
+            @button.attr 'checked', false
+            @button.find("label").removeClass "ui-state-clicked"
+            @button.button 'refresh'
             @state = 'off'
 )(jQuery)

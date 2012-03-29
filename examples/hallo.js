@@ -280,7 +280,6 @@
         for (plugin in this.options.plugins) {
           jQuery(this.element)[plugin]('cleanupContentClone', contentClone);
         }
-        console.info("getContents", contentClone.html());
         return contentClone.html();
       },
       setContents: function(contents) {
@@ -567,7 +566,7 @@
           return;
         }
         this.state = 'off';
-        buttonHolder = jQuery('<span class="#{widget.widgetName}"></span>');
+        buttonHolder = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         this.button = buttonHolder.hallobutton({
           label: '',
           icon: 'icon-tags',
@@ -578,12 +577,9 @@
           queryState: false
         });
         buttonHolder.bind('change', function(event) {
-          switch (_this.state) {
-            case 'off':
-              return _this.enhance();
-            case 'on':
-              return _this.done();
-          }
+          if (_this.state === "pending") return;
+          if (_this.state === "off") return _this.turnOn();
+          return _this.turnOff();
         });
         buttonHolder.buttonset();
         this.options.toolbar.append(this.button);
@@ -591,19 +587,17 @@
         turnOffAnnotate = function() {
           var editable;
           editable = this;
-          return jQuery(editable).halloannotate('done');
+          return jQuery(editable).halloannotate('turnOff');
         };
         editableElement = this.options.editable.element;
         return editableElement.bind('hallodisabled', turnOffAnnotate);
       },
       cleanupContentClone: function(el) {
         if (this.state === 'on') {
-          el.find(".entity:not([about])").each(function() {
+          return el.find(".entity:not([about])").each(function() {
             return jQuery(this).replaceWith(jQuery(this).html());
           });
-          console.info('to be cleaned up', el);
         }
-        return el;
       },
       instantiate: function() {
         return this.options.editable.element.annotate({
@@ -615,31 +609,38 @@
           success: this.options.success,
           error: this.options.error
         }).bind('annotateselect', function() {
-          return console.info(this, arguments);
+          return jQuery.noop();
         }).bind('annotateremove', function() {
-          return console.info(this, arguments);
+          return jQuery.noop();
         });
       },
-      enhance: function() {
+      turnPending: function() {
+        this.state = 'pending';
+        this.button.hallobutton('checked', false);
+        return this.button.hallobutton('disable');
+      },
+      turnOn: function() {
         var widget,
           _this = this;
+        this.turnPending();
         widget = this;
-        this.button.hallobutton('disable');
         try {
           return this.options.editable.element.annotate('enable', function(success) {
             if (success) {
               _this.state = 'on';
+              _this.button.hallobutton('checked', true);
               return _this.button.hallobutton('enable');
-            } else {
-              return _this.buttons.enhance.show().button('enable').button('option', 'label', 'error, see the log.. Try to enhance again!');
             }
           });
         } catch (e) {
           return alert(e);
         }
       },
-      done: function() {
+      turnOff: function() {
         this.options.editable.element.annotate('disable');
+        this.button.attr('checked', false);
+        this.button.find("label").removeClass("ui-state-clicked");
+        this.button.button('refresh');
         return this.state = 'off';
       }
     });
