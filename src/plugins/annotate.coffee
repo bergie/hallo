@@ -50,23 +50,6 @@
           @options.toolbar.append @button
           @instantiate()
 
-          editableElement = @options.editable.element
-          queryState = (event) =>
-            if document.queryCommandState @options.command
-              @button.attr 'checked', true
-              @button.next('label').addClass 'ui-state-clicked'
-              @button.button 'refresh'
-              return
-            @button.attr 'checked', false
-            @button.next('label').removeClass 'ui-state-clicked'
-            @button.button 'refresh'
-
-          editableElement.bind 'halloenabled', =>
-            editableElement.bind 'keyup paste change mouseup hallomodified', queryState
-          editableElement.bind 'hallodisabled', =>
-            editableElement.unbind 'keyup paste change mouseup hallomodified', queryState
-
-
         instantiate: ->
             @options.editable.element.annotate
                 vie: @options.vie
