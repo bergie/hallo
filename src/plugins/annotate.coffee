@@ -62,6 +62,7 @@
               jQuery(@).replaceWith jQuery(@).html()
 
         instantiate: ->
+            widget = @
             @options.editable.element.annotate
                 vie: @options.vie
                 debug: false
@@ -71,7 +72,7 @@
                 success: @options.success
                 error: @options.error
             .bind 'annotateselect', ->
-              jQuery.noop()
+              widget.options.editable.setModified()
               # console.info @, arguments
             .bind 'annotateremove', ->
               jQuery.noop()
