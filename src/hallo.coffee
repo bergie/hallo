@@ -227,7 +227,11 @@ Hallo may be freely distributed under the MIT license
 
         # Get contents of an editable as HTML string
         getContents: ->
-           @element.html()
+          # clone
+          contentClone = @element.clone()
+          for plugin of @options.plugins
+            jQuery(@element)[plugin] 'cleanupContentClone', contentClone
+          contentClone.html()
 
         # Set the contents of an editable
         setContents: (contents) ->
