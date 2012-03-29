@@ -30,7 +30,7 @@
           # states are off, working, on
           @state = 'off'
 
-          buttonHolder = jQuery "<span class=\"#{widget.widgetName}\"></span>"
+          buttonHolder = jQuery '<span class="#{widget.widgetName}"></span>'
           @button = buttonHolder.hallobutton
             label: ''
             icon: 'icon-tags'
@@ -50,22 +50,16 @@
           @options.toolbar.append @button
           @instantiate()
 
+          turnOffAnnotate = ->
+            editable = @
+            jQuery(editable).halloannotate 'done'
           editableElement = @options.editable.element
-          queryState = (event) =>
-            if document.queryCommandState @options.command
-              @button.attr 'checked', true
-              @button.next('label').addClass 'ui-state-clicked'
-              @button.button 'refresh'
-              return
-            @button.attr 'checked', false
-            @button.next('label').removeClass 'ui-state-clicked'
-            @button.button 'refresh'
+          editableElement.bind 'hallodisabled', turnOffAnnotate
 
-          editableElement.bind 'halloenabled', =>
-            editableElement.bind 'keyup paste change mouseup hallomodified', queryState
-          editableElement.bind 'hallodisabled', =>
-            editableElement.unbind 'keyup paste change mouseup hallomodified', queryState
-
+        cleanupContentClone: (el) ->
+          if @state is 'on'
+            el.find(".entity:not([about])").each () ->
+              jQuery(@).replaceWith jQuery(@).html()
 
         instantiate: ->
             @options.editable.element.annotate
@@ -76,21 +70,28 @@
                 remove: @options.remove
                 success: @options.success
                 error: @options.error
-            # @buttons.acceptAll.hide()
+            .bind 'annotateselect', ->
+              jQuery.noop()
+              # console.info @, arguments
+            .bind 'annotateremove', ->
+              jQuery.noop()
+              # console.info @, arguments
+
         enhance: ->
             widget = @
-            @button.hallobutton "disable"
+            @button.hallobutton 'disable'
             try
                 @options.editable.element.annotate 'enable', (success) =>
                     if success
-                        @state = "on"
-                        @button.hallobutton "enable"
+                        @state = 'on'
+                        @button.hallobutton 'enable'
                     else
                         @buttons.enhance.show()
                         .button('enable')
                         .button 'option', 'label', 'error, see the log.. Try to enhance again!'
             catch e
                 alert e
+
         done: ->
             @options.editable.element.annotate 'disable'
             @state = 'off'
