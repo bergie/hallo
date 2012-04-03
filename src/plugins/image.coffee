@@ -81,7 +81,7 @@
                 cssClass: @options.buttonCssClass
             buttonset.append buttonHolder
 
-            button = buttonHolder.button();
+            button = buttonHolder
             button.bind "change", (event) ->
                 if widget.options.dialog.dialog "isOpen"
                     widget._closeDialog()
@@ -193,6 +193,7 @@
             widget.options.loaded = 1
 
             @options.dialog.dialog("open")
+            @options.editable.protectFocusFrom @options.dialog
 
         _closeDialog: ->
             @options.dialog.dialog("close")
@@ -303,7 +304,7 @@
             tabs.append jQuery "<li id=\"#{@options.uuid}-tab-upload\" class=\"#{widget.widgetName}-tabselector #{widget.widgetName}-tab-upload\"><span>Upload</span></li>"
             element.append jQuery "<div id=\"#{@options.uuid}-tab-upload-content\" class=\"#{widget.widgetName}-tab tab-upload\">
                 <form id=\"#{@options.uuid}-#{widget.widgetName}-uploadform\">
-                    <input id=\"#{@options.uuid}-#{widget.widgetName}-file\" name=\"#{@options.uuid}-#{widget.widgetName}-file\" type=\"file\" class=\"file\">
+                    <input id=\"#{@options.uuid}-#{widget.widgetName}-file\" name=\"#{@options.uuid}-#{widget.widgetName}-file\" type=\"file\" class=\"file\" accept=\"image/*\">
                     <input id=\"#{@options.uuid}-#{widget.widgetName}-tags\" name=\"tags\" type=\"hidden\" />
                     <br />
                     <input type=\"submit\" value=\"Upload\" id=\"#{@options.uuid}-#{widget.widgetName}-upload\">
