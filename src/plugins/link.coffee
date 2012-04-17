@@ -64,6 +64,7 @@
                         urlInput.val(jQuery(widget.lastSelection.startContainer.parentNode).attr('href'))
                         jQuery(urlInput[0].form).find('input[type=submit]').val('update')
                     dialog.dialog('open')
+                    widget.options.editable.protectFocusFrom dialog
 
                 @element.bind "keyup paste change mouseup", (event) ->
                     start = jQuery(widget.options.editable.getSelection().startContainer)

@@ -578,19 +578,18 @@
                     jQuery(".rotationWrapper img", widgetOptions.dialog).each (index, elem) ->
                         initDraggable(elem) if not elem.jquery_draggable_initialized
 
-                    jQuery("img", editable).each (index, elem) ->
+                    jQuery('img', editable).each (index, elem) ->
                         elem.contentEditable = false
                         if not elem.jquery_draggable_initialized
                             initDraggable(elem)
-
-                    jQuery("p", editable).each (index, elem) ->
-                        if not elem.jquery_droppable_initialized
-                            elem.jquery_droppable_initialized = true
-                            jQuery('p', editable).droppable
-                                tolerance: "pointer"
-                                drop: dnd.handleDropEvent
-                                over: dnd.handleOverEvent
-                                out: dnd.handleLeaveEvent
+                    jQuery('p', editable).each (index, elem) ->
+                        return if jQuery(elem).data 'jquery_droppable_initialized'
+                        jQuery(elem).droppable
+                            tolerance: "pointer"
+                            drop: dnd.handleDropEvent
+                            over: dnd.handleOverEvent
+                            out: dnd.handleLeaveEvent
+                        jQuery(elem).data 'jquery_droppable_initialized', true
 
                 enableDragging: () ->
                     jQuery.each draggables, (index, d) ->
