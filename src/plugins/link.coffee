@@ -85,7 +85,13 @@
                 buttonset.buttonset()
                 @options.toolbar.append buttonset
                 dialog.dialog(@options.dialogOpts)
-
+                editable = @options.editable
+                dialog.dialog "option", "open", ->
+                   editable.overwriteToolbarFocus = true 
+                dialog.dialog "option", "close", ->
+                   editable.overwriteToolbarFocus = false
+                   editable.element.focus()		   
+				   
         _init: ->
 
 )(jQuery)

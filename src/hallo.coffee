@@ -1,6 +1,5 @@
 ###
 Hallo - a rich text editing jQuery UI widget
-modified by Carlo
 (c) 2011 Henri Bergius, IKS Consortium
 Hallo may be freely distributed under the MIT license
 ###
@@ -460,7 +459,8 @@ Hallo may be freely distributed under the MIT license
               event.data.turnOff()
             else
               setTimeout ->
-                jQuery(event.data.element).focus()
+                if event.data.overwriteToolbarFocus isnt true 
+                    jQuery(event.data.element).focus()
               , 300
 
         _forceStructured: (event) ->
