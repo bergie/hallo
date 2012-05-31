@@ -87,10 +87,9 @@
                 dialog.dialog(@options.dialogOpts)
                 editable = @options.editable
                 dialog.dialog "option", "open", ->
-                   editable.overwriteToolbarFocus = true 
+                   editable.overwriteToolbarFocus(on) 
                 dialog.dialog "option", "close", ->
-                   editable.overwriteToolbarFocus = false
-                   editable.element.focus()		   
+                   editable.overwriteToolbarFocus(off)
 				   
         _init: ->
 

@@ -269,6 +269,11 @@ Hallo may be freely distributed under the MIT license
                   widget._protectToolbarFocus = false
                 , 300
 
+        overwriteToolbarFocus: (swtch) ->
+            @_overwriteToolbarFocus = swtch
+            if swtch is off
+                this.element.focus()
+
         _generateUUID: ->
             S4 = ->
                 ((1 + Math.random()) * 0x10000|0).toString(16).substring 1
@@ -459,7 +464,7 @@ Hallo may be freely distributed under the MIT license
               event.data.turnOff()
             else
               setTimeout ->
-                if event.data.overwriteToolbarFocus isnt true 
+                if event.data._overwriteToolbarFocus isnt true 
                     jQuery(event.data.element).focus()
               , 300
 

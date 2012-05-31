@@ -192,6 +192,12 @@ Hallo may be freely distributed under the MIT license
           }, 300);
         });
       },
+      overwriteToolbarFocus: function(swtch) {
+        this._overwriteToolbarFocus = swtch;
+        if (swtch === false) {
+          return this.element.focus();
+        }
+      },
       _generateUUID: function() {
         var S4;
         S4 = function() {
@@ -418,7 +424,7 @@ Hallo may be freely distributed under the MIT license
           return event.data.turnOff();
         } else {
           return setTimeout(function() {
-            if (event.data.overwriteToolbarFocus !== true) {
+            if (event.data._overwriteToolbarFocus !== true) {
               return jQuery(event.data.element).focus();
             }
           }, 300);
@@ -1482,11 +1488,10 @@ Hallo may be freely distributed under the MIT license
           dialog.dialog(this.options.dialogOpts);
           editable = this.options.editable;
           dialog.dialog("option", "open", function() {
-            return editable.overwriteToolbarFocus = true;
+            return editable.overwriteToolbarFocus(true);
           });
           return dialog.dialog("option", "close", function() {
-            editable.overwriteToolbarFocus = false;
-            return editable.element.focus();
+            return editable.overwriteToolbarFocus(false);
           });
         }
       },
