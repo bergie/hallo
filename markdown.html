@@ -1,96 +1,28 @@
-<!doctype html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <title>Hallo &mdash; Editing Markdown in WYSIWYG</title>
-        <link rel="stylesheet" href="css/hallo.css" />
-        <link href="css/font-awesome/css/font-awesome.css" rel="stylesheet" />
-        <link type="text/css" href="css/jquery-ui-bootstrap/jquery-ui-1.8.16.custom.css" rel="stylesheet" />
-        <script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
-        <script type="text/javascript" src="js/jquery-ui-1.8.18.custom.min.js"></script>
-        <script type="text/javascript" src="js/markdown/showdown.js"></script>
-        <script type="text/javascript" src="js/markdown/to-markdown.js"></script>
-        <script type="text/javascript" src="js/hallo.js"></script>
-    </head>
-    <body>
-        <header>
-            <a href="https://github.com/bergie/hallo" rel="doap:homepage"><img style="position: absolute; top: 0; right: 0; border: 0;" src="./img/fork-me.png" alt="Fork me on GitHub"></a>
-        </header>
-        <article>
-          <div class="editable">
-            <h1>Hallo &mdash; editing Markdown in WYSIWYG</h1>
+---
+layout: default
+title: "Editing Markdown in WYSIWYG"
+includes_js:
+  - /js/markdown/showdown.js 
+  - /js/markdown/to-markdown.js 
+  - /js/markdown/editor.js
+---
+<article>
+  <div class="editable">
+    <h1>Hallo &mdash; editing Markdown in WYSIWYG</h1>
 
-            <p>
-                <a href="/hallo/">Hallo</a> is the simplest web editor imaginable. Instead of cluttered forms or toolbars, you edit your web content as it is. Just you, your web design, and your content.
-            </p>
+    <p>
+    <a href="/hallo/">Hallo</a> is the simplest web editor imaginable. Instead of cluttered forms or toolbars, you edit your web content as it is. Just you, your web design, and your content.
+    </p>
 
-            <p>
-                Actually, this text you're reading has Hallo loaded. To try it out, just click here and start writing. If you want to make more comprehensive modifications, just select some text.
-            </p>
-            <p>
-                <strong>Note:</strong> you can also edit the Markdown source below
-            </p>
-           </div>
-        </article>
+    <p>
+    Actually, this text you're reading has Hallo loaded. To try it out, just click here and start writing. If you want to make more comprehensive modifications, just select some text.
+    </p>
 
-        <textarea id="source">
-        </textarea>
-        <footer>
-            <p>Hallo is <a href="http://www.opensource.org/licenses/mit-license.php" rel="license">free software</a> developed by <a href="http://bergie.iki.fi/">Henri Bergius</a></span> for the <a href="http://iks-project.eu/">IKS Project</a> and co-funded by the European Union</p>
-        </footer>
+    <p>
+    <strong>Note:</strong> you can also edit the Markdown source below
+    </p>
+  </div>
+</article>
 
-        <script>
-            jQuery(document).ready(function() {
-                // Enable Hallo editor
-                jQuery('.editable').hallo({
-                    plugins: {
-                        'halloformat': {},
-                        'halloblock': {},
-                        'hallolists': {},
-                        'halloreundo': {}
-                    }
-                });
-
-                var markdownize = function(content) {
-                    var html = content.split("\n").map($.trim).filter(function(line) { 
-                        return line != "" }
-                    ).join("\n");
-                    return toMarkdown(html);
-                };
-
-                var converter = new Showdown.converter();
-                var htmlize = function(content) {
-                    return converter.makeHtml(content);
-                }
-
-                // Method that converts the HTML contents to Markdown
-                var showSource = function(content) {
-                    var markdown = markdownize(content);
-                    if (jQuery('#source').get(0).value == markdown) {
-                        return;
-                    }
-                    jQuery('#source').get(0).value = markdown;
-                  };
-
-
-                var updateHtml = function(content) {
-                    if (markdownize(jQuery('.editable').html()) == content) {
-                        return;
-                    }
-                    var html = htmlize(content);
-                    jQuery('.editable').html(html); 
-                }
-
-                // Update Markdown every time content is modified
-                jQuery('.editable').bind('hallomodified', function(event, data) {
-                    showSource(data.content);
-
-                });
-                jQuery('#source').bind('keyup', function() {
-                    updateHtml(this.value);
-                });
-                showSource(jQuery('.editable').html());
-            }); 
-        </script>
-    </body>
-</html>
+<textarea id="source">
+</textarea>

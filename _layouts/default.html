@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>{{ site.name }} - {{ page.title }}</title>
+    <link rel="stylesheet" href="css/hallo.css" />
+    <link href="css/font-awesome/css/font-awesome.css" rel="stylesheet" />
+    <link type="text/css" href="css/jquery-ui-bootstrap/jquery-ui-1.8.16.custom.css" rel="stylesheet" />
+    <script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.8.18.custom.min.js"></script>
+    <script type="text/javascript" src="js/hallo.js"></script>
+    {% for js in page.includes_js %}
+    <script src="{{ js }}"></script>
+    {% endfor %}
+  </head>
+  <body>
+    {% include header.html %}
+    {{ content }}
+    {% include footer.html %}
+  </body>
+</html>
