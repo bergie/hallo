@@ -2,6 +2,7 @@
 Hallo {{ VERSION }} - a rich text editing jQuery UI widget
 (c) 2011 Henri Bergius, IKS Consortium
 Hallo may be freely distributed under the MIT license
+http://hallojs.org
 ###
 ((jQuery) ->
     # Hallo provides a jQuery UI widget `hallo`. Usage:
