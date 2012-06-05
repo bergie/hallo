@@ -3,7 +3,7 @@
   "description": "Simple rich text editor",
   "author": "Henri Bergius <henri.bergius@iki.fi>",
   "homepage": "http://bergie.github.com/hallo/",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "dependencies": {},
   "devDependencies": {
     "async": ">=0.1.18",
