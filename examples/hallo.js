@@ -448,7 +448,7 @@ http://hallojs.org
         toolbar: null,
         uuid: '',
         lists: {
-          ordered: false,
+          ordered: true,
           unordered: true
         },
         buttonCssClass: null
@@ -465,7 +465,7 @@ http://hallojs.org
             editable: _this.options.editable,
             label: label,
             command: "insert" + type + "List",
-            icon: 'icon-list',
+            icon: "icon-list-" + (label.toLowerCase()),
             cssClass: _this.options.buttonCssClass
           });
           return buttonset.append(buttonElement);
@@ -1465,7 +1465,7 @@ http://hallojs.org
             uuid: _this.options.uuid,
             editable: _this.options.editable,
             label: label,
-            icon: cmd === 'undo' ? 'icon-arrow-left' : 'icon-arrow-right',
+            icon: cmd === 'undo' ? 'icon-undo' : 'icon-repeat',
             command: cmd,
             queryState: false,
             cssClass: _this.options.buttonCssClass

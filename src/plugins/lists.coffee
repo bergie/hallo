@@ -7,21 +7,22 @@
             editable: null
             toolbar: null
             uuid: ''
-            lists: 
-                ordered: false
+            lists:
+                ordered: true
                 unordered: true
             buttonCssClass: null
 
         _create: ->
             buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
             buttonize = (type, label) =>
+
                 buttonElement = jQuery '<span></span>'
                 buttonElement.hallobutton
                   uuid: @options.uuid
                   editable: @options.editable
                   label: label
                   command: "insert#{type}List"
-                  icon: 'icon-list'
+                  icon: "icon-list-#{label.toLowerCase()}"
                   cssClass: @options.buttonCssClass
                 buttonset.append buttonElement
 

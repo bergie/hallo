@@ -17,7 +17,7 @@
                   uuid: @options.uuid
                   editable: @options.editable
                   label: label
-                  icon: if cmd is 'undo' then 'icon-arrow-left' else 'icon-arrow-right'
+                  icon: if cmd is 'undo' then 'icon-undo' else 'icon-repeat'
                   command: cmd
                   queryState: false
                   cssClass: @options.buttonCssClass
