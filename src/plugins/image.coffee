@@ -40,8 +40,6 @@
                 resizable: false
                 draggable: true
                 dialogClass: 'halloimage-dialog'
-                close: (ev, ui) ->
-                    jQuery('.image_button').removeClass('ui-state-clicked')
             dialog: null
             buttonCssClass: null
 
@@ -81,8 +79,8 @@
                 cssClass: @options.buttonCssClass
             buttonset.append buttonHolder
 
-            button = buttonHolder
-            button.bind "change", (event) ->
+            @button = buttonHolder
+            @button.bind "change", (event) ->
                 if widget.options.dialog.dialog "isOpen"
                     widget._closeDialog()
                 else
@@ -140,9 +138,6 @@
                 if response.assets.length > 0
                     jQuery("#activitySpinner").hide()
 
-            # Update state of button in toolbar
-            jQuery('.image_button').addClass('ui-state-clicked')
-
             # Update active Image
             jQuery("##{@options.uuid}-sugg-activeImage").attr "src", jQuery("##{@options.uuid}-tab-suggestions-content .imageThumbnailActive").first().attr "src"
             jQuery("##{@options.uuid}-sugg-activeImageBg").attr "src", jQuery("##{@options.uuid}-tab-suggestions-content .imageThumbnailActive").first().attr "src"
@@ -196,6 +191,7 @@
             @options.dialog.dialog("open")
 
             @options.dialog.bind 'dialogclose', =>
+              jQuery('label', @button).removeClass 'ui-state-active'
               do @options.editable.element.focus
               @options.editable.keepActivated false
 
