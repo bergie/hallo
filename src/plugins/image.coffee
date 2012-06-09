@@ -42,6 +42,12 @@
                 dialogClass: 'halloimage-dialog'
             dialog: null
             buttonCssClass: null
+            # Additional configuration options that can be used for
+            # image suggestions. The Entity is used to get tags
+            # and VIE to load additional data on them.
+            entity: null
+            vie: null
+            dbPediaUrl: "http://dev.iks-project.eu/stanbolfull"
 
         _create: ->
             widget = this
@@ -55,15 +61,18 @@
                 <div class=\"dialogcontent\">
             </div>"
 
-            if widget.options.uploadUrl and !widget.options.upload
-              widget.options.upload = widget._iframeUpload
-
             if widget.options.suggestions
                 @_addGuiTabSuggestions jQuery(".tabs", @options.dialog), jQuery(".dialogcontent", @options.dialog)
             if widget.options.search
                 @_addGuiTabSearch jQuery(".tabs", @options.dialog), jQuery(".dialogcontent", @options.dialog)
-            if widget.options.upload
+            if widget.options.upload or widget.options.uploadUrl
                 @_addGuiTabUpload jQuery(".tabs", @options.dialog), jQuery(".dialogcontent", @options.dialog)
+
+            @current = jQuery('<div class="currentImage"></div>').halloimagecurrent
+                uuid: @options.uuid
+                imageWidget: @
+
+            jQuery('.dialogcontent', @options.dialog).append @current
 
             buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
 
@@ -92,51 +101,40 @@
             jQuery(@options.editable.element).delegate "img", "click", (event) ->
                 widget._openDialog()
 
-            jQuery(@options.dialog).find(".nav li").click () ->
-                jQuery(".#{widget.widgetName}-tab").each () ->
-                    jQuery(this).hide()
 
-                id = jQuery(this).attr("id")
-                jQuery("##{id}-content").show()
-                jQuery("##{widget.options.uuid}-tab-activeIndicator").css("margin-left", jQuery(this).position().left + (jQuery(this).width()/2))
-
-            # Add action to image thumbnails
-            jQuery(".#{widget.widgetName}-tab .imageThumbnail").live "click", (event) ->
-                scope = jQuery(this).closest(".#{widget.widgetName}-tab")
-                jQuery(".imageThumbnail", scope).removeClass "imageThumbnailActive"
-                jQuery(this).addClass "imageThumbnailActive"
-                jQuery(".activeImage", scope).attr "src", jQuery(this).attr "src"
-                jQuery(".activeImageBg", scope).attr "src", jQuery(this).attr "src"
 
             buttonset.buttonset()
             @options.toolbar.append buttonset
+
             @options.dialog.dialog(@options.dialogOpts)
+            @_handleTabs()
 
             # Add DragnDrop
             @_addDragnDrop()
 
         _init: ->
 
+        setCurrent: (image) ->
+            @current.halloimagecurrent 'setImage', image
+
+        _handleTabs: ->
+            widget = @
+            jQuery('.nav li', @options.dialog).bind 'click', ->
+                jQuery(".#{widget.widgetName}-tab").hide()
+                id = jQuery(this).attr 'id'
+                jQuery("##{id}-content").show()
+                jQuery("##{widget.options.uuid}-tab-activeIndicator").css("margin-left", jQuery(this).position().left + (jQuery(this).width()/2))
+
         _openDialog: ->
             widget = this
             cleanUp = ->
-                window.setTimeout (->
+                window.setTimeout ->
                     thumbnails = jQuery(".imageThumbnail")
                     jQuery(thumbnails).each ->
                         size = jQuery("#" + @id).width()
                         if size <= 20
                             jQuery("#" + @id).parent("li").remove()
-                ), 15000  # cleanup after 15 sec
-
-            repoImagesFound = false
-
-            showResults = (response) ->
-                # TODO: paging
-                jQuery.each response.assets, (key, val) ->
-                    jQuery(".imageThumbnailContainer ul").append "<li><img src=\"" + val.url + "\" class=\"imageThumbnail\"></li>"
-                    repoImagesFound = true
-                if response.assets.length > 0
-                    jQuery("#activitySpinner").hide()
+                , 15000  # cleanup after 15 sec
 
             # Update active Image
             jQuery("##{@options.uuid}-sugg-activeImage").attr "src", jQuery("##{@options.uuid}-tab-suggestions-content .imageThumbnailActive").first().attr "src"
@@ -149,41 +147,8 @@
             xposition = jQuery(@options.editable.element).offset().left + jQuery(@options.editable.element).outerWidth() - 3 # 3 is the border width of the contenteditable border
             yposition = jQuery(@options.toolbar).offset().top - jQuery(document).scrollTop() - 29
             @options.dialog.dialog("option", "position", [xposition, yposition])
-
-            if widget.options.loaded is null && widget.options.suggestions
-                articleTags = []
-                jQuery("#activitySpinner").show()
-                tmpArticleTags = jQuery(".inEditMode").parent().find(".articleTags input").val()
-                tmpArticleTags = tmpArticleTags.split(",")
-                for i of tmpArticleTags
-                    tagType = typeof tmpArticleTags[i]
-                    if "string" == tagType && tmpArticleTags[i].indexOf("http") != -1
-                        articleTags.push tmpArticleTags[i]
-                jQuery(".imageThumbnailContainer ul").empty()
-                widget.options.suggestions(jQuery(".inEditMode").parent().find(".articleTags input").val(), widget.options.limit, 0, showResults)
-                vie = new VIE()
-                vie.use new vie.DBPediaService(
-                    url: "http://dev.iks-project.eu/stanbolfull"
-                    proxyDisabled: true
-                )
-                thumbId = 1
-                if articleTags.length is 0
-                    jQuery("#activitySpinner").html "No images found."
-                jQuery(articleTags).each ->
-                    vie.load(entity: this + "").using("dbpedia").execute().done (entity) ->
-                        jQuery(entity).each ->
-                            if @attributes["<http://dbpedia.org/ontology/thumbnail>"]
-                                responseType = typeof (@attributes["<http://dbpedia.org/ontology/thumbnail>"])
-                                if responseType is "string"
-                                    img = @attributes["<http://dbpedia.org/ontology/thumbnail>"]
-                                    img = img.substring(1, img.length - 1)
-                                if responseType is "object"
-                                    img = ""
-                                    img = @attributes["<http://dbpedia.org/ontology/thumbnail>"][0].value
-                                jQuery(".imageThumbnailContainer ul").append "<li><img id=\"si-#{thumbId}\" src=\"#{img}\" class=\"imageThumbnail\"></li>"
-                                thumbId++
-                        jQuery("#activitySpinner").hide()
-
+            # do @_getSuggestions
+ 
             cleanUp()
             widget.options.loaded = 1
 
@@ -199,24 +164,13 @@
             @options.dialog.dialog("close")
 
         _addGuiTabSuggestions: (tabs, element) ->
-            widget = this
-            tabs.append jQuery "<li id=\"#{@options.uuid}-tab-suggestions\" class=\"#{widget.widgetName}-tabselector #{widget.widgetName}-tab-suggestions\"><span>Suggestions</span></li>"
-            element.append jQuery "<div id=\"#{@options.uuid}-tab-suggestions-content\" class=\"#{widget.widgetName}-tab tab-suggestions\">
-                <div class=\"imageThumbnailContainer fixed\"><div id=\"activitySpinner\">Loading Images...</div><ul><li>
-                    <img src=\"http://imagesus.homeaway.com/mda01/badf2e69babf2f6a0e4b680fc373c041c705b891\" class=\"imageThumbnail imageThumbnailActive\" />
-                  </li></ul><br style=\"clear:both\"/>
-                </div>
-                <div class=\"activeImageContainer\">
-                    <div class=\"rotationWrapper\">
-                        <div class=\"hintArrow\"></div>
-                        <img src=\"\" id=\"#{@options.uuid}-sugg-activeImage\" class=\"activeImage\" />
-                    </div>
-                    <img src=\"\" id=\"#{@options.uuid}-sugg-activeImageBg\" class=\"activeImage activeImageBg\" />
-                </div>
-                <div class=\"metadata\">
-                    <label for=\"caption-sugg\">Caption</label><input type=\"text\" id=\"caption-sugg\" />
-                </div>
-            </div>"
+            tabs.append jQuery "<li id=\"#{@options.uuid}-tab-upload\" class=\"#{@widgetName}-tabselector #{@widgetName}-tab-upload\"><span>Upload</span></li>"
+            tab = jQuery "<div id=\"#{@options.uuid}-tab-upload-content\" class=\"#{@widgetName}-tab tab-upload\"></div>"
+            element.append tab
+
+            tab.halloimagesuggestions
+                uuid: @options.uuid
+                imageWidget: @
 
         _addGuiTabSearch: (tabs, element) ->
             widget = this
@@ -224,112 +178,27 @@
 
             tabs.append jQuery "<li id=\"#{@options.uuid}-tab-search\" class=\"#{widget.widgetName}-tabselector #{widget.widgetName}-tab-search\"><span>Search</span></li>"
 
-            element.append jQuery "<div id=\"#{@options.uuid}-tab-search-content\" class=\"#{widget.widgetName}-tab tab-search\">
-                <form type=\"get\" id=\"#{@options.uuid}-#{widget.widgetName}-searchForm\">
-                    <input type=\"text\" class=\"searchInput\" /><input type=\"submit\" id=\"#{@options.uuid}-#{widget.widgetName}-searchButton\" class=\"button searchButton\" value=\"OK\"/>
-                </form>
-                <div class=\"searchResults imageThumbnailContainer\"></div>
-                <div id=\"#{@options.uuid}-search-activeImageContainer\" class=\"search-activeImageContainer activeImageContainer\">
-                    <div class=\"rotationWrapper\">
-                        <div class=\"hintArrow\"></div>
-                        <img src=\"\" id=\"#{@options.uuid}-search-activeImageBg\" class=\"activeImage\" />
-                    </div>
-                    <img src=\"\" id=\"#{@options.uuid}-search-activeImage\" class=\"activeImage activeImageBg\" />
-                </div>
-                <div class=\"metadata\" id=\"metadata-search\" style=\"display: none;\">
-                    <label for=\"caption-search\">Caption</label><input type=\"text\" id=\"caption-search\" />
-                    <!--<button id=\"#{@options.uuid}-#{widget.widgetName}-addimage\">Add Image</button>-->
-                </div>
-            </div>"
+            tab = jQuery "<div id=\"#{@options.uuid}-tab-search-content\" class=\"#{widget.widgetName}-tab tab-search\"></div>"
+            element.append tab
 
-            jQuery(".tab-search form", element).submit (event) ->
-                event.preventDefault()
-                that = this
-
-                showResults = (response) ->
-                    items = []
-                    items.push("<div class=\"pager-prev\" style=\"display:none\"></div>");
-                    jQuery.each response.assets, (key, val) ->
-                        items.push("<img src=\"#{val.url}\" class=\"imageThumbnail #{widget.widgetName}-search-imageThumbnail\" /> ");
-                    items.push("<div class=\"pager-next\" style=\"display:none\"></div>");
-
-                    container = jQuery("##{dialogId} .tab-search .searchResults")
-                    container.html items.join("")
-
-                    # handle pagers
-                    if response.offset > 0
-                        jQuery('.pager-prev', container).show()
-                    if response.offset < response.total
-                        jQuery('.pager-next', container).show()
-
-                    jQuery('.pager-prev', container).click (event) ->
-                        widget.options.search(null, widget.options.limit, response.offset - widget.options.limit, showResults)
-                    jQuery('.pager-next', container).click (event) ->
-                        widget.options.search(null, widget.options.limit, response.offset + widget.options.limit, showResults)
-
-                    # Add action to image thumbnails
-                    jQuery("##{widget.options.uuid}-search-activeImageContainer").show()
-                    firstimage = jQuery(".#{widget.widgetName}-search-imageThumbnail").first().addClass "imageThumbnailActive"
-                    jQuery("##{widget.options.uuid}-search-activeImage, ##{widget.options.uuid}-search-activeImageBg").attr "src", firstimage.attr "src"
-
-                    jQuery("#metadata-search").show()
-
-                widget.options.search(null, widget.options.limit, 0, showResults)
-
-        _prepareIframe: (widget) ->
-          widget.options.iframeName = "#{widget.options.uuid}-#{widget.widgetName}-postframe"  
-          iframe = jQuery "<iframe name=\"#{widget.options.iframeName}\" id=\"#{widget.options.iframeName}\" class=\"hidden\" src=\"javascript:false;\" style=\"display:none\" />"
-          jQuery("##{widget.options.uuid}-#{widget.widgetName}-iframe").append iframe
-          iframe.get(0).name = widget.options.iframeName
-
-        _iframeUpload: (data) ->
-          widget = data.widget
-          widget._prepareIframe widget
-
-          jQuery("##{widget.options.uuid}-#{widget.widgetName}-tags").val jQuery(".inEditMode").parent().find(".articleTags input").val()
-
-          uploadForm = jQuery("##{widget.options.uuid}-#{widget.widgetName}-uploadform")
-          uploadForm.attr "action", widget.options.uploadUrl
-          uploadForm.attr "method", "post"
-          uploadForm.attr "userfile", data.file
-          uploadForm.attr "enctype", "multipart/form-data"
-          uploadForm.attr "encoding", "multipart/form-data"
-          uploadForm.attr "target", widget.options.iframeName
-          uploadForm.submit()
-          jQuery("##{widget.options.iframeName}").load ->
-              data.success jQuery("##{widget.options.iframeName}")[0].contentWindow.location.href
+            tab.halloimagesearch
+                uuid: @options.uuid
+                imageWidget: @
+                searchCallback: @options.search
+                limit: @options.limit
 
         _addGuiTabUpload: (tabs, element) ->
-            widget = this
-            tabs.append jQuery "<li id=\"#{@options.uuid}-tab-upload\" class=\"#{widget.widgetName}-tabselector #{widget.widgetName}-tab-upload\"><span>Upload</span></li>"
-            element.append jQuery "<div id=\"#{@options.uuid}-tab-upload-content\" class=\"#{widget.widgetName}-tab tab-upload\">
-                <form id=\"#{@options.uuid}-#{widget.widgetName}-uploadform\">
-                    <input id=\"#{@options.uuid}-#{widget.widgetName}-file\" name=\"#{@options.uuid}-#{widget.widgetName}-file\" type=\"file\" class=\"file\" accept=\"image/*\">
-                    <input id=\"#{@options.uuid}-#{widget.widgetName}-tags\" name=\"tags\" type=\"hidden\" />
-                    <br />
-                    <input type=\"submit\" value=\"Upload\" id=\"#{@options.uuid}-#{widget.widgetName}-upload\">
-                </form>
-                <div id=\"#{@options.uuid}-#{widget.widgetName}-iframe\"></div>
-            </div>"
+            tabs.append jQuery "<li id=\"#{@options.uuid}-tab-upload\" class=\"#{@widgetName}-tabselector #{@widgetName}-tab-upload\"><span>Upload</span></li>"
+            tab = jQuery "<div id=\"#{@options.uuid}-tab-upload-content\" class=\"#{@widgetName}-tab tab-upload\"></div>"
+            element.append tab
 
-            iframe = jQuery("<iframe name=\"postframe\" id=\"postframe\" class=\"hidden\" src=\"about:none\" style=\"display:none\" />")
+            tab.halloimageupload
+                uuid: @options.uuid
+                uploadCallback: @options.upload
+                uploadUrl: @options.uploadUrl
+                imageWidget: @
 
-            jQuery("##{widget.options.uuid}-#{widget.widgetName}-upload").live "click", (e) ->
-                  e.preventDefault()
-                  userFile = jQuery("##{widget.options.uuid}-#{widget.widgetName}-file").val()
-                  widget.options.upload
-                      widget: widget
-                      file: userFile
-                      success: (imageUrl) ->
-                          imageID = "si" + Math.floor(Math.random() * (400 - 300 + 1) + 400) + "ab"
-                          if jQuery(".imageThumbnailContainer ul", widget.options.dialog).length is 0
-                            list = jQuery '<ul></ul>'
-                            jQuery('.imageThumbnailContainer').append list
-                          jQuery(".imageThumbnailContainer ul", widget.options.dialog).append "<li><img src=\"#{imageUrl}\" id=\"#{imageID}\" class=\"imageThumbnail\"></li>" 
-                          jQuery("#" + imageID).trigger "click"
-                          jQuery(widget.options.dialog).find(".nav li").first().trigger "click"
-                  return false;
-
+            ###
             insertImage = () ->
                 #This may need to insert an image that does not have the same URL as the preview image, since it may be a different size
 
@@ -350,6 +219,7 @@
                 widget._closeDialog()
 
             @options.dialog.find(".halloimage-activeImage, ##{widget.options.uuid}-#{widget.widgetName}-addimage").click insertImage
+            ###
 
         _addDragnDrop: ->
             helper =
