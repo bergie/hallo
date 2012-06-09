@@ -1,0 +1,42 @@
+#     Hallo - a rich text editing jQuery UI widget
+#     (c) 2011 Henri Bergius, IKS Consortium
+#     Hallo may be freely distributed under the MIT license
+((jQuery) ->
+  jQuery.widget 'IKS.halloindicator',
+    options:
+      editable: null
+      className: 'halloEditIndicator'
+
+    _create: ->
+      editButton = jQuery('<div><i class="icon-edit"></i> Edit</div>');
+      editButton.addClass @options.className
+      do editButton.hide
+
+      this.element.before editButton
+
+      @bindIndicator editButton
+      @setIndicatorPosition editButton
+
+    bindIndicator: (indicator) ->
+      indicator.bind 'click', =>
+        do @options.editable.element.focus
+
+      this.element.bind 'halloactivated', ->
+        do indicator.hide
+
+      @options.editable.element.hover ->
+        return if jQuery(this).hasClass 'inEditMode'
+        do indicator.show
+      , (data) ->
+        return if jQuery(this).hasClass 'inEditMode'
+        return if data.relatedTarget is indicator.get 0
+
+        do indicator.hide
+
+    setIndicatorPosition: (indicator) ->
+      indicator.css 'position', 'absolute'
+      offset = this.element.offset()
+      indicator.css 'top', offset.top + 2
+      indicator.css 'left', offset.left + 2
+
+) jQuery

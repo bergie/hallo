@@ -9,6 +9,13 @@ div.hallotoolbar {
     z-index: 500;
 }
 
+div.halloEditIndicator {
+    background-color: #000000;
+    color: #ffffff;
+    padding: 4px;
+    border-radius: 4px;
+}
+
 /* Drag n Drop */
 [contenteditable] .tmp {
     opacity: 0.3

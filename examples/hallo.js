@@ -442,6 +442,54 @@ http://hallojs.org
   })(jQuery);
 
   (function(jQuery) {
+    return jQuery.widget('IKS.halloindicator', {
+      options: {
+        editable: null,
+        className: 'halloEditIndicator'
+      },
+      _create: function() {
+        var editButton;
+        editButton = jQuery('<div><i class="icon-edit"></i> Edit</div>');
+        editButton.addClass(this.options.className);
+        editButton.hide();
+        this.element.before(editButton);
+        this.bindIndicator(editButton);
+        return this.setIndicatorPosition(editButton);
+      },
+      bindIndicator: function(indicator) {
+        var _this = this;
+        indicator.bind('click', function() {
+          return _this.options.editable.element.focus();
+        });
+        this.element.bind('halloactivated', function() {
+          return indicator.hide();
+        });
+        return this.options.editable.element.hover(function() {
+          if (jQuery(this).hasClass('inEditMode')) {
+            return;
+          }
+          return indicator.show();
+        }, function(data) {
+          if (jQuery(this).hasClass('inEditMode')) {
+            return;
+          }
+          if (data.relatedTarget === indicator.get(0)) {
+            return;
+          }
+          return indicator.hide();
+        });
+      },
+      setIndicatorPosition: function(indicator) {
+        var offset;
+        indicator.css('position', 'absolute');
+        offset = this.element.offset();
+        indicator.css('top', offset.top + 2);
+        return indicator.css('left', offset.left + 2);
+      }
+    });
+  })(jQuery);
+
+  (function(jQuery) {
     return jQuery.widget("IKS.hallolists", {
       options: {
         editable: null,
