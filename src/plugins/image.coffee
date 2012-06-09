@@ -196,7 +196,7 @@
             @options.dialog.dialog("open")
 
             @options.dialog.bind 'dialogclose', =>
-              do @options.editable.focus
+              do @options.editable.element.focus
               @options.editable.keepActivated false
 
         _closeDialog: ->

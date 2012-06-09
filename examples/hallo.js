@@ -1038,7 +1038,7 @@ http://hallojs.org
         this.options.editable.keepActivated(true);
         this.options.dialog.dialog("open");
         return this.options.dialog.bind('dialogclose', function() {
-          _this.options.editable.focus();
+          _this.options.editable.element.focus();
           return _this.options.editable.keepActivated(false);
         });
       },
