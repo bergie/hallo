@@ -192,8 +192,12 @@
             cleanUp()
             widget.options.loaded = 1
 
+            @options.editable.keepActivated true
             @options.dialog.dialog("open")
-            @options.editable.protectFocusFrom @options.dialog
+
+            @options.dialog.bind 'dialogclose', =>
+              do @options.editable.focus
+              @options.editable.keepActivated false
 
         _closeDialog: ->
             @options.dialog.dialog("close")

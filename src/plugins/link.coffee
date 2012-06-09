@@ -19,6 +19,7 @@
                 resizable: false
                 draggable: false
                 dialogClass: 'hallolink-dialog'
+            butonCssClass: null
 
         _create: ->
             widget = this
@@ -27,7 +28,9 @@
             dialog = jQuery "<div id=\"#{dialogId}\"><form action=\"#\" method=\"post\" class=\"linkForm\"><input class=\"url\" type=\"text\" name=\"url\" value=\"#{@options.defaultUrl}\" /><input type=\"submit\" id=\"addlinkButton\" value=\"Insert\" /></form></div>"
             urlInput = jQuery('input[name=url]', dialog).focus (e)->
                 this.select()
-            dialogSubmitCb = () ->
+            dialogSubmitCb = (event) ->
+                event.preventDefault()
+
                 link = urlInput.val()
                 widget.options.editable.restoreSelection(widget.lastSelection)
                 if ((new RegExp(/^\s*$/)).test link) or link is widget.options.defaultUrl
@@ -52,8 +55,17 @@
             buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
             buttonize = (type) =>
                 id = "#{@options.uuid}-#{type}"
-                buttonset.append jQuery("<input id=\"#{id}\" type=\"checkbox\" /><label for=\"#{id}\" class=\"btn anchor_button\" ><i class=\"icon-bookmark\"></i></label>").button()
-                button = jQuery "##{id}", buttonset
+                buttonHolder = jQuery '<span></span>'
+                buttonHolder.hallobutton
+                    label: 'Link'
+                    icon: 'icon-link'
+                    editable: @options.editable
+                    command: null
+                    queryState: false
+                    uuid: @options.uuid
+                    cssClass: @options.buttonCssClass
+                buttonset.append buttonHolder
+                button = buttonHolder
                 button.bind "change", (event) ->
                     # we need to save the current selection because we will lose focus
                     widget.lastSelection = widget.options.editable.getSelection()
@@ -63,20 +75,22 @@
                     else
                         urlInput.val(jQuery(widget.lastSelection.startContainer.parentNode).attr('href'))
                         jQuery(urlInput[0].form).find('input[type=submit]').val('update')
+
+                    widget.options.editable.keepActivated true
                     dialog.dialog('open')
-                    widget.options.editable.protectFocusFrom dialog
+
+                    dialog.bind 'dialogclose', ->
+                        jQuery('label', buttonHolder).removeClass 'ui-state-active'
+                        do widget.options.editable.element.focus
+                        widget.options.editable.keepActivated false
 
                 @element.bind "keyup paste change mouseup", (event) ->
                     start = jQuery(widget.options.editable.getSelection().startContainer)
                     nodeName = if start.prop('nodeName') then start.prop('nodeName') else start.parent().prop('nodeName')
                     if nodeName and nodeName.toUpperCase() is "A"
-                        button.attr "checked", true
-                        button.next().addClass "ui-state-clicked"
-                        button.button "refresh"
-                    else
-                        button.attr "checked", false
-                        button.next().removeClass "ui-state-clicked"
-                        button.button "refresh"
+                        jQuery('label', button).addClass 'ui-state-active'
+                        return
+                    jQuery('label', button).removeClass 'ui-state-active'
 
             if (@options.link)
                 buttonize "A"

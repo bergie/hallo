@@ -105,6 +105,7 @@ http://hallojs.org
         originalContent: ""
         uuid: ""
         selection: null
+        _keepActivated: false
 
         options:
             editable: true
@@ -269,6 +270,8 @@ http://hallojs.org
                 setTimeout ->
                   widget._protectToolbarFocus = false
                 , 300
+
+        keepActivated: (@_keepActivated) ->
 
         _generateUUID: ->
             S4 = ->
@@ -456,6 +459,8 @@ http://hallojs.org
             event.data.turnOn()
 
         _deactivated: (event) ->
+            return if event.data._keepActivated
+
             unless event.data._protectToolbarFocus is true
               event.data.turnOff()
             else
