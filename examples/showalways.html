@@ -87,7 +87,9 @@
                     successCallback(response);
                 },
                 suggestions: null,
-                uploadUrl: '/some/example/url'
+                uploadUrl: function() {
+                  return '/some/example/url'
+                }
             }
           },
           editable: true,

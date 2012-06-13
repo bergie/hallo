@@ -7,6 +7,7 @@
       uploadCallback: null
       uploadUrl: null
       imageWidget: null
+      entity: null
 
     _create: ->
       @element.html '
@@ -46,7 +47,13 @@
       iframe = widget._prepareIframe widget
 
       uploadForm = jQuery 'form', widget.element
-      uploadForm.attr 'action', widget.options.uploadUrl
+
+      if typeof widget.options.uploadUrl is 'function'
+        uploadUrl = widget.options.uploadUrl widget.options.entity
+      else
+        uploadUrl = widget.options.uploadUrl
+
+      uploadForm.attr 'action', uploadUrl
       uploadForm.attr 'method', 'post'
       uploadForm.attr 'userfile', data.file
       uploadForm.attr 'enctype', 'multipart/form-data'

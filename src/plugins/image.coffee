@@ -124,6 +124,8 @@
                 id = jQuery(this).attr 'id'
                 jQuery("##{id}-content").show()
                 jQuery("##{widget.options.uuid}-tab-activeIndicator").css("margin-left", jQuery(this).position().left + (jQuery(this).width()/2))
+            # Activate first tab
+            jQuery('.nav li', @options.dialog).first().click()
 
         _openDialog: ->
             widget = this
@@ -171,6 +173,7 @@
             tab.halloimagesuggestions
                 uuid: @options.uuid
                 imageWidget: @
+                entity: @options.entity
 
         _addGuiTabSearch: (tabs, element) ->
             widget = this
@@ -186,6 +189,7 @@
                 imageWidget: @
                 searchCallback: @options.search
                 limit: @options.limit
+                entity: @options.entity
 
         _addGuiTabUpload: (tabs, element) ->
             tabs.append jQuery "<li id=\"#{@options.uuid}-tab-upload\" class=\"#{@widgetName}-tabselector #{@widgetName}-tab-upload\"><span>Upload</span></li>"
@@ -197,6 +201,7 @@
                 uploadCallback: @options.upload
                 uploadUrl: @options.uploadUrl
                 imageWidget: @
+                entity: @options.entity
 
             ###
             insertImage = () ->

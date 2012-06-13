@@ -738,7 +738,8 @@ http://hallojs.org
       options: {
         uploadCallback: null,
         uploadUrl: null,
-        imageWidget: null
+        imageWidget: null,
+        entity: null
       },
       _create: function() {
         return this.element.html('\
@@ -783,11 +784,16 @@ http://hallojs.org
         return iframe;
       },
       _iframeUpload: function(data) {
-        var iframe, uploadForm, widget;
+        var iframe, uploadForm, uploadUrl, widget;
         widget = data.widget;
         iframe = widget._prepareIframe(widget);
         uploadForm = jQuery('form', widget.element);
-        uploadForm.attr('action', widget.options.uploadUrl);
+        if (typeof widget.options.uploadUrl === 'function') {
+          uploadUrl = widget.options.uploadUrl(widget.options.entity);
+        } else {
+          uploadUrl = widget.options.uploadUrl;
+        }
+        uploadForm.attr('action', uploadUrl);
         uploadForm.attr('method', 'post');
         uploadForm.attr('userfile', data.file);
         uploadForm.attr('enctype', 'multipart/form-data');
@@ -1250,13 +1256,14 @@ http://hallojs.org
       _handleTabs: function() {
         var widget;
         widget = this;
-        return jQuery('.nav li', this.options.dialog).bind('click', function() {
+        jQuery('.nav li', this.options.dialog).bind('click', function() {
           var id;
           jQuery("." + widget.widgetName + "-tab").hide();
           id = jQuery(this).attr('id');
           jQuery("#" + id + "-content").show();
           return jQuery("#" + widget.options.uuid + "-tab-activeIndicator").css("margin-left", jQuery(this).position().left + (jQuery(this).width() / 2));
         });
+        return jQuery('.nav li', this.options.dialog).first().click();
       },
       _openDialog: function() {
         var cleanUp, widget, xposition, yposition,
@@ -1301,7 +1308,8 @@ http://hallojs.org
         element.append(tab);
         return tab.halloimagesuggestions({
           uuid: this.options.uuid,
-          imageWidget: this
+          imageWidget: this,
+          entity: this.options.entity
         });
       },
       _addGuiTabSearch: function(tabs, element) {
@@ -1315,7 +1323,8 @@ http://hallojs.org
           uuid: this.options.uuid,
           imageWidget: this,
           searchCallback: this.options.search,
-          limit: this.options.limit
+          limit: this.options.limit,
+          entity: this.options.entity
         });
       },
       _addGuiTabUpload: function(tabs, element) {
@@ -1327,7 +1336,8 @@ http://hallojs.org
           uuid: this.options.uuid,
           uploadCallback: this.options.upload,
           uploadUrl: this.options.uploadUrl,
-          imageWidget: this
+          imageWidget: this,
+          entity: this.options.entity
         });
         /*
                     insertImage = () ->
