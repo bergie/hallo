@@ -71,7 +71,7 @@
                 remove: @options.remove
                 success: @options.success
                 error: @options.error
-            .bind 'annotateselect', ->
+            .bind 'annotateselect', (event, data) ->
               widget.options.editable.setModified()
               # console.info @, arguments
             .bind 'annotateremove', ->

@@ -44,7 +44,6 @@
     _iframeUpload: (data) ->
       widget = data.widget
       iframe = widget._prepareIframe widget
-      console.log iframe, iframe.get(0).name
 
       uploadForm = jQuery 'form', widget.element
       uploadForm.attr 'action', widget.options.uploadUrl

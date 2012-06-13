@@ -786,7 +786,6 @@ http://hallojs.org
         var iframe, uploadForm, widget;
         widget = data.widget;
         iframe = widget._prepareIframe(widget);
-        console.log(iframe, iframe.get(0).name);
         uploadForm = jQuery('form', widget.element);
         uploadForm.attr('action', widget.options.uploadUrl);
         uploadForm.attr('method', 'post');
@@ -841,6 +840,9 @@ http://hallojs.org
       _showResult: function(image) {
         var html,
           _this = this;
+        if (!image.label) {
+          image.label = image.alt;
+        }
         html = jQuery("<li><img src=\"" + image.url + "\" class=\"imageThumbnail\" title=\"" + image.label + "\"></li>");
         html.bind('click', function() {
           return _this.options.imageWidget.setCurrent(image);
@@ -1123,7 +1125,7 @@ http://hallojs.org
           remove: this.options.remove,
           success: this.options.success,
           error: this.options.error
-        }).bind('annotateselect', function() {
+        }).bind('annotateselect', function(event, data) {
           return widget.options.editable.setModified();
         }).bind('annotateremove', function() {
           return jQuery.noop();

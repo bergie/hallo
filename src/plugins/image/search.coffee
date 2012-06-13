@@ -34,6 +34,8 @@
           widget._showResults results
 
     _showResult: (image) ->
+      image.label = image.alt unless image.label
+
       html = jQuery "<li><img src=\"#{image.url}\" class=\"imageThumbnail\" title=\"#{image.label}\"></li>"
       html.bind 'click', =>
         @options.imageWidget.setCurrent image
