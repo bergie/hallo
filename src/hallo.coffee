@@ -106,6 +106,7 @@ http://hallojs.org
         uuid: ""
         selection: null
         _keepActivated: false
+        originalHref: null
 
         options:
             editable: true
@@ -155,10 +156,23 @@ http://hallojs.org
             @element.unbind "keyup", @_keys
             @element.unbind "keyup mouseup", @_checkSelection
             @bound = false
+
+            @element.parents('a').andSelf().each (idx, elem) =>
+              element = jQuery elem
+              return unless element.is 'a'
+              return unless @originalHref
+              element.attr 'href', @originalHref
+
             @_trigger "disabled", null
 
         # Enable an editable
         enable: ->
+            @element.parents('a[href]').andSelf().each (idx, elem) =>
+              element = jQuery elem
+              return unless element.is 'a[href]'
+              @originalHref = element.attr 'href'
+              element.removeAttr 'href'
+
             @element.attr "contentEditable", true
 
             unless @element.html()

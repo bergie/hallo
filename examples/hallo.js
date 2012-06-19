@@ -19,6 +19,7 @@ http://hallojs.org
       uuid: "",
       selection: null,
       _keepActivated: false,
+      originalHref: null,
       options: {
         editable: true,
         plugins: {},
@@ -69,6 +70,7 @@ http://hallojs.org
         }
       },
       disable: function() {
+        var _this = this;
         this.element.attr("contentEditable", false);
         this.element.unbind("focus", this._activated);
         this.element.unbind("blur", this._deactivated);
@@ -76,10 +78,31 @@ http://hallojs.org
         this.element.unbind("keyup", this._keys);
         this.element.unbind("keyup mouseup", this._checkSelection);
         this.bound = false;
+        this.element.parents('a').andSelf().each(function(idx, elem) {
+          var element;
+          element = jQuery(elem);
+          if (!element.is('a')) {
+            return;
+          }
+          if (!_this.originalHref) {
+            return;
+          }
+          return element.attr('href', _this.originalHref);
+        });
         return this._trigger("disabled", null);
       },
       enable: function() {
-        var widget;
+        var widget,
+          _this = this;
+        this.element.parents('a[href]').andSelf().each(function(idx, elem) {
+          var element;
+          element = jQuery(elem);
+          if (!element.is('a[href]')) {
+            return;
+          }
+          _this.originalHref = element.attr('href');
+          return element.removeAttr('href');
+        });
         this.element.attr("contentEditable", true);
         if (!this.element.html()) {
           this.element.html(this.options.placeholder);
