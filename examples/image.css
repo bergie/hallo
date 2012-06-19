@@ -274,3 +274,46 @@
 .inlineImage-middle {
     float: none;
 }
+
+[contenteditable] .halloTmp {
+    opacity: 0.3
+}
+
+[contenteditable] .halloTmpLine{
+    background-color: #ffffff;
+    width: 98%;
+    height: 2px;
+    margin: 0 auto 10px auto;
+    border-top: 2px solid #1cb8d6;
+    border-bottom: 2px solid #1cb8d6;
+    opacity: 1;
+    padding: 1px;
+}
+
+.bigOverlay, .smallOverlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(28, 184, 214, 0.4);
+}
+
+.bigOverlayRight{
+    display : block;
+    border-right : 3px dashed rgb(28, 184, 214);
+    border-left : none;
+}
+
+.bigOverlayLeft{
+    display : block;
+    border-left : 3px dashed rgb(28, 184, 214);
+    border-right : none;
+}
+
+.smallOverlayLeft{
+   border-right : 3px dashed rgb(28, 184, 214);
+}
+
+.smallOverlayRight{
+    border-left : 3px dashed rgb(28, 184, 214);
+}
