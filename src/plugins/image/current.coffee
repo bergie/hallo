@@ -22,6 +22,7 @@
       @element.hide()
 
     setImage: (image) ->
+      return unless image
       @element.show()
 
       jQuery('.activeImage', @element).attr 'src', image.url

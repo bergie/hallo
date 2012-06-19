@@ -723,6 +723,9 @@ http://hallojs.org
         return this.element.hide();
       },
       setImage: function(image) {
+        if (!image) {
+          return;
+        }
         this.element.show();
         jQuery('.activeImage', this.element).attr('src', image.url);
         if (image.label) {
@@ -859,10 +862,10 @@ http://hallojs.org
         container = jQuery('imageThumbnailContainer ul', this.element);
         container.prepend(jQuery('<div class="pager-prev" style="display:none"></div>'));
         container.append(jQuery('<div class="pager-next" style="display:none"></div>'));
-        if (response.offset > 0) {
+        if (results.offset > 0) {
           jQuery('.pager-prev', container).show();
         }
-        if (response.offset < response.total) {
+        if (results.offset < results.total) {
           jQuery('.pager-next', container).show();
         }
         jQuery('.pager-prev', container).click(function(event) {

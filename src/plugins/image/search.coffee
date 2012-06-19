@@ -48,8 +48,8 @@
       container.prepend jQuery '<div class="pager-prev" style="display:none"></div>'
       container.append jQuery '<div class="pager-next" style="display:none"></div>'
 
-      jQuery('.pager-prev', container).show() if response.offset > 0
-      jQuery('.pager-next', container).show() if response.offset < response.total
+      jQuery('.pager-prev', container).show() if results.offset > 0
+      jQuery('.pager-next', container).show() if results.offset < results.total
 
       jQuery('.pager-prev', container).click (event) ->
           widget.options.searchCallback query, widget.options.limit, response.offset - widget.options.limit, (results) ->
