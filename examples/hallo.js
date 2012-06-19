@@ -705,7 +705,9 @@ http://hallojs.org
   (function(jQuery) {
     return jQuery.widget('IKS.halloimagecurrent', {
       options: {
-        imageWidget: null
+        imageWidget: null,
+        startPlace: '',
+        draggables: []
       },
       _create: function() {
         this.element.html('<div>\
@@ -720,7 +722,33 @@ http://hallojs.org
             <input type="text" class="caption" name="caption" />\
           </div>\
         </div>');
-        return this.element.hide();
+        this.element.hide();
+        return this._prepareDnD();
+      },
+      _prepareDnD: function() {
+        var editable, overlayMiddleConfig, widget;
+        widget = this;
+        editable = jQuery(this.options.editable.element);
+        this.options.offset = editable.offset();
+        this.options.third = parseFloat(editable.width() / 3);
+        overlayMiddleConfig = {
+          width: this.options.third,
+          height: editable.height()
+        };
+        this.overlay = {
+          big: jQuery("<div/>").addClass("bigOverlay").css({
+            width: this.options.third * 2,
+            height: editable.height()
+          }),
+          left: jQuery("<div/>").addClass("smallOverlay smallOverlayLeft").css(overlayMiddleConfig),
+          right: jQuery("<div/>").addClass("smallOverlay smallOverlayRight").css(overlayMiddleConfig).css("left", this.options.third * 2)
+        };
+        editable.bind('halloactivated', function() {
+          return widget._enableDragging();
+        });
+        return editable.bind('hallodeactivated', function() {
+          return widget._disableDragging();
+        });
       },
       setImage: function(image) {
         if (!image) {
@@ -730,8 +758,289 @@ http://hallojs.org
         jQuery('.activeImage', this.element).attr('src', image.url);
         if (image.label) {
           jQuery('input', this.element).val(image.label);
-          return jQuery('.metadata', this.element).show();
+          jQuery('.metadata', this.element).show();
         }
+        return this._initImage(jQuery(this.options.editable.element));
+      },
+      _delayAction: function(functionToCall, delay) {
+        var timer;
+        timer = clearTimeout(timer);
+        if (!timer) {
+          return timer = setTimeout(functionToCall, delay);
+        }
+      },
+      _calcDropPosition: function(offset, event) {
+        var position;
+        position = offset.left + this.options.third;
+        if (event.pageX >= position && event.pageX <= (offset.left + this.options.third * 2)) {
+          return 'middle';
+        } else if (event.pageX < position) {
+          return 'left';
+        } else if (event.pageX > (offset.left + this.options.third * 2)) {
+          return 'right';
+        }
+      },
+      _createInsertElement: function(image, tmp) {
+        var altText, height, imageInsert, maxHeight, maxWidth, ratio, tmpImg, width;
+        maxWidth = 250;
+        maxHeight = 250;
+        tmpImg = new Image();
+        tmpImg.src = image.src;
+        if (!tmp) {
+          altText = jQuery(image).attr("alt");
+          width = tmpImg.width;
+          height = tmpImg.height;
+          if (width > maxWidth || height > maxHeight) {
+            if (width > height) {
+              ratio = (tmpImg.width / maxWidth).toFixed();
+            } else {
+              ratio = (tmpImg.height / maxHeight).toFixed();
+            }
+            width = (tmpImg.width / ratio).toFixed();
+            height = (tmpImg.height / ratio).toFixed();
+          }
+        }
+        imageInsert = jQuery('<img>').attr({
+          src: tmpImg.src,
+          width: width,
+          height: height,
+          alt: altText,
+          "class": tmp ? 'halloTmp' : ''
+        });
+        imageInsert.show();
+        return imageInsert;
+      },
+      _createLineFeedbackElement: function() {
+        return jQuery('<div/>').addClass('halloTmpLine');
+      },
+      _removeFeedbackElements: function() {
+        return jQuery('.halloTmp, .halloTmpLine', this.options.editable.element).remove();
+      },
+      _removeCustomHelper: function() {
+        return jQuery('.customHelper').remove();
+      },
+      _showOverlay: function(position) {
+        var eHeight, editable;
+        editable = jQuery(this.options.editable.element);
+        eHeight = editable.height() + parseFloat(editable.css('paddingTop')) + parseFloat(editable.css('paddingBottom'));
+        this.overlay.big.css({
+          height: eHeight
+        });
+        this.overlay.left.css({
+          height: eHeight
+        });
+        this.overlay.right.css({
+          height: eHeight
+        });
+        switch (position) {
+          case 'left':
+            this.overlay.big.addClass("bigOverlayLeft").removeClass("bigOverlayRight").css({
+              left: this.options.third
+            }).show();
+            this.overlay.left.hide();
+            return this.overlay.right.hide();
+          case 'middle':
+            this.overlay.big.removeClass("bigOverlayLeft bigOverlayRight");
+            this.overlay.big.hide();
+            this.overlay.left.show();
+            return this.overlay.right.show();
+          case 'right':
+            this.overlay.big.addClass("bigOverlayRight").removeClass("bigOverlayLeft").css({
+              left: 0
+            }).show();
+            this.overlay.left.hide();
+            return this.overlay.right.hide();
+        }
+      },
+      _checkOrigin: function(event) {
+        if (jQuery(event.target).parents("[contenteditable]").length !== 0) {
+          return true;
+        }
+        return false;
+      },
+      _createTmpFeedback: function(image, position) {
+        var el;
+        if (position === 'middle') {
+          return this._createLineFeedbackElement();
+        }
+        el = this._createInsertElement(image, true);
+        return el.addClass("inlineImage-" + position);
+      },
+      _handleOverEvent: function(event, ui) {
+        var editable, postPone, widget;
+        widget = this;
+        editable = jQuery(this.options.editable);
+        postPone = function() {
+          var position;
+          window.waitWithTrash = clearTimeout(window.waitWithTrash);
+          position = widget._calcDropPosition(widget.options.offset, event);
+          jQuery('.trashcan', ui.helper).remove();
+          editable.append(widget.overlay.big);
+          editable.append(widget.overlay.left);
+          editable.append(widget.overlay.right);
+          widget._removeFeedbackElements();
+          jQuery(event.target).prepend(widget._createTmpFeedback(ui.draggable[0], position));
+          if (position === 'middle') {
+            jQuery(event.target).prepend(widget._createTmpFeedback(ui.draggable[0], 'right'));
+            jQuery('.halloTmp', event.target).hide();
+          } else {
+            jQuery(event.target).prepend(widget._createTmpFeedback(ui.draggable[0], 'middle'));
+            jQuery('.halloTmpLine', event.target).hide();
+          }
+          return widget._showOverlay(position);
+        };
+        return setTimeout(postPone, 5);
+      },
+      _handleDragEvent: function(event, ui) {
+        var position, tmpFeedbackLR, tmpFeedbackMiddle;
+        position = this._calcDropPosition(this.options.offset, event);
+        if (position === this._lastPositionDrag) {
+          return;
+        }
+        this._lastPositionDrag = position;
+        tmpFeedbackLR = jQuery('.halloTmp', this.options.editable.element);
+        tmpFeedbackMiddle = jQuery('.halloTmpLine', this.options.editable.element);
+        if (position === 'middle') {
+          tmpFeedbackMiddle.show();
+          tmpFeedbackLR.hide();
+        } else {
+          tmpFeedbackMiddle.hide();
+          tmpFeedbackLR.removeClass('inlineImage-left inlineImage-right').addClass("inlineImage-" + position).show();
+        }
+        return this._showOverlay(position);
+      },
+      _handleLeaveEvent: function(event, ui) {
+        var func;
+        func = function() {
+          if (!jQuery('div.trashcan', ui.helper).length) {
+            jQuery(ui.helper).append(jQuery('<div class="trashcan"></div>'));
+            return jQuery('.bigOverlay, .smallOverlay').remove();
+          }
+        };
+        window.waitWithTrash = setTimeout(func, 200);
+        return this._removeFeedbackElements();
+      },
+      _handleStartEvent: function(event, ui) {
+        var internalDrop;
+        internalDrop = this._checkOrigin(event);
+        if (internalDrop) {
+          jQuery(event.target).remove();
+        }
+        jQuery(document).trigger('startPreventSave');
+        return this.options.startPlace = jQuery(event.target);
+      },
+      _handleStopEvent: function(event, ui) {
+        var internalDrop;
+        internalDrop = this._checkOrigin(event);
+        if (internalDrop) {
+          jQuery(event.target).remove();
+        } else {
+          jQuery(this.options.editable.element).trigger('change');
+        }
+        this.overlay.big.hide();
+        this.overlay.left.hide();
+        this.overlay.right.hide();
+        return jQuery(document).trigger('stopPreventSave');
+      },
+      _handleDropEvent: function(event, ui) {
+        var editable, imageInsert, internalDrop, position;
+        editable = jQuery(this.options.editable.element);
+        internalDrop = this._checkOrigin(event);
+        position = this._calcDropPosition(this.options.offset, event);
+        this._removeFeedbackElements();
+        this._removeCustomHelper();
+        imageInsert = this._createInsertElement(ui.draggable[0], false);
+        if (position === 'middle') {
+          imageInsert.show();
+          imageInsert.removeClass('inlineImage-middle inlineImage-left inlineImage-right');
+          imageInsert.addClass("inlineImage-" + position).css({
+            position: 'relative',
+            left: ((editable.width() + parseFloat(editable.css('paddingLeft')) + parseFloat(editable.css('paddingRight'))) - imageInsert.attr('width')) / 2
+          });
+          imageInsert.insertBefore(jQuery(event.target));
+        } else {
+          imageInsert.removeClass('inlineImage-middle inlineImage-left inlineImage-right');
+          imageInsert.addClass("inlineImage-" + position);
+          imageInsert.css('display', 'block');
+          jQuery(event.target).prepend(imageInsert);
+        }
+        this.overlay.big.hide();
+        this.overlay.left.hide();
+        this.overlay.right.hide();
+        editable.trigger('change');
+        return this._initImage(editable);
+      },
+      _createHelper: function(event) {
+        return jQuery('<div>').css({
+          backgroundImage: "url(" + (jQuery(event.currentTarget).attr('src')) + ")"
+        }).addClass('customHelper').appendTo('body');
+      },
+      _initDraggable: function(elem, editable) {
+        var widget;
+        widget = this;
+        if (!elem.jquery_draggable_initialized) {
+          elem.jquery_draggable_initialized = true;
+          jQuery(elem).draggable({
+            cursor: 'move',
+            helper: function(event) {
+              return widget._createHelper(event);
+            },
+            drag: function(event, ui) {
+              return widget._handleDragEvent(event, ui);
+            },
+            start: function(event, ui) {
+              return widget._handleStartEvent(event, ui);
+            },
+            stop: function(event, ui) {
+              return widget._handleStopEvent(event, ui);
+            },
+            disabled: !editable.hasClass('inEditMode'),
+            cursorAt: {
+              top: 50,
+              left: 50
+            }
+          });
+        }
+        return widget.options.draggables.push(elem);
+      },
+      _initImage: function(editable) {
+        var widget;
+        widget = this;
+        jQuery('.rotationWrapper img', this.options.dialog).each(function(index, elem) {
+          return widget._initDraggable(elem, editable);
+        });
+        jQuery('img', editable).each(function(index, elem) {
+          elem.contentEditable = false;
+          return widget._initDraggable(elem, editable);
+        });
+        return jQuery('p', editable).each(function(index, elem) {
+          if (jQuery(elem).data('jquery_droppable_initialized')) {
+            return;
+          }
+          jQuery(elem).droppable({
+            tolerance: 'pointer',
+            drop: function(event, ui) {
+              return widget._handleDropEvent(event, ui);
+            },
+            over: function(event, ui) {
+              return widget._handleOverEvent(event, ui);
+            },
+            out: function(event, ui) {
+              return widget._handleLeaveEvent(event, ui);
+            }
+          });
+          return jQuery(elem).data('jquery_droppable_initialized', true);
+        });
+      },
+      _enableDragging: function() {
+        return jQuery.each(this.options.draggables, function(index, d) {
+          return jQuery(d).draggable('option', 'disabled', false);
+        });
+      },
+      _disableDragging: function() {
+        return jQuery.each(this.options.draggables, function(index, d) {
+          return jQuery(d).draggable('option', 'disabled', true);
+        });
       }
     });
   })(jQuery);
@@ -856,6 +1165,10 @@ http://hallojs.org
         }
         html = jQuery("<li><img src=\"" + image.url + "\" class=\"imageThumbnail\" title=\"" + image.label + "\"></li>");
         html.bind('click', function() {
+          return _this.options.imageWidget.setCurrent(image);
+        });
+        jQuery('img', html).bind('mousedown', function(event) {
+          event.preventDefault();
           return _this.options.imageWidget.setCurrent(image);
         });
         return jQuery('.imageThumbnailContainer ul', this.element).append(html);
@@ -1228,7 +1541,9 @@ http://hallojs.org
         }
         this.current = jQuery('<div class="currentImage"></div>').halloimagecurrent({
           uuid: this.options.uuid,
-          imageWidget: this
+          imageWidget: this,
+          editable: this.options.editable,
+          dialog: this.options.dialog
         });
         jQuery('.dialogcontent', this.options.dialog).append(this.current);
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
@@ -1261,8 +1576,7 @@ http://hallojs.org
         buttonset.buttonset();
         this.options.toolbar.append(buttonset);
         this.options.dialog.dialog(this.options.dialogOpts);
-        this._handleTabs();
-        return this._addDragnDrop();
+        return this._handleTabs();
       },
       _init: function() {},
       setCurrent: function(image) {
@@ -1378,302 +1692,6 @@ http://hallojs.org
                     @options.dialog.find(".halloimage-activeImage, ##{widget.options.uuid}-#{widget.widgetName}-addimage").click insertImage
         */
 
-      },
-      _addDragnDrop: function() {
-        var dnd, draggables, editable, helper, offset, overlay, overlayMiddleConfig, third, widgetOptions;
-        helper = {
-          delayAction: function(functionToCall, delay) {
-            var timer;
-            timer = clearTimeout(timer);
-            if (!timer) {
-              return timer = setTimeout(functionToCall, delay);
-            }
-          },
-          calcPosition: function(offset, event) {
-            var position;
-            position = offset.left + third;
-            if (event.pageX >= position && event.pageX <= (offset.left + third * 2)) {
-              return "middle";
-            } else if (event.pageX < position) {
-              return "left";
-            } else if (event.pageX > (offset.left + third * 2)) {
-              return "right";
-            }
-          },
-          createInsertElement: function(image, tmp) {
-            var altText, height, imageInsert, maxHeight, maxWidth, ratio, tmpImg, width;
-            maxWidth = 250;
-            maxHeight = 250;
-            tmpImg = new Image();
-            tmpImg.src = image.src;
-            if (!tmp) {
-              if (this.startPlace.parents(".tab-suggestions").length > 0) {
-                altText = jQuery("#caption-sugg").val();
-              } else if (this.startPlace.parents(".tab-search").length > 0) {
-                altText = jQuery("#caption-search").val();
-              } else {
-                altText = jQuery(image).attr("alt");
-              }
-            }
-            width = tmpImg.width;
-            height = tmpImg.height;
-            if (width > maxWidth || height > maxHeight) {
-              if (width > height) {
-                ratio = (tmpImg.width / maxWidth).toFixed();
-              } else {
-                ratio = (tmpImg.height / maxHeight).toFixed();
-              }
-              width = (tmpImg.width / ratio).toFixed();
-              height = (tmpImg.height / ratio).toFixed();
-            }
-            imageInsert = jQuery("<img>").attr({
-              src: tmpImg.src,
-              width: width,
-              height: height,
-              alt: altText,
-              "class": (tmp ? "tmp" : "")
-            }).show();
-            return imageInsert;
-          },
-          createLineFeedbackElement: function() {
-            return jQuery("<div/>").addClass("tmpLine");
-          },
-          removeFeedbackElements: function() {
-            return jQuery('.tmp, .tmpLine', editable).remove();
-          },
-          removeCustomHelper: function() {
-            return jQuery(".customHelper").remove();
-          },
-          showOverlay: function(position) {
-            var eHeight;
-            eHeight = editable.height() + parseFloat(editable.css('paddingTop')) + parseFloat(editable.css('paddingBottom'));
-            overlay.big.css({
-              height: eHeight
-            });
-            overlay.left.css({
-              height: eHeight
-            });
-            overlay.right.css({
-              height: eHeight
-            });
-            switch (position) {
-              case "left":
-                overlay.big.addClass("bigOverlayLeft").removeClass("bigOverlayRight").css({
-                  left: third
-                }).show();
-                overlay.left.hide();
-                return overlay.right.hide();
-              case "middle":
-                overlay.big.removeClass("bigOverlayLeft bigOverlayRight");
-                overlay.big.hide();
-                overlay.left.show();
-                return overlay.right.show();
-              case "right":
-                overlay.big.addClass("bigOverlayRight").removeClass("bigOverlayLeft").css({
-                  left: 0
-                }).show();
-                overlay.left.hide();
-                return overlay.right.hide();
-            }
-          },
-          checkOrigin: function(event) {
-            if (jQuery(event.target).parents("[contenteditable]").length !== 0) {
-              return true;
-            } else {
-              return false;
-            }
-          },
-          startPlace: ""
-        };
-        dnd = {
-          createTmpFeedback: function(image, position) {
-            var el;
-            if (position === 'middle') {
-              return helper.createLineFeedbackElement();
-            } else {
-              el = helper.createInsertElement(image, true);
-              return el.addClass("inlineImage-" + position);
-            }
-          },
-          handleOverEvent: function(event, ui) {
-            var postPone;
-            postPone = function() {
-              var position;
-              window.waitWithTrash = clearTimeout(window.waitWithTrash);
-              position = helper.calcPosition(offset, event);
-              jQuery('.trashcan', ui.helper).remove();
-              editable.append(overlay.big);
-              editable.append(overlay.left);
-              editable.append(overlay.right);
-              helper.removeFeedbackElements();
-              jQuery(event.target).prepend(dnd.createTmpFeedback(ui.draggable[0], position));
-              if (position === "middle") {
-                jQuery(event.target).prepend(dnd.createTmpFeedback(ui.draggable[0], 'right'));
-                jQuery('.tmp', jQuery(event.target)).hide();
-              } else {
-                jQuery(event.target).prepend(dnd.createTmpFeedback(ui.draggable[0], 'middle'));
-                jQuery('.tmpLine', jQuery(event.target)).hide();
-              }
-              return helper.showOverlay(position);
-            };
-            return setTimeout(postPone, 5);
-          },
-          handleDragEvent: function(event, ui) {
-            var position, tmpFeedbackLR, tmpFeedbackMiddle;
-            position = helper.calcPosition(offset, event);
-            if (position === dnd.lastPositionDrag) {
-              return;
-            }
-            dnd.lastPositionDrag = position;
-            tmpFeedbackLR = jQuery('.tmp', editable);
-            tmpFeedbackMiddle = jQuery('.tmpLine', editable);
-            if (position === "middle") {
-              tmpFeedbackMiddle.show();
-              tmpFeedbackLR.hide();
-            } else {
-              tmpFeedbackMiddle.hide();
-              tmpFeedbackLR.removeClass("inlineImage-left inlineImage-right").addClass("inlineImage-" + position).show();
-            }
-            return helper.showOverlay(position);
-          },
-          handleLeaveEvent: function(event, ui) {
-            var func;
-            func = function() {
-              if (!jQuery('div.trashcan', ui.helper).length) {
-                jQuery(ui.helper).append(jQuery('<div class="trashcan"></div>'));
-              }
-              return jQuery('.bigOverlay, .smallOverlay').remove();
-            };
-            window.waitWithTrash = setTimeout(func, 200);
-            return helper.removeFeedbackElements();
-          },
-          handleStartEvent: function(event, ui) {
-            var internalDrop;
-            internalDrop = helper.checkOrigin(event);
-            if (internalDrop) {
-              jQuery(event.target).remove();
-            }
-            jQuery(document).trigger('startPreventSave');
-            return helper.startPlace = jQuery(event.target);
-          },
-          handleStopEvent: function(event, ui) {
-            var internalDrop;
-            internalDrop = helper.checkOrigin(event);
-            if (internalDrop) {
-              jQuery(event.target).remove();
-            } else {
-              editable.trigger('change');
-            }
-            overlay.big.hide();
-            overlay.left.hide();
-            overlay.right.hide();
-            return jQuery(document).trigger('stopPreventSave');
-          },
-          handleDropEvent: function(event, ui) {
-            var imageInsert, internalDrop, position;
-            internalDrop = helper.checkOrigin(event);
-            position = helper.calcPosition(offset, event);
-            helper.removeFeedbackElements();
-            helper.removeCustomHelper();
-            imageInsert = helper.createInsertElement(ui.draggable[0], false);
-            if (position === "middle") {
-              imageInsert.show();
-              imageInsert.removeClass("inlineImage-middle inlineImage-left inlineImage-right").addClass("inlineImage-" + position).css({
-                position: "relative",
-                left: ((editable.width() + parseFloat(editable.css('paddingLeft')) + parseFloat(editable.css('paddingRight'))) - imageInsert.attr('width')) / 2
-              });
-              imageInsert.insertBefore(jQuery(event.target));
-            } else {
-              imageInsert.removeClass("inlineImage-middle inlineImage-left inlineImage-right").addClass("inlineImage-" + position).css("display", "block");
-              jQuery(event.target).prepend(imageInsert);
-            }
-            overlay.big.hide();
-            overlay.left.hide();
-            overlay.right.hide();
-            editable.trigger('change');
-            return dnd.init(editable);
-          },
-          createHelper: function(event) {
-            return jQuery('<div>').css({
-              backgroundImage: "url(" + jQuery(event.currentTarget).attr('src') + ")"
-            }).addClass('customHelper').appendTo('body');
-          },
-          init: function() {
-            var draggable, initDraggable;
-            draggable = [];
-            initDraggable = function(elem) {
-              if (!elem.jquery_draggable_initialized) {
-                elem.jquery_draggable_initialized = true;
-                jQuery(elem).draggable({
-                  cursor: "move",
-                  helper: dnd.createHelper,
-                  drag: dnd.handleDragEvent,
-                  start: dnd.handleStartEvent,
-                  stop: dnd.handleStopEvent,
-                  disabled: !editable.hasClass('inEditMode'),
-                  cursorAt: {
-                    top: 50,
-                    left: 50
-                  }
-                });
-              }
-              return draggables.push(elem);
-            };
-            jQuery(".rotationWrapper img", widgetOptions.dialog).each(function(index, elem) {
-              if (!elem.jquery_draggable_initialized) {
-                return initDraggable(elem);
-              }
-            });
-            jQuery('img', editable).each(function(index, elem) {
-              elem.contentEditable = false;
-              if (!elem.jquery_draggable_initialized) {
-                return initDraggable(elem);
-              }
-            });
-            return jQuery('p', editable).each(function(index, elem) {
-              if (jQuery(elem).data('jquery_droppable_initialized')) {
-                return;
-              }
-              jQuery(elem).droppable({
-                tolerance: "pointer",
-                drop: dnd.handleDropEvent,
-                over: dnd.handleOverEvent,
-                out: dnd.handleLeaveEvent
-              });
-              return jQuery(elem).data('jquery_droppable_initialized', true);
-            });
-          },
-          enableDragging: function() {
-            return jQuery.each(draggables, function(index, d) {
-              return jQuery(d).draggable('option', 'disabled', false);
-            });
-          },
-          disableDragging: function() {
-            return jQuery.each(draggables, function(index, d) {
-              return jQuery(d).draggable('option', 'disabled', true);
-            });
-          }
-        };
-        draggables = [];
-        editable = jQuery(this.options.editable.element);
-        widgetOptions = this.options;
-        offset = editable.offset();
-        third = parseFloat(editable.width() / 3);
-        overlayMiddleConfig = {
-          width: third,
-          height: editable.height()
-        };
-        overlay = {
-          big: jQuery("<div/>").addClass("bigOverlay").css({
-            width: third * 2,
-            height: editable.height()
-          }),
-          left: jQuery("<div/>").addClass("smallOverlay smallOverlayLeft").css(overlayMiddleConfig),
-          right: jQuery("<div/>").addClass("smallOverlay smallOverlayRight").css(overlayMiddleConfig).css("left", third * 2)
-        };
-        dnd.init();
-        editable.bind('halloactivated', dnd.enableDragging);
-        return editable.bind('hallodeactivated', dnd.disableDragging);
       }
     });
   })(jQuery);
