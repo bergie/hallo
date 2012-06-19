@@ -26,6 +26,22 @@
       @element.hide()
       @_prepareDnD()
 
+    _init: ->
+      editable = jQuery @options.editable.element
+      widget = @
+      jQuery('img', editable).each (index, elem) ->
+        elem.contentEditable = false
+        widget._initDraggable elem, editable
+
+      jQuery('p', editable).each (index, elem) ->
+        return if jQuery(elem).data 'jquery_droppable_initialized'
+        jQuery(elem).droppable
+          tolerance: 'pointer'
+          drop: (event, ui) -> widget._handleDropEvent event, ui
+          over: (event, ui) -> widget._handleOverEvent event, ui
+          out: (event, ui) -> widget._handleLeaveEvent event, ui
+        jQuery(elem).data 'jquery_droppable_initialized', true
+
     _prepareDnD: ->
       widget = @
       editable = jQuery @options.editable.element
@@ -267,7 +283,7 @@
     _createHelper: (event) ->
       jQuery('<div>').css(
         backgroundImage: "url(#{jQuery(event.currentTarget).attr('src')})"
-      ).addClass('customHelper').appendTo('body');
+      ).addClass('customHelper').appendTo('body')
 
     _initDraggable: (elem, editable) ->
       widget = @
@@ -292,19 +308,6 @@
 
       jQuery('.rotationWrapper img', @options.dialog).each (index, elem) ->
         widget._initDraggable elem, editable
-
-      jQuery('img', editable).each (index, elem) ->
-        elem.contentEditable = false
-        widget._initDraggable elem, editable
-
-      jQuery('p', editable).each (index, elem) ->
-        return if jQuery(elem).data 'jquery_droppable_initialized'
-        jQuery(elem).droppable
-          tolerance: 'pointer'
-          drop: (event, ui) -> widget._handleDropEvent event, ui
-          over: (event, ui) -> widget._handleOverEvent event, ui
-          out: (event, ui) -> widget._handleLeaveEvent event, ui
-        jQuery(elem).data 'jquery_droppable_initialized', true
 
     _enableDragging: ->
       jQuery.each @options.draggables, (index, d) ->
