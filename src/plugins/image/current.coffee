@@ -7,6 +7,8 @@
       imageWidget: null
       startPlace: ''
       draggables: []
+      maxWidth: 400
+      maxHeight: 200
 
     _create: ->
       @element.html '<div>
@@ -75,14 +77,17 @@
 
     # create image to be inserted
     _createInsertElement: (image, tmp) ->
-      maxWidth = 250
-      maxHeight = 250
+      imageInsert = jQuery '<img>'
+
       tmpImg = new Image()
-      tmpImg.src = image.src
-      unless tmp
-        altText = jQuery(image).attr("alt")
+
+      # Calculate the size for the image
+      maxWidth = @options.maxWidth
+      maxHeight = @options.maxHeight
+      jQuery(tmpImg).bind 'load', ->
         width = tmpImg.width
         height = tmpImg.height
+
         if width > maxWidth or height > maxHeight
           if width > height
             ratio = (tmpImg.width / maxWidth).toFixed()
@@ -91,12 +96,17 @@
           width = (tmpImg.width / ratio).toFixed()
           height = (tmpImg.height / ratio).toFixed()
 
-      imageInsert = jQuery('<img>').attr
+        imageInsert.attr
+          width: width
+          height: height
+
+      tmpImg.src = image.src
+      
+      imageInsert.attr
         src: tmpImg.src
-        width: width
-        height: height
-        alt: altText
+        alt: jQuery(image).attr('alt') unless tmp
         class: if tmp then 'halloTmp' else ''
+
       imageInsert.show()
       imageInsert
 

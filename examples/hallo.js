@@ -707,7 +707,9 @@ http://hallojs.org
       options: {
         imageWidget: null,
         startPlace: '',
-        draggables: []
+        draggables: [],
+        maxWidth: 400,
+        maxHeight: 200
       },
       _create: function() {
         this.element.html('<div>\
@@ -781,13 +783,13 @@ http://hallojs.org
         }
       },
       _createInsertElement: function(image, tmp) {
-        var altText, height, imageInsert, maxHeight, maxWidth, ratio, tmpImg, width;
-        maxWidth = 250;
-        maxHeight = 250;
+        var imageInsert, maxHeight, maxWidth, tmpImg;
+        imageInsert = jQuery('<img>');
         tmpImg = new Image();
-        tmpImg.src = image.src;
-        if (!tmp) {
-          altText = jQuery(image).attr("alt");
+        maxWidth = this.options.maxWidth;
+        maxHeight = this.options.maxHeight;
+        jQuery(tmpImg).bind('load', function() {
+          var height, ratio, width;
           width = tmpImg.width;
           height = tmpImg.height;
           if (width > maxWidth || height > maxHeight) {
@@ -799,12 +801,15 @@ http://hallojs.org
             width = (tmpImg.width / ratio).toFixed();
             height = (tmpImg.height / ratio).toFixed();
           }
-        }
-        imageInsert = jQuery('<img>').attr({
+          return imageInsert.attr({
+            width: width,
+            height: height
+          });
+        });
+        tmpImg.src = image.src;
+        imageInsert.attr({
           src: tmpImg.src,
-          width: width,
-          height: height,
-          alt: altText,
+          alt: !tmp ? jQuery(image).attr('alt') : void 0,
           "class": tmp ? 'halloTmp' : ''
         });
         imageInsert.show();
@@ -1523,7 +1528,9 @@ http://hallojs.org
         buttonCssClass: null,
         entity: null,
         vie: null,
-        dbPediaUrl: "http://dev.iks-project.eu/stanbolfull"
+        dbPediaUrl: "http://dev.iks-project.eu/stanbolfull",
+        maxWidth: 250,
+        maxHeight: 250
       },
       _create: function() {
         var buttonHolder, buttonset, dialogId, id, widget;
@@ -1543,7 +1550,9 @@ http://hallojs.org
           uuid: this.options.uuid,
           imageWidget: this,
           editable: this.options.editable,
-          dialog: this.options.dialog
+          dialog: this.options.dialog,
+          maxWidth: this.options.maxWidth,
+          maxHeight: this.options.maxHeight
         });
         jQuery('.dialogcontent', this.options.dialog).append(this.current);
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");

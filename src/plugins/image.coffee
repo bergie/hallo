@@ -49,6 +49,8 @@
             entity: null
             vie: null
             dbPediaUrl: "http://dev.iks-project.eu/stanbolfull"
+            maxWidth: 250
+            maxHeight: 250
 
         _create: ->
             widget = this
@@ -74,6 +76,8 @@
                 imageWidget: @
                 editable: @options.editable
                 dialog: @options.dialog
+                maxWidth: @options.maxWidth
+                maxHeight: @options.maxHeight
 
             jQuery('.dialogcontent', @options.dialog).append @current
 
