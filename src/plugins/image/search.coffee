@@ -6,6 +6,7 @@
     options:
       imageWidget: null
       searchCallback: null
+      searchUrl: null
       limit: 5
 
     _create: ->
@@ -22,6 +23,10 @@
 
     _init: ->
       widget = @
+
+      if widget.options.searchUrl and !widget.options.searchCallback
+        widget.options.searchCallback = widget._ajaxSearch
+
       jQuery('.activitySpinner', @element).hide()
 
       jQuery('form', @element).submit (event) ->
@@ -60,13 +65,21 @@
 
     _showResults: (results) ->
       jQuery('.activitySpinner', @element).hide()
-      jQuery('imageThumbnailContainer ul', @element).empty()
-      jQuery('imageThumbnailContainer ul', @element).show()
+      jQuery('.imageThumbnailContainer ul', @element).empty()
+      jQuery('.imageThumbnailContainer ul', @element).show()
 
       @_showResult image for image in results.assets
 
       @options.imageWidget.setCurrent results.assets.shift()
 
       @_showNextPrev results
+
+    _ajaxSearch: (query, limit, offset, success) ->
+      searchUrl = @searchUrl + '?' + jQuery.param
+        q: query
+        limit: limit
+        offset: offset
+
+      jQuery.getJSON searchUrl, success
 
 ) jQuery

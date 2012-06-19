@@ -19,6 +19,7 @@
             # successCallback: function that will be called with the response json object
             #     the object has fields offset (the requested offset), total (total number of results) and assets (list of url and alt text for each image)
             search: null
+            searchUrl: null
             # this function is responsible to fetch suggestions for images to insert
             # this could for example be based on tags of the entity or some semantic enhancement, ...
             #
@@ -63,7 +64,7 @@
 
             if widget.options.suggestions
                 @_addGuiTabSuggestions jQuery(".tabs", @options.dialog), jQuery(".dialogcontent", @options.dialog)
-            if widget.options.search
+            if widget.options.search or widget.options.searchUrl
                 @_addGuiTabSearch jQuery(".tabs", @options.dialog), jQuery(".dialogcontent", @options.dialog)
             if widget.options.upload or widget.options.uploadUrl
                 @_addGuiTabUpload jQuery(".tabs", @options.dialog), jQuery(".dialogcontent", @options.dialog)
@@ -188,6 +189,7 @@
                 uuid: @options.uuid
                 imageWidget: @
                 searchCallback: @options.search
+                searchUrl: @options.searchUrl
                 limit: @options.limit
                 entity: @options.entity
 

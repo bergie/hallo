@@ -816,6 +816,7 @@ http://hallojs.org
       options: {
         imageWidget: null,
         searchCallback: null,
+        searchUrl: null,
         limit: 5
       },
       _create: function() {
@@ -833,6 +834,9 @@ http://hallojs.org
       _init: function() {
         var widget;
         widget = this;
+        if (widget.options.searchUrl && !widget.options.searchCallback) {
+          widget.options.searchCallback = widget._ajaxSearch;
+        }
         jQuery('.activitySpinner', this.element).hide();
         return jQuery('form', this.element).submit(function(event) {
           var query;
@@ -882,8 +886,8 @@ http://hallojs.org
       _showResults: function(results) {
         var image, _i, _len, _ref;
         jQuery('.activitySpinner', this.element).hide();
-        jQuery('imageThumbnailContainer ul', this.element).empty();
-        jQuery('imageThumbnailContainer ul', this.element).show();
+        jQuery('.imageThumbnailContainer ul', this.element).empty();
+        jQuery('.imageThumbnailContainer ul', this.element).show();
         _ref = results.assets;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           image = _ref[_i];
@@ -891,6 +895,15 @@ http://hallojs.org
         }
         this.options.imageWidget.setCurrent(results.assets.shift());
         return this._showNextPrev(results);
+      },
+      _ajaxSearch: function(query, limit, offset, success) {
+        var searchUrl;
+        searchUrl = this.searchUrl + '?' + jQuery.param({
+          q: query,
+          limit: limit,
+          offset: offset
+        });
+        return jQuery.getJSON(searchUrl, success);
       }
     });
   })(jQuery);
@@ -1178,6 +1191,7 @@ http://hallojs.org
         uuid: "",
         limit: 8,
         search: null,
+        searchUrl: null,
         suggestions: null,
         loaded: null,
         upload: null,
@@ -1206,7 +1220,7 @@ http://hallojs.org
         if (widget.options.suggestions) {
           this._addGuiTabSuggestions(jQuery(".tabs", this.options.dialog), jQuery(".dialogcontent", this.options.dialog));
         }
-        if (widget.options.search) {
+        if (widget.options.search || widget.options.searchUrl) {
           this._addGuiTabSearch(jQuery(".tabs", this.options.dialog), jQuery(".dialogcontent", this.options.dialog));
         }
         if (widget.options.upload || widget.options.uploadUrl) {
@@ -1324,6 +1338,7 @@ http://hallojs.org
           uuid: this.options.uuid,
           imageWidget: this,
           searchCallback: this.options.search,
+          searchUrl: this.options.searchUrl,
           limit: this.options.limit,
           entity: this.options.entity
         });
