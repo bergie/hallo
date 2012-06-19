@@ -44,6 +44,12 @@
       html = jQuery "<li><img src=\"#{image.url}\" class=\"imageThumbnail\" title=\"#{image.label}\"></li>"
       html.bind 'click', =>
         @options.imageWidget.setCurrent image
+
+      # Prevent users from dragging from the thumbnails list
+      jQuery('img', html).bind 'mousedown', (event) =>
+        event.preventDefault()
+        @options.imageWidget.setCurrent image
+
       jQuery('.imageThumbnailContainer ul', @element).append html
 
     _showNextPrev: (results) ->
