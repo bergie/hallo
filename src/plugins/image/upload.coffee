@@ -11,9 +11,10 @@
 
     _create: ->
       @element.html '
-        <form>
-          <input type="file" class="file" accept="image/*" />
-          <input type="submit" class="uploadSubmit" value="Upload">
+        <form class="upload">
+          <input type="file" class="file" name="userfile" accept="image/*" />
+          <input type="hidden" name="tags" value="" />
+          <button class="uploadSubmit">Upload</button>
         </form>
       '
     _init: ->
@@ -23,21 +24,20 @@
 
       jQuery('.uploadSubmit', @element).bind 'click', (event) ->
         event.preventDefault()
-        userFile = jQuery('.file', widget.element).val()
+        event.stopPropagation()
         widget.options.uploadCallback
           widget: widget
-          file: jQuery('.file', widget.element).val()
           success: (url) ->
             widget.options.imageWidget.setCurrent
               url: url
               label: ''
 
     _prepareIframe: (widget) ->
-      iframeName = "#{widget.options.uuid}_#{widget.widgetName}_postframe"
+      iframeName = "#{widget.widgetName}_postframe_#{widget.options.uuid}".replace /-/g, '_'
       iframe = jQuery "##{iframeName}"
       return iframe if iframe.length
 
-      iframe = jQuery "<iframe name=\"#{iframeName}\" id=\"#{iframeName}\" class=\"hidden\" src=\"javascript:false;\" style=\"display:none\" />"
+      iframe = jQuery "<iframe name=\"#{iframeName}\" id=\"#{iframeName}\" class=\"hidden\" style=\"display:none\" />"
       @element.append iframe
       iframe.get(0).name = iframeName
       iframe
@@ -46,24 +46,23 @@
       widget = data.widget
       iframe = widget._prepareIframe widget
 
-      uploadForm = jQuery 'form', widget.element
+      uploadForm = jQuery 'form.upload', widget.element
 
       if typeof widget.options.uploadUrl is 'function'
         uploadUrl = widget.options.uploadUrl widget.options.entity
       else
         uploadUrl = widget.options.uploadUrl
 
-      uploadForm.attr 'action', uploadUrl
-      uploadForm.attr 'method', 'post'
-      uploadForm.attr 'userfile', data.file
-      uploadForm.attr 'enctype', 'multipart/form-data'
-      uploadForm.attr 'encoding', 'multipart/form-data'
-      uploadForm.attr 'target', iframe.get(0).name
-      uploadForm.submit()
-
-      iframe.load ->
+      iframe.bind 'load', ->
         imageUrl = iframe.get(0).contentWindow.location.href
         widget.element.hide()
         data.success imageUrl
+
+      uploadForm.attr 'action', uploadUrl
+      uploadForm.attr 'method', 'post'
+      uploadForm.attr 'target', iframe.get(0).name
+      uploadForm.attr 'enctype', 'multipart/form-data'
+      uploadForm.attr 'encoding', 'multipart/form-data'
+      uploadForm.submit()
 
 ) jQuery
