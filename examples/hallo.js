@@ -417,7 +417,7 @@ http://hallojs.org
           this.setContents('');
         }
         jQuery(this.element).addClass('inEditMode');
-        if (!(this.options.floating || this.options.parentElement !== 'body')) {
+        if (this.options.parentElement === 'body' && !this.options.floating) {
           el = jQuery(this.element);
           widthToAdd = parseFloat(el.css('padding-left'));
           widthToAdd += parseFloat(el.css('padding-right'));

@@ -449,7 +449,7 @@ http://hallojs.org
 
             jQuery(@element).addClass 'inEditMode'
             #make sure the toolbar has not got the full width of the editable element when floating is set to true
-            unless @options.floating or @options.parentElement isnt 'body'
+            if @options.parentElement is 'body' and not @options.floating
                 el = jQuery(@element)
                 widthToAdd = parseFloat el.css('padding-left')
                 widthToAdd += parseFloat el.css('padding-right')
