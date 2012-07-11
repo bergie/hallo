@@ -45,6 +45,7 @@
           @checked document.queryCommandState @options.command
         catch e
           return
+      editableElement.bind 'keyup paste change mouseup hallomodified', queryState
       editableElement.bind 'halloenabled', =>
         editableElement.bind 'keyup paste change mouseup hallomodified', queryState
       editableElement.bind 'hallodisabled', =>

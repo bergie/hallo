@@ -1971,6 +1971,7 @@ http://hallojs.org
 
           }
         };
+        editableElement.bind('keyup paste change mouseup hallomodified', queryState);
         editableElement.bind('halloenabled', function() {
           return editableElement.bind('keyup paste change mouseup hallomodified', queryState);
         });
