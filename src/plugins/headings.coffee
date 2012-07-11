@@ -9,7 +9,7 @@
             uuid: ""
             headers: [1,2,3]
 
-        _create: ->
+        populateToolbar: (toolbar) ->
             widget = this
             buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
             id = "#{@options.uuid}-paragraph"
@@ -54,7 +54,7 @@
                     selectedButton.next("label").addClass "ui-state-clicked"
                     selectedButton.button "refresh"
 
-            @options.toolbar.append buttonset
+            toolbar.append buttonset
 
         _init: ->
 

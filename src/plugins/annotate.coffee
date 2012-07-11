@@ -22,7 +22,6 @@
           if @options.vie is undefined
             throw 'The halloannotate plugin requires VIE to be loaded'
             return
-
           unless typeof @element.annotate is 'function'
             throw 'The halloannotate plugin requires annotate.js to be loaded'
             return
@@ -30,7 +29,16 @@
           # states are off, working, on
           @state = 'off'
 
-          buttonHolder = jQuery "<span class=\"#{widget.widgetName}\"></span>"
+          @instantiate()
+
+          turnOffAnnotate = ->
+            editable = @
+            jQuery(editable).halloannotate 'turnOff'
+          editableElement = @options.editable.element
+          editableElement.bind 'hallodisabled', turnOffAnnotate
+
+        populateToolbar: (toolbar) ->
+          buttonHolder = jQuery "<span class=\"#{@widgetName}\"></span>"
           @button = buttonHolder.hallobutton
             label: 'Annotate'
             icon: 'icon-tags'
@@ -47,14 +55,7 @@
             
           buttonHolder.buttonset()
 
-          @options.toolbar.append @button
-          @instantiate()
-
-          turnOffAnnotate = ->
-            editable = @
-            jQuery(editable).halloannotate 'turnOff'
-          editableElement = @options.editable.element
-          editableElement.bind 'hallodisabled', turnOffAnnotate
+          toolbar.append @button
 
         cleanupContentClone: (el) ->
           if @state is 'on'
@@ -82,6 +83,7 @@
             @state = 'pending'
             @button.hallobutton 'checked', false
             @button.hallobutton 'disable'
+
         turnOn: ->
             @turnPending()
             widget = @
@@ -96,8 +98,9 @@
 
         turnOff: ->
             @options.editable.element.annotate 'disable'
+            @state = 'off'
+            return unless @button
             @button.attr 'checked', false
             @button.find("label").removeClass "ui-state-clicked"
             @button.button 'refresh'
-            @state = 'off'
 )(jQuery)

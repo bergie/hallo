@@ -9,7 +9,7 @@
             uuid: ''
             buttonCssClass: null
 
-        _create: ->
+        populateToolbar: (toolbar) ->
             buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
             buttonize = (alignment) =>
                 buttonElement = jQuery '<span></span>'
@@ -26,7 +26,7 @@
             buttonize "Right"
 
             buttonset.buttonset()
-            @options.toolbar.append buttonset
+            toolbar.append buttonset
         _init: ->
 
 )(jQuery)

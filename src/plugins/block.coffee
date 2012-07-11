@@ -17,13 +17,13 @@
       ]
       buttonCssClass: null
 
-    _create: ->
+    populateToolbar: (toolbar) ->
       buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
       contentId = "#{@options.uuid}-#{@widgetName}-data"
       target = @_prepareDropdown contentId
       buttonset.append target
       buttonset.append @_prepareButton target
-      @options.toolbar.append buttonset
+      toolbar.append buttonset
 
     _prepareDropdown: (contentId) ->
       contentArea = jQuery "<div id=\"#{contentId}\"></div>"

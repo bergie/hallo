@@ -52,7 +52,7 @@
             maxWidth: 250
             maxHeight: 250
 
-        _create: ->
+        populateToolbar: (toolbar) ->
             widget = this
             dialogId = "#{@options.uuid}-image-dialog"
             @options.dialog = jQuery "<div id=\"#{dialogId}\">
@@ -109,12 +109,10 @@
                 widget._openDialog()
 
             buttonset.buttonset()
-            @options.toolbar.append buttonset
+            toolbar.append buttonset
 
             @options.dialog.dialog(@options.dialogOpts)
             @_handleTabs()
-
-        _init: ->
 
         setCurrent: (image) ->
             @current.halloimagecurrent 'setImage', image

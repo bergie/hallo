@@ -20,40 +20,22 @@ http://hallojs.org
     # supported.
     #
     # If plugins providing toolbar buttons have been enabled for
-    # Hallo, then a floating editing toolbar will be rendered above
-    # the editable contents when an area is active.
+    # Hallo, then a toolbar will be rendered when an area is active.
     #
-    # ## Options
+    # ## Toolbar
     #
-    # Change from floating mode to relative positioning with using
-    # the offset to position the toolbar where you want it:
+    # Hallo ships with different toolbar options, including:
     #
-    #    jQuery('selector').hallo({
-    #       floating: true,
-    #       offset: {
-    #         'x' : 0,
-    #         'y' : 0
-    #       }
-    #    });
+    # * `halloToolbarContextual`: a toolbar that appears as a popover 
+    #   dialog when user makes a selection
+    # * `halloToolbarFixed`: a toolbar that is constantly visible above
+    #   the editable area when the area is activated
     #
-    # In addition to floating mode, you can also show the toolbar in a
-    # fixed mode, where no positioning is applied to it. This is useful
-    # when you want to show the toolbar inside some DOM element. For
-    # example:
+    # The toolbar can be defined by the `toolbar` configuration key,
+    # which has to conform to the toolbar widget being used.
     #
-    #     jQuery('selector').hallo({
-    #         fixed: true,
-    #         parentElement: jQuery('.my-custom-toolbar'),
-    #     });
-    #
-    # Force the toolbar to be shown at all times when a contenteditable
-    # element is focused:
-    #
-    #    jQuery('selector').hallo({
-    #       showAlways: true
-    #    });
-    #
-    # showAlways is false by default
+    # Just like with plugins, it is possible to use Hallo with your own
+    # custom toolbar implementation.
     #
     # ## Events
     #
@@ -89,9 +71,10 @@ http://hallojs.org
     #
     # ### Restored
     #
-    # When contents are restored through calling .hallo("restoreOriginalContent")
-    # or the user pressing ESC while the cursor is in the editable element,
-    # a 'hallorestored' event will be fired.
+    # When contents are restored through calling 
+    # `.hallo("restoreOriginalContent")` or the user pressing ESC while
+    # the cursor is in the editable element, a 'hallorestored' event will
+    # be fired.
     #
     #     jQuery('p').bind('hallorestored', function(event, data) {
     #         console.log("The thrown contents are " + data.thrown);
@@ -100,7 +83,6 @@ http://hallojs.org
     #
     jQuery.widget "IKS.hallo",
         toolbar: null
-        toolbarMoved: false
         bound: false
         originalContent: ""
         uuid: ""
@@ -111,38 +93,32 @@ http://hallojs.org
         options:
             editable: true
             plugins: {}
-            floating: true
-            offset: {x:0,y:0}
-            fixed: false
-            showAlways: false
-            activated: ->
-            deactivated: ->
-            selected: ->
-            unselected: ->
-            enabled: ->
-            disabled: ->
-            placeholder: ''
+            toolbar: 'halloToolbarContextual'
             parentElement: 'body'
-            forceStructured: true
             buttonCssClass: null
+            placeholder: ''
+            forceStructured: true
 
         _create: ->
             @id = @_generateUUID()
-            @_prepareToolbar()
 
             for plugin, options of @options.plugins
-                if not jQuery.isPlainObject options
-                    options = {}
-                options['editable'] = this
-                options['toolbar'] = @toolbar
-                options['uuid'] = @id
-                options['buttonCssClass'] = @options.buttonCssClass
+                options = {} unless jQuery.isPlainObject options
+                jQuery.extend options,
+                  editable: this
+                  uuid: @id
+                  buttonCssClass: @options.buttonCssClass
                 jQuery(@element)[plugin] options
+
+            @element.one 'halloactivated', =>
+                # We will populate the toolbar the first time this
+                # editable is activated. This will make multiple
+                # Hallo instances on same page load much faster
+                @_prepareToolbar()
 
             @originalContent = @getContents()
 
         _init: ->
-            @_setToolbarPosition()
             if @options.editable
                 @enable()
             else
@@ -293,93 +269,19 @@ http://hallojs.org
                 ((1 + Math.random()) * 0x10000|0).toString(16).substring 1
             "#{S4()}#{S4()}-#{S4()}-#{S4()}-#{S4()}-#{S4()}#{S4()}#{S4()}"
 
-        _getToolbarPosition: (event, selection) ->
-            return unless event
-            if @options.floating
-                if event.originalEvent instanceof KeyboardEvent
-                   return @_getCaretPosition(selection);
-                else if event.originalEvent instanceof MouseEvent
-                    return { top: event.pageY, left: event.pageX }
-            else
-                offset = parseFloat(@element.css('outline-width')) + parseFloat(@element.css('outline-offset'))
-                top: @element.offset().top - this.toolbar.outerHeight() - offset
-                left: @element.offset().left - offset
-
-        _getCaretPosition: (range) ->
-            tmpSpan = jQuery "<span/>"
-            newRange = document.createRange()
-            newRange.setStart range.endContainer, range.endOffset
-            newRange.insertNode tmpSpan.get 0
-
-            position = {top: tmpSpan.offset().top, left: tmpSpan.offset().left}
-            tmpSpan.remove()
-            return position
-
-        _bindToolbarEventsFixed: ->
-            @options.floating = false
-            # catch activate -> show
-            @element.bind "halloactivated", (event, data) =>
-                @_updateToolbarPosition @_getToolbarPosition event
-                @toolbar.show()
-
-            # catch deactivate -> hide
-            @element.bind "hallodeactivated", (event, data) =>
-                @toolbar.hide()
-
-        _bindToolbarEventsRegular: ->
-            # catch select -> show (and reposition?)
-            @element.bind "halloselected", (event, data) =>
-                position = @_getToolbarPosition data.originalEvent, data.selection
-                return unless position
-                @_updateToolbarPosition position
-                @toolbar.show()
-                # TO CHECK: Am I not showing in some case?
-
-            # catch deselect -> hide
-            @element.bind "hallounselected", (event, data) =>
-                @toolbar.hide()
-
-            @element.bind "hallodeactivated", (event, data) =>
-                @toolbar.hide()
-
-        _setToolbarPosition: ->
-            if @options.fixed
-              @toolbar.css 'position', 'static'
-              jQuery(@options.parentElement).append @toolbar if @toolbarMoved
-              @toolbarMoved = false
-              return
-
-            # Floating toolbar, move to body
-            unless @options.parentElement is 'body'
-                jQuery('body').append @toolbar
-                @toolbarMoved = true
-            @toolbar.css 'position', 'absolute'
-            @toolbar.css 'top', @element.offset().top - 20
-            @toolbar.css 'left', @element.offset().left
-
         _prepareToolbar: ->
             @toolbar = jQuery('<div class="hallotoolbar"></div>').hide()
-            @_setToolbarPosition()
-            jQuery(@options.parentElement).append @toolbar
 
-            # clicking on the toolbar would blur the editable
-            # In order to keep focus on it we need to put it back later.
-            widget = @
+            jQuery(@element)[@options.toolbar]
+              editable: @
+              parentElement: @options.parentElement
+              toolbar: @toolbar
 
-            @_bindToolbarEventsFixed() if @options.showAlways
-            @_bindToolbarEventsRegular() unless @options.showAlways
+            for plugin of @options.plugins
+                jQuery(@element)[plugin] 'populateToolbar', @toolbar
 
-            jQuery(window).resize (event) =>
-                @_updateToolbarPosition @_getToolbarPosition event
-
+            jQuery(@element)[@options.toolbar] 'setPosition'
             @protectFocusFrom @toolbar
-
-        _updateToolbarPosition: (position) ->
-            return if @options.fixed
-            return unless position
-            return unless position.top and position.left
-            @toolbar.css "top", position.top
-            @toolbar.css "left", position.left
 
         _checkModified: (event) ->
             widget = event.data
@@ -449,18 +351,6 @@ http://hallojs.org
                 this.setContents ''
 
             jQuery(@element).addClass 'inEditMode'
-            #make sure the toolbar has not got the full width of the editable element when floating is set to true
-            if @options.parentElement is 'body' and not @options.floating
-                el = jQuery(@element)
-                widthToAdd = parseFloat el.css('padding-left')
-                widthToAdd += parseFloat el.css('padding-right')
-                widthToAdd += parseFloat el.css('border-left-width')
-                widthToAdd += parseFloat el.css('border-right-width')
-                widthToAdd += (parseFloat el.css('outline-width')) * 2
-                widthToAdd += (parseFloat el.css('outline-offset')) * 2
-                jQuery(@toolbar).css "width", el.width()+widthToAdd
-            else
-                @toolbar.css "width", "auto"
             @_trigger "activated", @
 
         turnOff: () ->

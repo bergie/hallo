@@ -5,7 +5,6 @@
     jQuery.widget "IKS.hallolink",
         options:
             editable: null
-            toolbar: null
             uuid: ""
             link: true
             image: true
@@ -21,7 +20,7 @@
                 dialogClass: 'hallolink-dialog'
             butonCssClass: null
 
-        _create: ->
+        populateToolbar: (toolbar) ->
             widget = this
 
             dialogId = "#{@options.uuid}-dialog"
@@ -97,7 +96,7 @@
 
             if (@options.link)
                 buttonset.buttonset()
-                @options.toolbar.append buttonset
+                toolbar.append buttonset
                 dialog.dialog(@options.dialogOpts)
 
         _init: ->

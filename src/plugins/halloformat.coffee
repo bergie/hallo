@@ -5,7 +5,6 @@
     jQuery.widget "IKS.halloformat",
         options:
             editable: null
-            toolbar: null
             uuid: ""
             formattings: 
                 bold: true
@@ -14,7 +13,7 @@
                 underline: false
             buttonCssClass: null
 
-        _create: ->
+        populateToolbar: (toolbar) ->
             widget = this
             buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
             buttonize = (format) =>
@@ -29,8 +28,5 @@
             buttonize format for format, enabled of @options.formattings when enabled
 
             buttonset.buttonset()
-            @options.toolbar.append buttonset
-
-        _init: ->
-
+            toolbar.append buttonset
 )(jQuery)

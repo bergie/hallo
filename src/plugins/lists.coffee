@@ -12,7 +12,7 @@
                 unordered: true
             buttonCssClass: null
 
-        _create: ->
+        populateToolbar: (toolbar) ->
             buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
             buttonize = (type, label) =>
 
@@ -30,8 +30,6 @@
             buttonize "Unordered", "UL" if @options.lists.unordered
 
             buttonset.buttonset()
-            @options.toolbar.append buttonset
-
-        _init: ->
+            toolbar.append buttonset
 
 )(jQuery)

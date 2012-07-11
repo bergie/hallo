@@ -22,12 +22,11 @@
     jQuery.widget "Liip.hallotoolbarlinebreak",
         options:
             editable: null
-            toolbar: null
             uuid: ""
             breakAfter: [] # array of widgetnames after which a linebreak should occur
 
-        _create: ->
-            buttonsets = jQuery('.ui-buttonset', @options.toolbar)
+        populateToolbar: (toolbar) ->
+            buttonsets = jQuery('.ui-buttonset', toolbar)
             queuedButtonsets = jQuery()
             rowcounter = 0
 
