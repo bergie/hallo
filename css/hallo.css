@@ -29,6 +29,19 @@ article p {
     margin-top: 0px;
     margin-bottom: 0.5em;
     text-indent: 2em;
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+    font-size: 16pt;
+    line-height: 21pt;
+}
+
+article .download {
+    text-align: center;
+    margin: 1em;
+}
+
+article .download a {
+    margin-left: 1em;
+    margin-right: 1em;
 }
 
 a {
@@ -105,4 +118,10 @@ footer {
     display: block;
     background-color: #eeeeec;
     bottom: 0px;
+}
+
+footer p {
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+    font-size: 16pt;
+    line-height: 21pt;
 }
