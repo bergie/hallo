@@ -127,7 +127,6 @@ http://hallojs.org
             buttonCssClass: null
 
         _create: ->
-            @originalContent = @getContents()
             @id = @_generateUUID()
             @_prepareToolbar()
 
@@ -139,6 +138,8 @@ http://hallojs.org
                 options['uuid'] = @id
                 options['buttonCssClass'] = @options.buttonCssClass
                 jQuery(@element)[plugin] options
+
+            @originalContent = @getContents()
 
         _init: ->
             @_setToolbarPosition()

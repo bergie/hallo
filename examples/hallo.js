@@ -42,12 +42,10 @@ http://hallojs.org
         buttonCssClass: null
       },
       _create: function() {
-        var options, plugin, _ref, _results;
-        this.originalContent = this.getContents();
+        var options, plugin, _ref;
         this.id = this._generateUUID();
         this._prepareToolbar();
         _ref = this.options.plugins;
-        _results = [];
         for (plugin in _ref) {
           options = _ref[plugin];
           if (!jQuery.isPlainObject(options)) {
@@ -57,9 +55,9 @@ http://hallojs.org
           options['toolbar'] = this.toolbar;
           options['uuid'] = this.id;
           options['buttonCssClass'] = this.options.buttonCssClass;
-          _results.push(jQuery(this.element)[plugin](options));
+          jQuery(this.element)[plugin](options);
         }
-        return _results;
+        return this.originalContent = this.getContents();
       },
       _init: function() {
         this._setToolbarPosition();
