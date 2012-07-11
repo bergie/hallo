@@ -9,30 +9,40 @@ The widget has been written as a simple and liberally licensed editor. It doesn'
 
 You need jQuery and jQuery UI loaded. An easy way to do this is to use Google's JS service:
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js"></script>
+```html
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js"></script>
+```
 
 The editor toolbar is using jQuery UI theming, so you'll probably also want to [grab a theme](http://jqueryui.com/themeroller/) that fits your needs.
 
 Then include Hallo itself:
 
-    <script src="hallo.js"></script>
+```html
+<script src="hallo.js"></script>
+```
 
 Editor activation is easy:
 
-    jQuery('p').hallo();
+```javascript
+jQuery('p').hallo();
+```
 
 You can also deactivate the editor:
 
-    jQuery('p').hallo({editable: false});
+```javascript
+jQuery('p').hallo({editable: false});
+```
 
 Hallo itself only makes the selected DOM elements editable and doesn't provide any formatting tools. Formatting is accomplished by loading plugins when initializing Hallo:
 
-    jQuery('.editable').hallo({
-        plugins: {
-            'halloformat': {}
-        }
-    });
+```javascript
+jQuery('.editable').hallo({
+  plugins: {
+    'halloformat': {}
+  }
+});
+```
 
 This example would enable the simple formatting plugin that provides functionality like _bold_ and _italic_. You can include as many Hallo plugins as you want, and if necessary pass them options.
 
@@ -75,35 +85,41 @@ When Hallo is loaded it will also load all the enabled plugins for the element, 
 
 A simplistic plugin would look like the following:
 
-    #    Formatting plugin for Hallo
-    #    (c) 2011 Henri Bergius, IKS Consortium
-    #    Hallo may be freely distributed under the MIT license
-    ((jQuery) ->
-        jQuery.widget "IKS.halloformat",
-            boldElement: null
+```coffeescript
+#    Formatting plugin for Hallo
+#    (c) 2011 Henri Bergius, IKS Consortium
+#    Hallo may be freely distributed under the MIT license
+((jQuery) ->
+  jQuery.widget "IKS.halloformat",
+    boldElement: null
 
-            options:
-                uuid: ''
-                editable: null
-                toolbar: null
+    options:
+      uuid: ''
+      editable: null
 
-            _create: ->
-                # Create an element for holding the button
-                @boldElement = jQuery '<span></span>'
+    _create: ->
+      # Add any actions you want to run on plugin initialization
+      # here
 
-                # Use Hallo Button
-                @boldElement.hallobutton
-                  uuid: @options.uuid
-                  editable: @options.editable
-                  label: 'Bold'
-                  # Icons come from Font Awesome
-                  icon: 'icon-bold'
-                  # Commands are used for execCommand and queryCommandState
-                  command: 'bold'
+    populateToolbar: (toolbar) ->
+      # Create an element for holding the button
+      @boldElement = jQuery '<span></span>'
 
-                # Append the button to toolbar
-                @options.toolbar.append @boldElement
+      # Use Hallo Button
+      @boldElement.hallobutton
+        uuid: @options.uuid
+        editable: @options.editable
+        label: 'Bold'
+        # Icons come from Font Awesome
+        icon: 'icon-bold'
+        # Commands are used for execCommand and queryCommandState
+        command: 'bold'
 
-            _init: ->
+      # Append the button to toolbar
+      toolbar.append @boldElement
 
-    )(jQuery)
+    cleanupContentClone: (element) ->
+      # Perform content clean-ups before HTML is sent out
+
+)(jQuery)
+```
