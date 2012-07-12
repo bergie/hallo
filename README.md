@@ -12,8 +12,8 @@ Read the [introductory blog post](http://bergie.iki.fi/blog/hallo-editor/) for m
 You need jQuery and jQuery UI loaded. An easy way to do this is to use Google's JS service:
 
 ```html
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
 ```
 
 The editor toolbar is using jQuery UI theming, so you'll probably also want to [grab a theme](http://jqueryui.com/themeroller/) that fits your needs.
@@ -48,7 +48,17 @@ jQuery('.editable').hallo({
 
 This example would enable the simple formatting plugin that provides functionality like _bold_ and _italic_. You can include as many Hallo plugins as you want, and if necessary pass them options.
 
-Hallo has got more options you set when instantiating. See the hallo.coffee file for further documentation.
+Hallo has got more options you set when instantiating. See the [hallo.coffee](https://github.com/bergie/hallo/blob/master/src/hallo.coffee) file for further documentation.
+
+### Events
+
+Hallo provides some events that are useful for integration. You can use [jQuery bind](http://api.jquery.com/bind/) to subscribe to them:
+
+* `halloenabled`: Triggered when an editable is enabled (`editable` set to `true`)
+* `hallodisabled`: Triggered when an editable is disabled (`editable` set to `false`)
+* `hallomodified`: Triggered whenever user has changed the contents being edited. Event data key `content` contains the HTML
+* `halloactivated`: Triggered when user activates an editable area (usually by clicking it)
+* `hallodeactivated`: Triggered when user deactivates an editable area
 
 ## Plugins
 
