@@ -53,6 +53,7 @@
             maxHeight: 250
 
         populateToolbar: (toolbar) ->
+            @options.toolbar = toolbar
             widget = this
             dialogId = "#{@options.uuid}-image-dialog"
             @options.dialog = jQuery "<div id=\"#{dialogId}\">

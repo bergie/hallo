@@ -1451,6 +1451,7 @@ http://hallojs.org
       },
       populateToolbar: function(toolbar) {
         var buttonHolder, buttonset, dialogId, id, widget;
+        this.options.toolbar = toolbar;
         widget = this;
         dialogId = "" + this.options.uuid + "-image-dialog";
         this.options.dialog = jQuery("<div id=\"" + dialogId + "\">                <div class=\"nav\">                    <ul class=\"tabs\">                    </ul>                    <div id=\"" + this.options.uuid + "-tab-activeIndicator\" class=\"tab-activeIndicator\" />                </div>                <div class=\"dialogcontent\">            </div>");
