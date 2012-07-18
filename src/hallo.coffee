@@ -98,9 +98,13 @@ http://hallojs.org
             buttonCssClass: null
             placeholder: ''
             forceStructured: true
+            checkTouch: true
+            touchScreen: null
 
         _create: ->
             @id = @_generateUUID()
+
+            @checkTouch() if @options.checkTouch and @options.touchScreen is null
 
             for plugin, options of @options.plugins
                 options = {} unless jQuery.isPlainObject options
@@ -383,5 +387,8 @@ http://hallojs.org
                     try
                         document.execCommand 'styleWithCSS', false, false
                     catch e
+
+        checkTouch: ->
+          @options.touchScreen = !!('createTouch' of document)
 
 )(jQuery)

@@ -26,12 +26,17 @@ http://hallojs.org
         parentElement: 'body',
         buttonCssClass: null,
         placeholder: '',
-        forceStructured: true
+        forceStructured: true,
+        checkTouch: true,
+        touchScreen: null
       },
       _create: function() {
         var options, plugin, _ref,
           _this = this;
         this.id = this._generateUUID();
+        if (this.options.checkTouch && this.options.touchScreen === null) {
+          this.checkTouch();
+        }
         _ref = this.options.plugins;
         for (plugin in _ref) {
           options = _ref[plugin];
@@ -344,6 +349,9 @@ http://hallojs.org
             }
           }
         }
+      },
+      checkTouch: function() {
+        return this.options.touchScreen = !!('createTouch' in document);
       }
     });
   })(jQuery);
@@ -1942,6 +1950,9 @@ http://hallojs.org
         this.button.button();
         if (this.options.cssClass) {
           this.button.addClass(this.options.cssClass);
+        }
+        if (this.options.editable.options.touchScreen) {
+          this.button.addClass('btn-large');
         }
         return this.button.data('hallo-command', this.options.command);
       },

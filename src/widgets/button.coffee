@@ -26,6 +26,7 @@
       @button = @element.find 'input'
       @button.button()
       @button.addClass @options.cssClass if @options.cssClass
+      @button.addClass 'btn-large' if @options.editable.options.touchScreen
       @button.data 'hallo-command', @options.command
 
     _init: ->
