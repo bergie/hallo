@@ -25,7 +25,7 @@
             buttonize "undo", "Undo"
             buttonize "redo", "Redo"
 
-            buttonset.buttonset()
+            buttonset.hallobuttonset()
             toolbar.append buttonset
 
         _init: ->
