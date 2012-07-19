@@ -27,6 +27,6 @@
                 buttonset.append buttonHolder
             buttonize format for format, enabled of @options.formattings when enabled
 
-            buttonset.buttonset()
+            buttonset.hallobuttonset()
             toolbar.append buttonset
 )(jQuery)
