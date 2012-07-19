@@ -138,6 +138,8 @@ http://hallojs.org
             @element.unbind "keyup mouseup", @_checkSelection
             @bound = false
 
+            jQuery(@element).removeClass 'isModified'
+
             @element.parents('a').andSelf().each (idx, elem) =>
               element = jQuery elem
               return unless element.is 'a'
@@ -244,6 +246,7 @@ http://hallojs.org
 
         # Set the editable as modified
         setModified: ->
+            jQuery(@element).addClass 'isModified'
             @._trigger 'modified', null,
                 editable: @
                 content: @getContents()

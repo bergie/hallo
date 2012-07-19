@@ -71,6 +71,7 @@ http://hallojs.org
         this.element.unbind("keyup", this._keys);
         this.element.unbind("keyup mouseup", this._checkSelection);
         this.bound = false;
+        jQuery(this.element).removeClass('isModified');
         this.element.parents('a').andSelf().each(function(idx, elem) {
           var element;
           element = jQuery(elem);
@@ -186,6 +187,7 @@ http://hallojs.org
         return this.originalContent = this.getContents();
       },
       setModified: function() {
+        jQuery(this.element).addClass('isModified');
         return this._trigger('modified', null, {
           editable: this,
           content: this.getContents()
