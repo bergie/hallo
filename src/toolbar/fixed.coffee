@@ -44,7 +44,7 @@
 
     _getCaretPosition: (range) ->
       tmpSpan = jQuery "<span/>"
-      newRange = document.createRange()
+      newRange =rangy.createRange()
       newRange.setStart range.endContainer, range.endOffset
       newRange.insertNode tmpSpan.get 0
 

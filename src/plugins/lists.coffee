@@ -29,7 +29,7 @@
             buttonize "Ordered", "OL" if @options.lists.ordered
             buttonize "Unordered", "UL" if @options.lists.unordered
 
-            buttonset.buttonset()
+            buttonset.hallobuttonset()
             toolbar.append buttonset
 
 )(jQuery)

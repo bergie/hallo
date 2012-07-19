@@ -23,16 +23,17 @@
 
     _getPosition: (event, selection) ->
       return unless event
-      if event.originalEvent instanceof KeyboardEvent
+      eventType = event.type
+      if eventType == "keydown" || eventType == "keyup" || eventType == "keypress"
         return @_getCaretPosition selection
-      if event.originalEvent instanceof MouseEvent
+      if eventType == "click" || eventType == "mousedown" || eventType == "mouseup"
         return position =
           top: event.pageY
           left: event.pageX
 
     _getCaretPosition: (range) ->
       tmpSpan = jQuery "<span/>"
-      newRange = document.createRange()
+      newRange = rangy.createRange()
       newRange.setStart range.endContainer, range.endOffset
       newRange.insertNode tmpSpan.get 0
 

@@ -179,31 +179,24 @@ http://hallojs.org
         activate: ->
             @element.focus()
 
+        # Checks whether the editable element contains the current selection
+        containsSelection: ->
+            range=@getSelection()
+            return @element.has(range.startContainer).length > 0
+
         # Only supports one range for now (i.e. no multiselection)
         getSelection: ->
-            if jQuery.browser.msie
-                range = document.selection.createRange()
+            sel = rangy.getSelection()
+            range = null
+            if sel.rangeCount > 0
+                range = sel.getRangeAt(0)
             else
-                if window.getSelection
-                    userSelection = window.getSelection()
-                else if (document.selection) #opera
-                    userSelection = document.selection.createRange()
-                else
-                    throw "Your browser does not support selection handling"
-
-                if userSelection.rangeCount > 0
-                    range = userSelection.getRangeAt(0)
-                else
-                    range = userSelection
-
+                range = rangy.createRange()
             return range
 
         restoreSelection: (range) ->
-            if ( jQuery.browser.msie )
-                range.select()
-            else
-                window.getSelection().removeAllRanges()
-                window.getSelection().addRange(range)
+            sel=rangy.getSelection()
+            sel.setSingleRange(range)
 
         replaceSelection: (cb) ->
             if ( jQuery.browser.msie )
