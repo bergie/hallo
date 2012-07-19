@@ -4,6 +4,7 @@
 ((jQuery) ->
   jQuery.widget 'IKS.hallobutton',
     button: null
+    isChecked: false
 
     options:
       uuid: ''
@@ -20,32 +21,38 @@
       @options.icon ?= "icon-#{@options.label.toLowerCase()}"
 
       id = "#{@options.uuid}-#{@options.label}"
-      @element.append @_createButton id, @options.command
-      @element.append @_createLabel id, @options.command, @options.label, @options.icon
-      @element.find('label').addClass @options.cssClass if @options.cssClass
-      @button = @element.find 'input'
-      @button.button()
+      @button = @_createButton id, @options.command, @options.label, @options.icon
+      @element.append @button
       @button.addClass @options.cssClass if @options.cssClass
       @button.addClass 'btn-large' if @options.editable.options.touchScreen
       @button.data 'hallo-command', @options.command
 
+      hoverclass = 'ui-state-hover'
+      @button.bind 'mouseenter', (event) =>
+        if @isEnabled()
+          @button.addClass hoverclass
+      @button.bind 'mouseleave', (event) =>
+        @button.removeClass hoverclass
+
     _init: ->
       @button = @_prepareButton() unless @button
       @element.append @button
-
-      if @options.command
-        @button.bind 'change', (event) =>
-          @options.editable.execute @options.command
-
-      return unless @options.queryState
-
-      editableElement = @options.editable.element
       queryState = (event) =>
         return unless @options.command
         try
           @checked document.queryCommandState @options.command
         catch e
           return
+
+      if @options.command
+        @button.bind 'click', (event) =>
+          @options.editable.execute @options.command
+          queryState
+          return false
+
+      return unless @options.queryState
+
+      editableElement = @options.editable.element
       editableElement.bind 'keyup paste change mouseup hallomodified', queryState
       editableElement.bind 'halloenabled', =>
         editableElement.bind 'keyup paste change mouseup hallomodified', queryState
@@ -53,22 +60,41 @@
         editableElement.unbind 'keyup paste change mouseup hallomodified', queryState
 
     enable: ->
-      @button.button 'enable'
+      @button.removeAttr 'disabled'
 
     disable: ->
-      @button.button 'disable'
+      @button.attr 'disabled', 'true'
+
+    isEnabled: ->
+      return @button.attr('disabled') != 'true'
 
     refresh: ->
-      @button.button 'refresh'
+      if @isChecked
+        @button.addClass 'ui-state-active'
+      else
+        @button.removeClass 'ui-state-active'
 
     checked: (checked) ->
-      @button.attr 'checked', checked
+      @isChecked = checked
       @refresh()
 
-    _createButton: (id) ->
-      jQuery "<input id=\"#{id}\" type=\"checkbox\" />"
+    _createButton: (id, command, label, icon) ->
+      jQuery "<button for=\"#{id}\" class=\"ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only #{command}_button\" title=\"#{label}\"><span class=\"ui-button-text\"><i class=\"#{icon}\"></i></span></button>"
 
-    _createLabel: (id, command, label, icon) ->
-      jQuery "<label for=\"#{id}\" class=\"#{command}_button\" title=\"#{label}\"><i class=\"#{icon}\"></i></label>"
 
+  jQuery.widget 'IKS.hallobuttonset',
+    buttons: null
+    _create: ->
+      @element.addClass 'ui-buttonset'
+
+    _init: ->
+      @refresh()
+
+    refresh: ->
+      rtl = @element.css('direction') == 'rtl'
+      @buttons = @element.find '.ui-button'
+      @buttons.hallobutton 'refresh'
+      @buttons.removeClass 'ui-corner-all ui-corner-left ui-corner-right'
+      @buttons.filter(':first').addClass if rtl then 'ui-corner-right' else 'ui-corner-left'
+      @buttons.filter(':last').addClass if rtl then 'ui-corner-left' else 'ui-corner-right'
 )(jQuery)

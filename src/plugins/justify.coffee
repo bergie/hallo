@@ -25,7 +25,7 @@
             buttonize "Center"
             buttonize "Right"
 
-            buttonset.buttonset()
+            buttonset.hallobuttonset()
             toolbar.append buttonset
         _init: ->
 
