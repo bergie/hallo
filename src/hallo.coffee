@@ -85,6 +85,7 @@ http://hallojs.org
         toolbar: null
         bound: false
         originalContent: ""
+        previousContent: ""
         uuid: ""
         selection: null
         _keepActivated: false
@@ -238,11 +239,12 @@ http://hallojs.org
 
         # Check whether the editable has been modified
         isModified: ->
-            @originalContent isnt @getContents()
+            @previousContent = @originalContent unless @previousContent
+            @previousContent isnt @getContents()
 
         # Set the editable as unmodified
         setUnmodified: ->
-            @originalContent = @getContents()
+            @previousContent = @getContents()
 
         # Set the editable as modified
         setModified: ->

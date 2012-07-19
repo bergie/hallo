@@ -15,6 +15,7 @@ http://hallojs.org
       toolbar: null,
       bound: false,
       originalContent: "",
+      previousContent: "",
       uuid: "",
       selection: null,
       _keepActivated: false,
@@ -181,10 +182,13 @@ http://hallojs.org
         return this.element.html(contents);
       },
       isModified: function() {
-        return this.originalContent !== this.getContents();
+        if (!this.previousContent) {
+          this.previousContent = this.originalContent;
+        }
+        return this.previousContent !== this.getContents();
       },
       setUnmodified: function() {
-        return this.originalContent = this.getContents();
+        return this.previousContent = this.getContents();
       },
       setModified: function() {
         jQuery(this.element).addClass('isModified');
@@ -399,7 +403,7 @@ http://hallojs.org
       setIndicatorPosition: function(indicator) {
         var offset;
         indicator.css('position', 'absolute');
-        offset = this.element.offset();
+        offset = this.element.position();
         indicator.css('top', offset.top + 2);
         return indicator.css('left', offset.left + 2);
       }

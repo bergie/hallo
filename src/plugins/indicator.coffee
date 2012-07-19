@@ -35,7 +35,7 @@
 
     setIndicatorPosition: (indicator) ->
       indicator.css 'position', 'absolute'
-      offset = this.element.offset()
+      offset = this.element.position()
       indicator.css 'top', offset.top + 2
       indicator.css 'left', offset.left + 2
 
