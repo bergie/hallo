@@ -31,7 +31,7 @@
       containingElement = @options.editable.element.get(0).tagName.toLowerCase()  
 
       addElement = (element) =>
-        el = jQuery "<#{element} class=\"menu-item\">#{element}</#{element}>"
+        el = jQuery "<button class='blockselector'><#{element} class=\"menu-item\">#{element}</#{element}></button>"
         
         if containingElement is element
           el.addClass 'selected'
@@ -42,7 +42,11 @@
         el.bind 'click', =>
           if el.hasClass 'disabled'
             return
-          @options.editable.execute 'formatBlock', element.toUpperCase()
+          if jQuery.browser.msie
+            @options.editable.execute 'FormatBlock', '<'+element.toUpperCase()+'>'
+          else
+            @options.editable.execute 'formatBlock', element.toUpperCase()
+          
         queryState = (event) =>
           block = document.queryCommandValue 'formatBlock'
           if block.toLowerCase() is element
