@@ -1725,7 +1725,7 @@ http://hallojs.org
         containingElement = this.options.editable.element.get(0).tagName.toLowerCase();
         addElement = function(element) {
           var el, queryState;
-          el = jQuery("<" + element + " class=\"menu-item\">" + element + "</" + element + ">");
+          el = jQuery("<button class='blockselector'><" + element + " class=\"menu-item\">" + element + "</" + element + "></button>");
           if (containingElement === element) {
             el.addClass('selected');
           }
@@ -1736,7 +1736,11 @@ http://hallojs.org
             if (el.hasClass('disabled')) {
               return;
             }
-            return _this.options.editable.execute('formatBlock', element.toUpperCase());
+            if (jQuery.browser.msie) {
+              return _this.options.editable.execute('FormatBlock', '<' + element.toUpperCase() + '>');
+            } else {
+              return _this.options.editable.execute('formatBlock', element.toUpperCase());
+            }
           });
           queryState = function(event) {
             var block;
@@ -2099,10 +2103,11 @@ http://hallojs.org
         return target.hide();
       },
       _updateTargetPosition: function() {
-        var bottom, left, target, _ref;
+        var left, target, top, _ref;
         target = jQuery(this.options.target);
-        _ref = this.element.position(), bottom = _ref.bottom, left = _ref.left;
-        target.css('top', bottom);
+        _ref = this.button.position(), top = _ref.top, left = _ref.left;
+        top += this.button.outerHeight();
+        target.css('top', top);
         return target.css('left', left - 20);
       },
       _prepareButton: function() {
