@@ -97,11 +97,12 @@
             buttonset.append buttonHolder
 
             @button = buttonHolder
-            @button.bind "change", (event) ->
+            @button.bind "click", (event) ->
                 if widget.options.dialog.dialog "isOpen"
                     widget._closeDialog()
                 else
                     widget._openDialog()
+                return false
 
             @options.editable.element.bind "hallodeactivated", (event) ->
                 widget._closeDialog()
