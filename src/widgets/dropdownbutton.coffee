@@ -51,8 +51,9 @@
 
     _updateTargetPosition: ->
       target = jQuery @options.target
-      {bottom, left} = @element.position()
-      target.css 'top', bottom
+      {top, left} = @button.position()
+      top += @button.outerHeight()
+      target.css 'top', top
       target.css 'left', left - 20
 
     _prepareButton: ->
