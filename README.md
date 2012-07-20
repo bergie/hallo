@@ -75,7 +75,7 @@ Hallo is free software available under the [MIT license](http://en.wikipedia.org
 
 ## Contributing
 
-Hallo is written in [CoffeeScript](http://jashkenas.github.com/coffee-script/), a simple language that compiles into JavaScript. To generate the JavaScript code to `examples/hallo.js` from Hallo sources, run:
+Hallo is written in [CoffeeScript](http://jashkenas.github.com/coffee-script/), a simple language that compiles into JavaScript. To generate the JavaScript code to `examples/hallo.js` from Hallo sources, run CoffeeScript's [cake command](http://coffeescript.org/#cake):
 
     $ cake build
 
