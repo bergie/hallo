@@ -1754,6 +1754,7 @@ http://hallojs.org
             }
             return el.removeClass('selected');
           };
+          _this.options.editable.element.bind('keyup paste change mouseup', queryState);
           _this.options.editable.element.bind('halloenabled', function() {
             return _this.options.editable.element.bind('keyup paste change mouseup', queryState);
           });
