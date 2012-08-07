@@ -16,7 +16,12 @@ You need jQuery and jQuery UI loaded. An easy way to do this is to use Google's 
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
 ```
 
-The editor toolbar is using jQuery UI theming, so you'll probably also want to [grab a theme](http://jqueryui.com/themeroller/) that fits your needs.
+The editor toolbar is using jQuery UI theming, so you'll probably also want to [grab a theme](http://jqueryui.com/themeroller/) that fits your needs. Toolbar pluggins use icons from [Font Awesome](http://fortawesome.github.com/Font-Awesome/). Check these [integration instructions](http://fortawesome.github.com/Font-Awesome/#integration) for the right way to include Font Awesome depending on if/how you use Twitter Bootstrap. To style the toolbar as it appears in the demo, you'll also want to add some CSS (like background and border) to the class `hallotoolbar`.
+
+```html
+<link rel="stylesheet" href="/path/to/your/jquery-ui.css">
+<link rel="stylesheet" href="/path/to/your/font-awesome.css">
+```
 
 Then include Hallo itself:
 
