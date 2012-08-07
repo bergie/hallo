@@ -167,6 +167,9 @@ http://hallojs.org
         var contentClone, plugin;
         contentClone = this.element.clone();
         for (plugin in this.options.plugins) {
+          if (!jQuery.isFunction(jQuery(this.element).data(plugin)['cleanupContentClone'])) {
+            continue;
+          }
           jQuery(this.element)[plugin]('cleanupContentClone', contentClone);
         }
         return contentClone.html();
