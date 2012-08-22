@@ -8,7 +8,11 @@
       className: 'halloEditIndicator'
 
     _create: ->
-      editButton = jQuery('<div><i class="icon-edit"></i> Edit</div>');
+      this.element.bind 'halloenabled', =>
+        do @buildIndicator
+
+    buildIndicator: ->
+      editButton = jQuery '<div><i class="icon-edit"></i> Edit</div>'
       editButton.addClass @options.className
       do editButton.hide
 
@@ -23,6 +27,9 @@
 
       this.element.bind 'halloactivated', ->
         do indicator.hide
+
+      this.element.bind 'hallodisabled', ->
+        do indicator.remove
 
       @options.editable.element.hover ->
         return if jQuery(this).hasClass 'inEditMode'

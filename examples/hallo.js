@@ -365,6 +365,12 @@ http://hallojs.org
         className: 'halloEditIndicator'
       },
       _create: function() {
+        var _this = this;
+        return this.element.bind('halloenabled', function() {
+          return _this.buildIndicator();
+        });
+      },
+      buildIndicator: function() {
         var editButton;
         editButton = jQuery('<div><i class="icon-edit"></i> Edit</div>');
         editButton.addClass(this.options.className);
@@ -380,6 +386,9 @@ http://hallojs.org
         });
         this.element.bind('halloactivated', function() {
           return indicator.hide();
+        });
+        this.element.bind('hallodisabled', function() {
+          return indicator.remove();
         });
         return this.options.editable.element.hover(function() {
           if (jQuery(this).hasClass('inEditMode')) {
