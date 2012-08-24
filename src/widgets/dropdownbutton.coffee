@@ -59,7 +59,7 @@
     _prepareButton: ->
       id = "#{@options.uuid}-#{@options.label}"
       buttonEl = jQuery """<button id=\"#{id}\" data-toggle=\"dropdown\" data-target=\"##{@options.target.attr('id')}\" title=\"#{@options.label}\">
-          <span class="ui-button-text"><i class=\"#{@options.icon}\"></i></span>
+          <i class=\"#{@options.icon}\"></i>
         </button>"""
       buttonEl.addClass @options.cssClass if @options.cssClass
 
