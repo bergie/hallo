@@ -101,6 +101,7 @@ http://hallojs.org
             forceStructured: true
             checkTouch: true
             touchScreen: null
+            cssScope: null
 
         _create: ->
             @id = @_generateUUID()
@@ -273,7 +274,10 @@ http://hallojs.org
             "#{S4()}#{S4()}-#{S4()}-#{S4()}-#{S4()}-#{S4()}#{S4()}#{S4()}"
 
         _prepareToolbar: ->
-            @toolbar = jQuery('<div class="hallotoolbar"></div>').hide()
+            toolbarClass = "hallotoolbar"
+            if @options.cssScope
+                toolbarClass += " " + @options.cssScope
+            @toolbar = jQuery('<div class="'+toolbarClass+'"></div>').hide()
 
             jQuery(@element)[@options.toolbar]
               editable: @
