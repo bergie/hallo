@@ -21,9 +21,10 @@
       buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
       contentId = "#{@options.uuid}-#{@widgetName}-data"
       target = @_prepareDropdown contentId
+      toolbar.append buttonset
+      buttonset.hallobuttonset()
       buttonset.append target
       buttonset.append @_prepareButton target
-      toolbar.append buttonset
 
     _prepareDropdown: (contentId) ->
       contentArea = jQuery "<div id=\"#{contentId}\"></div>"
