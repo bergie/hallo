@@ -96,8 +96,8 @@
                 buttonize "A"
 
             if (@options.link)
-                buttonset.buttonset()
                 toolbar.append buttonset
+                buttonset.hallobuttonset()
                 dialog.dialog(@options.dialogOpts)
 
         _init: ->
