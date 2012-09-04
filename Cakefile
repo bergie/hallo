@@ -30,7 +30,7 @@ task 'doc_copy', 'copy documentation to gh-pages branch', ->
     (sh "git checkout master")
   ]
 
-task 'build', 'generate unified JavaScript file for whole Hallo', ->
+task 'update_examples', 'generate unified JavaScript file for whole Hallo, and replace the file for the examples', ->
   version = do getVersion
   console.log version
   series [
@@ -40,14 +40,24 @@ task 'build', 'generate unified JavaScript file for whole Hallo', ->
     (sh "rm -r tmp")
   ]
 
+task 'build', 'generate unified JavaScript file for whole Hallo', ->
+  version = do getVersion
+  console.log version
+  series [
+    (sh "cp -R src tmp")
+    (sh "sed -i 's/{{ VERSION }}/#{version}/' '#{__dirname}/tmp/hallo.coffee'")
+    (sh "coffee -o build -j hallo.js -c `find tmp -type f -name '*.coffee'`")
+    (sh "rm -r tmp")
+  ]
+
 task 'min', 'minify the generated JavaScript file', ->
   version = do getVersion
   console.log version
   series [
     (sh "cp -R src tmp")
     (sh "sed -i 's/{{ VERSION }}/#{version}/' '#{__dirname}/tmp/hallo.coffee'")
-    (sh "coffee -o examples -j hallo.js -c `find tmp -type f -name '*.coffee'`")
-    (sh "uglifyjs examples/hallo.js > examples/hallo-min.js")
+    (sh "coffee -o build -j hallo.js -c `find tmp -type f -name '*.coffee'`")
+    (sh "uglifyjs build/hallo.js > build/hallo-min.js")
     (sh "rm -r tmp")
   ]
 
