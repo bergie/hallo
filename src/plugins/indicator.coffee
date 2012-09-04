@@ -11,6 +11,8 @@
       this.element.bind 'halloenabled', =>
         do @buildIndicator
 
+    populateToolbar: ->
+
     buildIndicator: ->
       editButton = jQuery '<div><i class="icon-edit"></i> Edit</div>'
       editButton.addClass @options.className

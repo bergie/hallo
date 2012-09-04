@@ -93,7 +93,6 @@
     refresh: ->
       rtl = @element.css('direction') == 'rtl'
       @buttons = @element.find '.ui-button'
-      @buttons.hallobutton 'refresh'
       @buttons.removeClass 'ui-corner-all ui-corner-left ui-corner-right'
       @buttons.filter(':first').addClass if rtl then 'ui-corner-right' else 'ui-corner-left'
       @buttons.filter(':last').addClass if rtl then 'ui-corner-left' else 'ui-corner-right'
