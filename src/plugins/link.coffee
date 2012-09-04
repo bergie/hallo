@@ -37,10 +37,10 @@
                     if widget.lastSelection.collapsed
                         widget.lastSelection.setStartBefore(widget.lastSelection.startContainer)
                         widget.lastSelection.setEndAfter(widget.lastSelection.startContainer)
-                        window.getSelection().addRange(widget.lastSelection);
+                        window.getSelection().addRange(widget.lastSelection)
                     document.execCommand "unlink", null, ""
                 else
-                    // link does not have http://, add it.
+                    # link does not have ://, add http:// as default protocol
                     if !((new RegExp(/:\/\//)).test link)
                         link = 'http://' + link
                     if widget.lastSelection.startContainer.parentNode.href is undefined
