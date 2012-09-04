@@ -40,6 +40,9 @@
                         window.getSelection().addRange(widget.lastSelection);
                     document.execCommand "unlink", null, ""
                 else
+                    // link does not have http://, add it.
+                    if !((new RegExp(/:\/\//)).test link)
+                        link = 'http://' + link
                     if widget.lastSelection.startContainer.parentNode.href is undefined
                         document.execCommand "createLink", null, link
                     else
