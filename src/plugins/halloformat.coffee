@@ -11,12 +11,17 @@
                 italic: true
                 strikeThrough: false
                 underline: false
+            shortcuts:
+                bold: 66
+                italic: 73
+                strikeThrough: false
+                underline: 85
             buttonCssClass: null
 
         populateToolbar: (toolbar) ->
             widget = this
             buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
-            buttonize = (format) =>
+            addFormat = (format) =>
                 buttonHolder = jQuery '<span></span>'
                 buttonHolder.hallobutton
                   label: format
@@ -25,7 +30,13 @@
                   uuid: @options.uuid
                   cssClass: @options.buttonCssClass
                 buttonset.append buttonHolder
-            buttonize format for format, enabled of @options.formattings when enabled
+
+                @options.editable.element.keydown (e)=>
+                    if e.metaKey && @options.shortcuts[format] == e.which
+                        e.preventDefault()
+                        @options.editable.execute(format)
+
+            addFormat format for format, enabled of @options.formattings when enabled
 
             buttonset.hallobuttonset()
             toolbar.append buttonset
