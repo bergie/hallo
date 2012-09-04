@@ -79,7 +79,7 @@
       @refresh()
 
     _createButton: (id, command, label, icon) ->
-      jQuery "<button for=\"#{id}\" class=\"ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only #{command}_button\" title=\"#{label}\"><span class=\"ui-button-text\"><i class=\"#{icon}\"></i></span></button>"
+      jQuery "<button id=\"#{id}\" class=\"ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only #{command}_button\" title=\"#{label}\"><span class=\"ui-button-text\"><i class=\"#{icon}\"></i></span></button>"
 
 
   jQuery.widget 'IKS.hallobuttonset',
