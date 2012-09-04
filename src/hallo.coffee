@@ -161,6 +161,9 @@ http://hallojs.org
 
             unless @element.html()
                 @element.html this.options.placeholder
+                @element.css
+                  'min-width': @element.innerWidth()
+                  'min-height': @element.innerHeight()
 
             if not @bound
                 @element.bind "focus", this, @_activated

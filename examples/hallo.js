@@ -101,6 +101,10 @@ http://hallojs.org
         this.element.attr("contentEditable", true);
         if (!this.element.html()) {
           this.element.html(this.options.placeholder);
+          this.element.css({
+            'min-width': this.element.innerWidth(),
+            'min-height': this.element.innerHeight()
+          });
         }
         if (!this.bound) {
           this.element.bind("focus", this, this._activated);
@@ -1726,9 +1730,10 @@ http://hallojs.org
         buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
         contentId = "" + this.options.uuid + "-" + this.widgetName + "-data";
         target = this._prepareDropdown(contentId);
+        toolbar.append(buttonset);
+        buttonset.hallobuttonset();
         buttonset.append(target);
-        buttonset.append(this._prepareButton(target));
-        return toolbar.append(buttonset);
+        return buttonset.append(this._prepareButton(target));
       },
       _prepareDropdown: function(contentId) {
         var addElement, containingElement, contentArea, element, _i, _len, _ref,
@@ -1837,6 +1842,9 @@ http://hallojs.org
             }
             document.execCommand("unlink", null, "");
           } else {
+            if (!((new RegExp(/:\/\//)).test(link))) {
+              link = 'http://' + link;
+            }
             if (widget.lastSelection.startContainer.parentNode.href === void 0) {
               document.execCommand("createLink", null, link);
             } else {
@@ -1898,8 +1906,8 @@ http://hallojs.org
           buttonize("A");
         }
         if (this.options.link) {
-          buttonset.buttonset();
           toolbar.append(buttonset);
+          buttonset.hallobuttonset();
           return dialog.dialog(this.options.dialogOpts);
         }
       },
@@ -2039,7 +2047,7 @@ http://hallojs.org
         return this.refresh();
       },
       _createButton: function(id, command, label, icon) {
-        return jQuery("<button for=\"" + id + "\" class=\"ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only " + command + "_button\" title=\"" + label + "\"><span class=\"ui-button-text\"><i class=\"" + icon + "\"></i></span></button>");
+        return jQuery("<button id=\"" + id + "\" class=\"ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only " + command + "_button\" title=\"" + label + "\"><span class=\"ui-button-text\"><i class=\"" + icon + "\"></i></span></button>");
       }
     });
     return jQuery.widget('IKS.hallobuttonset', {
@@ -2124,14 +2132,13 @@ http://hallojs.org
         return target.css('left', left - 20);
       },
       _prepareButton: function() {
-        var button, buttonEl, id;
+        var buttonEl, id;
         id = "" + this.options.uuid + "-" + this.options.label;
-        buttonEl = jQuery("<button id=\"" + id + "\" data-toggle=\"dropdown\" data-target=\"#" + (this.options.target.attr('id')) + "\" title=\"" + this.options.label + "\">\n  <span class=\"ui-button-text\"><i class=\"" + this.options.icon + "\"></i></span>\n</button>");
+        buttonEl = jQuery("<button id=\"" + id + "\" class=\"ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only\" title=\"" + this.options.label + "\"><i class=\"" + this.options.icon + "\"></i></button>");
         if (this.options.cssClass) {
           buttonEl.addClass(this.options.cssClass);
         }
-        button = buttonEl.button();
-        return button;
+        return buttonEl.button();
       }
     });
   })(jQuery);
