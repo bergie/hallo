@@ -1575,8 +1575,8 @@ http://hallojs.org
       },
       _addGuiTabSuggestions: function(tabs, element) {
         var tab;
-        tabs.append(jQuery("<li id=\"" + this.options.uuid + "-tab-upload\" class=\"" + this.widgetName + "-tabselector " + this.widgetName + "-tab-upload\"><span>Upload</span></li>"));
-        tab = jQuery("<div id=\"" + this.options.uuid + "-tab-upload-content\" class=\"" + this.widgetName + "-tab tab-upload\"></div>");
+        tabs.append(jQuery("<li id=\"" + this.options.uuid + "-tab-suggestions\" class=\"" + this.widgetName + "-tabselector " + this.widgetName + "-tab-suggestions\"><span>Suggestions</span></li>"));
+        tab = jQuery("<div id=\"" + this.options.uuid + "-tab-suggestions-content\" class=\"" + this.widgetName + "-tab tab-suggestions\"></div>");
         element.append(tab);
         return tab.halloimagesuggestions({
           uuid: this.options.uuid,

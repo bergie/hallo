@@ -168,8 +168,8 @@
             @options.dialog.dialog("close")
 
         _addGuiTabSuggestions: (tabs, element) ->
-            tabs.append jQuery "<li id=\"#{@options.uuid}-tab-upload\" class=\"#{@widgetName}-tabselector #{@widgetName}-tab-upload\"><span>Upload</span></li>"
-            tab = jQuery "<div id=\"#{@options.uuid}-tab-upload-content\" class=\"#{@widgetName}-tab tab-upload\"></div>"
+            tabs.append jQuery "<li id=\"#{@options.uuid}-tab-suggestions\" class=\"#{@widgetName}-tabselector #{@widgetName}-tab-suggestions\"><span>Suggestions</span></li>"
+            tab = jQuery "<div id=\"#{@options.uuid}-tab-suggestions-content\" class=\"#{@widgetName}-tab tab-suggestions\"></div>"
             element.append tab
 
             tab.halloimagesuggestions
