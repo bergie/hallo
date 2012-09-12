@@ -97,6 +97,7 @@ http://hallojs.org
             toolbar: 'halloToolbarContextual'
             parentElement: 'body'
             buttonCssClass: null
+            toolbarCssClass: null
             placeholder: ''
             forceStructured: true
             checkTouch: true
@@ -277,6 +278,7 @@ http://hallojs.org
 
         _prepareToolbar: ->
             @toolbar = jQuery('<div class="hallotoolbar"></div>').hide()
+            @toolbar.addClass @options.toolbarCssClass if @options.toolbarCssClass
 
             jQuery(@element)[@options.toolbar]
               editable: @

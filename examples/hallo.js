@@ -26,6 +26,7 @@ http://hallojs.org
         toolbar: 'halloToolbarContextual',
         parentElement: 'body',
         buttonCssClass: null,
+        toolbarCssClass: null,
         placeholder: '',
         forceStructured: true,
         checkTouch: true,
@@ -229,6 +230,9 @@ http://hallojs.org
       _prepareToolbar: function() {
         var plugin;
         this.toolbar = jQuery('<div class="hallotoolbar"></div>').hide();
+        if (this.options.toolbarCssClass) {
+          this.toolbar.addClass(this.options.toolbarCssClass);
+        }
         jQuery(this.element)[this.options.toolbar]({
           editable: this,
           parentElement: this.options.parentElement,
