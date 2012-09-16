@@ -9,6 +9,7 @@
       uuid: ''
       label: 'Block formats'
       elements: [
+      defaultElements: [
         'h1'
         'h2'
         'h3'
@@ -64,8 +65,11 @@
           @options.editable.element.unbind 'keyup paste change mouseup', queryState
 
         el
-
-      for element in @options.elements
+      if @options.elements
+      	elements = @options.elements
+      else
+        elements = @options.defaultElements
+      for element in elements
         contentArea.append addElement element
       contentArea
 
