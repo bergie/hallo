@@ -19,7 +19,7 @@
       buttonCssClass: null
 
     populateToolbar: (toolbar) ->
-      buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
+      buttonset = jQuery "<span class=\"#{@widgetName} ui-buttonset\"></span>"
       contentId = "#{@options.uuid}-#{@widgetName}-data"
       target = @_prepareDropdown contentId
       buttonset.append target
