@@ -7,6 +7,11 @@
             editable: null
             toolbar: null
             uuid: ''
+            defaultFormats: [
+                (command: "Ordered", label: "Ordered list", icon: "ol")
+                (command: "Unordered", label: "Unordered list", icon: "ul")
+            ]
+            formats: null
             lists:
                 ordered: true
                 unordered: true
@@ -14,20 +19,20 @@
 
         populateToolbar: (toolbar) ->
             buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
-            buttonize = (type, label) =>
+            buttonize = (format) =>
 
                 buttonElement = jQuery '<span></span>'
                 buttonElement.hallobutton
                   uuid: @options.uuid
                   editable: @options.editable
-                  label: label
-                  command: "insert#{type}List"
-                  icon: "icon-list-#{label.toLowerCase()}"
+                  label: format.label
+                  command: "insert#{format.command}List"
+                  icon: "icon-list-#{format.icon}"
                   cssClass: @options.buttonCssClass
                 buttonset.append buttonElement
 
-            buttonize "Ordered", "OL" if @options.lists.ordered
-            buttonize "Unordered", "UL" if @options.lists.unordered
+            formats = if @options.formats != null then @options.formats else @options.defaultFormats
+            buttonize(format) for format in formats
 
             buttonset.hallobuttonset()
             toolbar.append buttonset

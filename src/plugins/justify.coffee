@@ -8,22 +8,29 @@
             toolbar: null
             uuid: ''
             buttonCssClass: null
+            defaultFormats: [
+                (command: "Left", label: "Left")
+                (command: "Center", label: "Center")
+                (command: "Right", label: "Right")
+                (command: "Full", label: "Block", icon: "justify")
+            ]
+            formats: null
 
         populateToolbar: (toolbar) ->
             buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
-            buttonize = (alignment) =>
+            buttonize = (format) =>
                 buttonElement = jQuery '<span></span>'
+                iconName= if format.icon then format.icon else format.command.toLowerCase()
                 buttonElement.hallobutton
                   uuid: @options.uuid
                   editable: @options.editable
-                  label: alignment
-                  command: "justify#{alignment}"
-                  icon: "icon-align-#{alignment.toLowerCase()}"
+                  label: format.label
+                  command: "justify#{format.command}"
+                  icon: "icon-align-#{iconName}"
                   cssClass: @options.buttonCssClass
                 buttonset.append buttonElement 
-            buttonize "Left"
-            buttonize "Center"
-            buttonize "Right"
+            formats = if @options.formats != null then @options.formats else @options.defaultFormats
+            buttonize(format) for format in formats
 
             buttonset.hallobuttonset()
             toolbar.append buttonset

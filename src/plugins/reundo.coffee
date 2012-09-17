@@ -8,6 +8,8 @@
             toolbar: null
             uuid: ''
             buttonCssClass: null
+            labelUndo: "Undo"
+            labelRedo: "Redo"
 
         populateToolbar: (toolbar) ->
             buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
@@ -22,8 +24,8 @@
                   queryState: false
                   cssClass: @options.buttonCssClass
                 buttonset.append buttonElement
-            buttonize "undo", "Undo"
-            buttonize "redo", "Redo"
+            buttonize "undo", @options.labelUndo
+            buttonize "redo", @options.labelRedo
 
             buttonset.hallobuttonset()
             toolbar.append buttonset

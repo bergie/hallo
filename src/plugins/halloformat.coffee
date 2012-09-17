@@ -6,11 +6,13 @@
         options:
             editable: null
             uuid: ""
-            formattings: 
-                bold: true
-                italic: true
-                strikeThrough: false
-                underline: false
+            defaultFormats: [
+                (command: "bold", label: "Bold")
+                (command: "italic", label: "Italic")
+                (command: "strikeThrough", label: "Strike through")
+                (command: "underline", label: "Underline")
+            ]
+            formats: null
             buttonCssClass: null
 
         populateToolbar: (toolbar) ->
@@ -19,13 +21,15 @@
             buttonize = (format) =>
                 buttonHolder = jQuery '<span></span>'
                 buttonHolder.hallobutton
-                  label: format
+                  label: format.label
                   editable: @options.editable
-                  command: format
+                  command: format.command
                   uuid: @options.uuid
                   cssClass: @options.buttonCssClass
+                  icon: "icon-#{format.command.toLowerCase()}"
                 buttonset.append buttonHolder
-            buttonize format for format, enabled of @options.formattings when enabled
+            formats = if @options.formats != null then @options.formats else @options.defaultFormats
+            buttonize(format) for format in formats
 
             buttonset.hallobuttonset()
             toolbar.append buttonset

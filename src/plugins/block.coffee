@@ -7,6 +7,7 @@
       editable: null
       toolbar: null
       uuid: ''
+      label: 'Block formats'
       elements: [
         'h1'
         'h2'
@@ -73,7 +74,7 @@
       buttonElement.hallodropdownbutton
         uuid: @options.uuid
         editable: @options.editable
-        label: 'block'
+        label: @options.label
         icon: 'icon-text-height'
         target: target
         cssClass: @options.buttonCssClass
