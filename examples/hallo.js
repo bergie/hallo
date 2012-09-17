@@ -1439,6 +1439,33 @@ http://hallojs.org
   })(jQuery);
 
   (function(jQuery) {
+    return jQuery.widget('IKS.halloblacklist', {
+      options: {
+        tags: []
+      },
+      _init: function() {
+        if (this.options.tags.indexOf('br') !== -1) {
+          return this.element.bind('keydown', function(event) {
+            if (event.originalEvent.keyCode === 13) {
+              return event.preventDefault();
+            }
+          });
+        }
+      },
+      cleanupContentClone: function(el) {
+        var tag, _i, _len, _ref, _results;
+        _ref = this.options.tags;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          tag = _ref[_i];
+          _results.push(jQuery(tag, el).remove());
+        }
+        return _results;
+      }
+    });
+  })(jQuery);
+
+  (function(jQuery) {
     return jQuery.widget("Liip.halloimage", {
       options: {
         editable: null,
