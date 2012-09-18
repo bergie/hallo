@@ -8,7 +8,7 @@
       toolbar: null
       uuid: ''
       label: 'Block formats'
-      elements: [
+      elements: null
       defaultElements: [
         'h1'
         'h2'
