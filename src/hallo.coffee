@@ -204,17 +204,17 @@ http://hallojs.org
 
         replaceSelection: (cb) ->
             if ( jQuery.browser.msie )
-                t = document.selection.createRange().text;
+                t = document.selection.createRange().text
                 r = document.selection.createRange()
                 r.pasteHTML(cb(t))
             else
-                sel = window.getSelection();
-                range = sel.getRangeAt(0);
-                newTextNode = document.createTextNode(cb(range.extractContents()));
-                range.insertNode(newTextNode);
-                range.setStartAfter(newTextNode);
-                sel.removeAllRanges();
-                sel.addRange(range);
+                sel = window.getSelection()
+                range = sel.getRangeAt(0)
+                newTextNode = document.createTextNode(cb(range.extractContents()))
+                range.insertNode(newTextNode)
+                range.setStartAfter(newTextNode)
+                sel.removeAllRanges()
+                sel.addRange(range)
 
         removeAllSelections: () ->
             if ( jQuery.browser.msie )
@@ -343,7 +343,7 @@ http://hallojs.org
                     return
 
                 if !widget.selection or not widget._rangesEqual sel, widget.selection
-                    widget.selection = sel.cloneRange();
+                    widget.selection = sel.cloneRange()
                     widget._trigger "selected", null,
                         editable: widget
                         selection: widget.selection
