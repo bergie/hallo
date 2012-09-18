@@ -233,16 +233,36 @@ http://hallojs.org
         if (this.options.toolbarCssClass) {
           this.toolbar.addClass(this.options.toolbarCssClass);
         }
-        jQuery(this.element)[this.options.toolbar]({
+        this.element[this.options.toolbar]({
           editable: this,
           parentElement: this.options.parentElement,
           toolbar: this.toolbar
         });
         for (plugin in this.options.plugins) {
-          jQuery(this.element)[plugin]('populateToolbar', this.toolbar);
+          this.element[plugin]('populateToolbar', this.toolbar);
         }
-        jQuery(this.element)[this.options.toolbar]('setPosition');
+        this.element[this.options.toolbar]('setPosition');
         return this.protectFocusFrom(this.toolbar);
+      },
+      changeToolbar: function(element, toolbar, hide) {
+        var originalToolbar;
+        if (hide == null) {
+          hide = false;
+        }
+        originalToolbar = this.options.toolbar;
+        this.options.parentElement = element;
+        if (toolbar) {
+          this.options.toolbar = toolbar;
+        }
+        if (!this.toolbar) {
+          return;
+        }
+        this.element[originalToolbar]('destroy');
+        this.toolbar.remove();
+        this._prepareToolbar();
+        if (hide) {
+          return this.toolbar.hide();
+        }
       },
       _checkModified: function(event) {
         var widget;
@@ -1674,7 +1694,7 @@ http://hallojs.org
     return jQuery.widget("IKS.halloformat", {
       options: {
         editable: null,
-        uuid: "",
+        uuid: '',
         formattings: {
           bold: true,
           italic: true,

@@ -29,7 +29,7 @@
     _prepareDropdown: (contentId) ->
       contentArea = jQuery "<div id=\"#{contentId}\"></div>"
 
-      containingElement = @options.editable.element.get(0).tagName.toLowerCase()  
+      containingElement = @options.editable.element.get(0).tagName.toLowerCase()
 
       addElement = (element) =>
         el = jQuery "<button class='blockselector'><#{element} class=\"menu-item\">#{element}</#{element}></button>"

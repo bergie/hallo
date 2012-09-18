@@ -5,8 +5,8 @@
     jQuery.widget "IKS.halloformat",
         options:
             editable: null
-            uuid: ""
-            formattings: 
+            uuid: ''
+            formattings:
                 bold: true
                 italic: true
                 strikeThrough: false

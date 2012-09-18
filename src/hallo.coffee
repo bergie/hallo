@@ -279,17 +279,29 @@ http://hallojs.org
         _prepareToolbar: ->
             @toolbar = jQuery('<div class="hallotoolbar"></div>').hide()
             @toolbar.addClass @options.toolbarCssClass if @options.toolbarCssClass
-
-            jQuery(@element)[@options.toolbar]
+            @element[@options.toolbar]
               editable: @
               parentElement: @options.parentElement
               toolbar: @toolbar
 
             for plugin of @options.plugins
-                jQuery(@element)[plugin] 'populateToolbar', @toolbar
+                @element[plugin] 'populateToolbar', @toolbar
 
-            jQuery(@element)[@options.toolbar] 'setPosition'
+            @element[@options.toolbar] 'setPosition'
             @protectFocusFrom @toolbar
+
+        changeToolbar: (element, toolbar, hide = false) ->
+            originalToolbar = @options.toolbar
+
+            @options.parentElement = element
+            @options.toolbar = toolbar if toolbar
+
+            return unless @toolbar
+            @element[originalToolbar] 'destroy'
+            do @toolbar.remove
+            do @_prepareToolbar
+
+            @toolbar.hide() if hide
 
         _checkModified: (event) ->
             widget = event.data
