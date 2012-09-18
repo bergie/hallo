@@ -16,12 +16,12 @@ getVersion = ->
 
 task 'doc', 'generate documentation for *.coffee files', ->
   series [
-    (sh "docco-husky src")
+    (sh "./node_modules/.bin/docco-husky src")
   ]
 
 task 'doc_copy', 'copy documentation to gh-pages branch', ->
   series [
-    (sh "docco-husky src")
+    (sh "./node_modules/.bin/docco-husky src")
     (sh "mv docs docs_tmp")
     (sh "git checkout gh-pages")
     (sh "mv docs_tmp/* docs")
@@ -36,7 +36,7 @@ task 'build', 'generate unified JavaScript file for whole Hallo', ->
   series [
     (sh "cp -R src tmp")
     (sh "sed -i 's/{{ VERSION }}/#{version}/' '#{__dirname}/tmp/hallo.coffee'")
-    (sh "coffee -o examples -j hallo.js -c `find tmp -type f -name '*.coffee'`")
+    (sh "./node_modules/.bin/coffee -o examples -j hallo.js -c `find tmp -type f -name '*.coffee'`")
     (sh "rm -r tmp")
   ]
 
@@ -46,8 +46,8 @@ task 'min', 'minify the generated JavaScript file', ->
   series [
     (sh "cp -R src tmp")
     (sh "sed -i 's/{{ VERSION }}/#{version}/' '#{__dirname}/tmp/hallo.coffee'")
-    (sh "coffee -o examples -j hallo.js -c `find tmp -type f -name '*.coffee'`")
-    (sh "uglifyjs examples/hallo.js > examples/hallo-min.js")
+    (sh "./node_modules/.bin/coffee -o examples -j hallo.js -c `find tmp -type f -name '*.coffee'`")
+    (sh "./node_modules/.bin/uglifyjs examples/hallo.js > examples/hallo-min.js")
     (sh "rm -r tmp")
   ]
 
