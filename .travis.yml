@@ -6,4 +6,4 @@ before_script:
   - ./node_modules/.bin/cake bam
 
 script:
-  - "find src -name \"*.coffee\" -exec coffeelint {} \\;"
+  - ./test/coffeelint.sh
