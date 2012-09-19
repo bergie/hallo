@@ -11,6 +11,7 @@
       parentElement: 'body'
       editable: null
       toolbar: null
+      toolbarOffset: 0
 
     _create: ->
       @toolbar = @options.toolbar
@@ -58,7 +59,7 @@
     setPosition: ->
       return unless @options.parentElement is 'body'
       @toolbar.css 'position', 'absolute'
-      @toolbar.css 'top', @element.offset().top - @toolbar.outerHeight()
+      @toolbar.css 'top', @element.offset().top - @toolbar.outerHeight() - @options.toolbarOffset
       @toolbar.css 'left', @element.offset().left
 
     _updatePosition: (position) ->

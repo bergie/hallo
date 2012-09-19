@@ -95,6 +95,7 @@ http://hallojs.org
             editable: true
             plugins: {}
             toolbar: 'halloToolbarContextual'
+            toolbarOffset: 0
             parentElement: 'body'
             buttonCssClass: null
             placeholder: ''
@@ -283,6 +284,7 @@ http://hallojs.org
               editable: @
               parentElement: @options.parentElement
               toolbar: @toolbar
+              toolbarOffset: @options.toolbarOffset
 
             for plugin of @options.plugins
                 jQuery(@element)[plugin] 'populateToolbar', @toolbar
