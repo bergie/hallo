@@ -32,16 +32,15 @@
         widthToAdd += parseFloat el.css('padding-right')
         widthToAdd += parseFloat el.css('border-left-width')
         widthToAdd += parseFloat el.css('border-right-width')
-        widthToAdd += (parseFloat el.css('outline-width')) * 2
-        widthToAdd += (parseFloat el.css('outline-offset')) * 2
+        try
+          widthToAdd += (parseFloat el.css('outline-width')) * 2
+          widthToAdd += (parseFloat el.css('outline-offset')) * 2
         jQuery(@toolbar).css "width", el.width() + widthToAdd
 
     _getPosition: (event, selection) ->
-      return unless event
-      offset = parseFloat(@element.css('outline-width')) + parseFloat(@element.css('outline-offset'))
       return position =
-        top: @element.offset().top - @toolbar.outerHeight() - offset
-        left: @element.offset().left - offset
+        top: 0
+        left: 0
 
     _getCaretPosition: (range) ->
       tmpSpan = jQuery "<span/>"
