@@ -64,6 +64,19 @@ http://hallojs.org
           return this.disable();
         }
       },
+      destroy: function() {
+        var options, plugin, _ref;
+        this.disable();
+        if (this.toolbar) {
+          this.toolbar.remove();
+        }
+        _ref = this.options.plugins;
+        for (plugin in _ref) {
+          options = _ref[plugin];
+          jQuery(this.element)[plugin]('destroy');
+        }
+        return jQuery.Widget.prototype.destroy.call(this);
+      },
       disable: function() {
         var _this = this;
         this.element.attr("contentEditable", false);
@@ -74,6 +87,7 @@ http://hallojs.org
         this.element.unbind("keyup mouseup", this._checkSelection);
         this.bound = false;
         jQuery(this.element).removeClass('isModified');
+        jQuery(this.element).removeClass('inEditMode');
         this.element.parents('a').andSelf().each(function(idx, elem) {
           var element;
           element = jQuery(elem);
@@ -188,6 +202,7 @@ http://hallojs.org
         return this.previousContent !== this.getContents();
       },
       setUnmodified: function() {
+        jQuery(this.element).removeClass('isModified');
         return this.previousContent = this.getContents();
       },
       setModified: function() {
@@ -355,11 +370,11 @@ http://hallojs.org
           this.setContents('');
         }
         jQuery(this.element).addClass('inEditMode');
-        return this._trigger("activated", this);
+        return this._trigger("activated", null, this);
       },
       turnOff: function() {
         jQuery(this.element).removeClass('inEditMode');
-        this._trigger("deactivated", this);
+        this._trigger("deactivated", null, this);
         if (!this.getContents()) {
           return this.setContents(this.options.placeholder);
         }

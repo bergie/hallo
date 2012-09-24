@@ -7,3 +7,4 @@ before_script:
 
 script:
   - ./node_modules/.bin/coffeelint -r src
+  - npm test

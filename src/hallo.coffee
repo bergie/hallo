@@ -130,6 +130,15 @@ http://hallojs.org
       else
         @disable()
 
+    destroy: ->
+      @disable()
+      @toolbar.remove() if @toolbar
+
+      for plugin, options of @options.plugins
+        jQuery(@element)[plugin] 'destroy'
+
+      jQuery.Widget::destroy.call @
+
     # Disable an editable
     disable: ->
       @element.attr "contentEditable", false
@@ -141,6 +150,7 @@ http://hallojs.org
       @bound = false
 
       jQuery(@element).removeClass 'isModified'
+      jQuery(@element).removeClass 'inEditMode'
 
       @element.parents('a').andSelf().each (idx, elem) =>
         element = jQuery elem
@@ -242,6 +252,7 @@ http://hallojs.org
 
     # Set the editable as unmodified
     setUnmodified: ->
+      jQuery(@element).removeClass 'isModified'
       @previousContent = @getContents()
 
     # Set the editable as modified
@@ -375,11 +386,11 @@ http://hallojs.org
         this.setContents ''
 
       jQuery(@element).addClass 'inEditMode'
-      @_trigger "activated", @
+      @_trigger "activated", null, @
 
     turnOff: () ->
       jQuery(@element).removeClass 'inEditMode'
-      @_trigger "deactivated", @
+      @_trigger "deactivated", null, @
 
       unless @getContents()
         @setContents @options.placeholder
