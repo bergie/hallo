@@ -114,7 +114,6 @@ Hallo plugins are written as regular [jQuery UI widgets](http://semantic-interac
 When Hallo is loaded it will also load all the enabled plugins for the element, and pass them some additional options:
 
 * `editable`: The main Hallo widget instance
-* `toolbar`: Toolbar jQuery object for that Hallo instance
 * `uuid`: unique identifier of the Hallo instance, can be used for element IDs
 
 A simplistic plugin would look like the following:
