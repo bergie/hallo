@@ -582,19 +582,19 @@ http://hallojs.org
         widget = this;
         if (!this.options.bound) {
           this.options.bound = true;
-          widget.options.editable.element.bind("halloactivated", function(event, data) {
+          this.options.editable.element.bind("halloactivated", function(event, data) {
             widget.options.currentEditable = jQuery(event.target);
             if (!widget.options.visible) {
               return widget.showOverlay();
             }
           });
-          widget.options.editable.element.bind("hallomodified", function(event, data) {
+          this.options.editable.element.bind("hallomodified", function(event, data) {
             widget.options.currentEditable = jQuery(event.target);
             if (widget.options.visible) {
               return widget.resizeOverlay();
             }
           });
-          return widget.options.editable.element.bind("hallodeactivated", function(event, data) {
+          return this.options.editable.element.bind("hallodeactivated", function(event, data) {
             widget.options.currentEditable = jQuery(event.target);
             if (widget.options.visible) {
               return widget.hideOverlay();
@@ -602,14 +602,13 @@ http://hallojs.org
           });
         }
       },
-      _init: function() {},
       showOverlay: function() {
         this.options.visible = true;
         if (this.options.overlay === null) {
           if (jQuery("#halloOverlay").length > 0) {
             this.options.overlay = jQuery("#halloOverlay");
           } else {
-            this.options.overlay = jQuery('<div id="halloOverlay" class="halloOverlay">');
+            this.options.overlay = jQuery("<div id=\"halloOverlay\"            class=\"halloOverlay\">");
             jQuery(document.body).append(this.options.overlay);
           }
           this.options.overlay.bind('click', jQuery.proxy(this.options.editable.turnOff, this.options.editable));
@@ -619,7 +618,7 @@ http://hallojs.org
           if (jQuery("#halloBackground").length > 0) {
             this.options.background = jQuery("#halloBackground");
           } else {
-            this.options.background = jQuery('<div id="halloBackground" class="halloBackground">');
+            this.options.background = jQuery("<div id=\"halloBackground\"            class=\"halloBackground\">");
             jQuery(document.body).append(this.options.background);
           }
         }
@@ -633,12 +632,12 @@ http://hallojs.org
       resizeOverlay: function() {
         var offset;
         offset = this.options.currentEditable.offset();
-        this.options.background.css({
+        return this.options.background.css({
           top: offset.top - this.options.padding,
-          left: offset.left - this.options.padding
+          left: offset.left - this.options.padding,
+          width: this.options.currentEditable.width() + 2 * this.options.padding,
+          height: this.options.currentEditable.height() + 2 * this.options.padding
         });
-        this.options.background.width(this.options.currentEditable.width() + 2 * this.options.padding);
-        return this.options.background.height(this.options.currentEditable.height() + 2 * this.options.padding);
       },
       hideOverlay: function() {
         this.options.visible = false;
