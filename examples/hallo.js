@@ -1899,26 +1899,36 @@ http://hallojs.org
           draggable: false,
           dialogClass: 'hallolink-dialog'
         },
-        butonCssClass: null
+        buttonCssClass: null
       },
       populateToolbar: function(toolbar) {
-        var buttonize, buttonset, dialog, dialogId, dialogSubmitCb, urlInput, widget,
+        var buttonize, buttonset, dialog, dialogId, dialogSubmitCb, isEmptyLink, urlInput, widget,
           _this = this;
         widget = this;
         dialogId = "" + this.options.uuid + "-dialog";
-        dialog = jQuery("<div id=\"" + dialogId + "\"><form action=\"#\" method=\"post\" class=\"linkForm\"><input class=\"url\" type=\"text\" name=\"url\" value=\"" + this.options.defaultUrl + "\" /><input type=\"submit\" id=\"addlinkButton\" value=\"Insert\" /></form></div>");
+        dialog = jQuery("<div id=\"" + dialogId + "\">        <form action=\"#\" method=\"post\" class=\"linkForm\">          <input class=\"url\" type=\"text\" name=\"url\"            value=\"" + this.options.defaultUrl + "\" />          <input type=\"submit\" id=\"addlinkButton\" value=\"Insert\" />        </form></div>");
         urlInput = jQuery('input[name=url]', dialog).focus(function(e) {
           return this.select();
         });
+        isEmptyLink = function(link) {
+          if ((new RegExp(/^\s*$/)).test(link)) {
+            return true;
+          }
+          if (link === widget.options.defaultUrl) {
+            return true;
+          }
+          return false;
+        };
         dialogSubmitCb = function(event) {
-          var link;
+          var link, selectionStart;
           event.preventDefault();
           link = urlInput.val();
           widget.options.editable.restoreSelection(widget.lastSelection);
-          if (((new RegExp(/^\s*$/)).test(link)) || link === widget.options.defaultUrl) {
+          if (isEmptyLink(link)) {
+            selectionStart = widget.lastSelection.startContainer;
             if (widget.lastSelection.collapsed) {
-              widget.lastSelection.setStartBefore(widget.lastSelection.startContainer);
-              widget.lastSelection.setEndAfter(widget.lastSelection.startContainer);
+              widget.lastSelection.setStartBefore(selectionStart);
+              widget.lastSelection.setEndAfter(selectionStart);
               window.getSelection().addRange(widget.lastSelection);
             }
             document.execCommand("unlink", null, "");
@@ -1955,12 +1965,14 @@ http://hallojs.org
           buttonset.append(buttonHolder);
           button = buttonHolder;
           button.bind("click", function(event) {
+            var selectionParent;
             widget.lastSelection = widget.options.editable.getSelection();
             urlInput = jQuery('input[name=url]', dialog);
-            if (widget.lastSelection.startContainer.parentNode.href === void 0) {
+            selectionParent = widget.lastSelection.startContainer.parentNode;
+            if (!selectionParent.href) {
               urlInput.val(widget.options.defaultUrl);
             } else {
-              urlInput.val(jQuery(widget.lastSelection.startContainer.parentNode).attr('href'));
+              urlInput.val(jQuery(selectionParent).attr('href'));
               jQuery(urlInput[0].form).find('input[type=submit]').val('update');
             }
             widget.options.editable.keepActivated(true);
@@ -1975,7 +1987,11 @@ http://hallojs.org
           return _this.element.bind("keyup paste change mouseup", function(event) {
             var nodeName, start;
             start = jQuery(widget.options.editable.getSelection().startContainer);
-            nodeName = start.prop('nodeName') ? start.prop('nodeName') : start.parent().prop('nodeName');
+            if (start.prop('nodeName')) {
+              nodeName = start.prop('nodeName');
+            } else {
+              nodeName = start.parent().prop('nodeName');
+            }
             if (nodeName && nodeName.toUpperCase() === "A") {
               jQuery('label', button).addClass('ui-state-active');
               return;
@@ -1991,8 +2007,7 @@ http://hallojs.org
           buttonset.hallobuttonset();
           return dialog.dialog(this.options.dialogOpts);
         }
-      },
-      _init: function() {}
+      }
     });
   })(jQuery);
 
