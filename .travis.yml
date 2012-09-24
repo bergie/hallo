@@ -8,3 +8,7 @@ before_script:
 script:
   - ./node_modules/.bin/coffeelint -r src
   - npm test
+
+notifications:
+  irc:
+    - "irc.freenode.org#iks"
