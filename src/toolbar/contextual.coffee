@@ -24,12 +24,13 @@
     _getPosition: (event, selection) ->
       return unless event
       eventType = event.type
-      if eventType == "keydown" || eventType == "keyup" || eventType == "keypress"
-        return @_getCaretPosition selection
-      if eventType == "click" || eventType == "mousedown" || eventType == "mouseup"
-        return position =
-          top: event.pageY
-          left: event.pageX
+      switch eventType
+        when 'keydown', 'keyup', 'keypress'
+          return @_getCaretPosition selection
+        when 'click', 'mousedown', 'mouseup'
+          return position =
+            top: event.pageY
+            left: event.pageX
 
     _getCaretPosition: (range) ->
       tmpSpan = jQuery "<span/>"
