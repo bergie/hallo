@@ -11,12 +11,12 @@ http://hallojs.org
 (function() {
 
   (function(jQuery) {
-    return jQuery.widget("IKS.hallo", {
+    return jQuery.widget('IKS.hallo', {
       toolbar: null,
       bound: false,
-      originalContent: "",
-      previousContent: "",
-      uuid: "",
+      originalContent: '',
+      previousContent: '',
+      uuid: '',
       selection: null,
       _keepActivated: false,
       originalHref: null,
@@ -88,8 +88,7 @@ http://hallojs.org
         return this._trigger("disabled", null);
       },
       enable: function() {
-        var widget,
-          _this = this;
+        var _this = this;
         this.element.parents('a[href]').andSelf().each(function(idx, elem) {
           var element;
           element = jQuery(elem);
@@ -113,7 +112,6 @@ http://hallojs.org
           this.element.bind("keyup paste change", this, this._checkModified);
           this.element.bind("keyup", this, this._keys);
           this.element.bind("keyup mouseup", this, this._checkSelection);
-          widget = this;
           this.bound = true;
         }
         if (this.options.forceStructured) {
@@ -207,13 +205,12 @@ http://hallojs.org
         }
       },
       protectFocusFrom: function(el) {
-        var widget;
-        widget = this;
+        var _this = this;
         return el.bind("mousedown", function(event) {
           event.preventDefault();
-          widget._protectToolbarFocus = true;
+          _this._protectToolbarFocus = true;
           return setTimeout(function() {
-            return widget._protectToolbarFocus = false;
+            return _this._protectToolbarFocus = false;
           }, 300);
         });
       },
@@ -304,8 +301,8 @@ http://hallojs.org
                 editable: widget,
                 originalEvent: event
               });
+              return;
             }
-            return;
           }
           if (!widget.selection || !widget._rangesEqual(sel, widget.selection)) {
             widget.selection = sel.cloneRange();
