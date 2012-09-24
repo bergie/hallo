@@ -1367,11 +1367,11 @@ http://hallojs.org
         var editableElement, turnOffAnnotate, widget;
         widget = this;
         if (this.options.vie === void 0) {
-          throw 'The halloannotate plugin requires VIE to be loaded';
+          throw new Error('The halloannotate plugin requires VIE');
           return;
         }
         if (typeof this.element.annotate !== 'function') {
-          throw 'The halloannotate plugin requires annotate.js to be loaded';
+          throw new Error('The halloannotate plugin requires annotate.js');
           return;
         }
         this.state = 'off';
@@ -1445,11 +1445,12 @@ http://hallojs.org
         widget = this;
         try {
           return this.options.editable.element.annotate('enable', function(success) {
-            if (success) {
-              _this.state = 'on';
-              _this.button.hallobutton('checked', true);
-              return _this.button.hallobutton('enable');
+            if (!success) {
+              return;
             }
+            _this.state = 'on';
+            _this.button.hallobutton('checked', true);
+            return _this.button.hallobutton('enable');
           });
         } catch (e) {
           return alert(e);
