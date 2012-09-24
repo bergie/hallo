@@ -17,11 +17,13 @@
 
     _create: ->
       # By default the icon is icon-command, but this doesn't
-      # always match with <http://fortawesome.github.com/Font-Awesome/#base-icons>
+      # always match with
+      # <http://fortawesome.github.com/Font-Awesome/#base-icons>
       @options.icon ?= "icon-#{@options.label.toLowerCase()}"
 
       id = "#{@options.uuid}-#{@options.label}"
-      @button = @_createButton id, @options.command, @options.label, @options.icon
+      opts = @options
+      @button = @_createButton id, opts.command, opts.label, opts.icon
       @element.append @button
       @button.addClass @options.cssClass if @options.cssClass
       @button.addClass 'btn-large' if @options.editable.options.touchScreen
@@ -53,11 +55,12 @@
       return unless @options.queryState
 
       editableElement = @options.editable.element
-      editableElement.bind 'keyup paste change mouseup hallomodified', queryState
+      events = 'keyup paste change mouseup hallomodified'
+      editableElement.bind events, queryState
       editableElement.bind 'halloenabled', =>
-        editableElement.bind 'keyup paste change mouseup hallomodified', queryState
+        editableElement.bind events, queryState
       editableElement.bind 'hallodisabled', =>
-        editableElement.unbind 'keyup paste change mouseup hallomodified', queryState
+        editableElement.unbind events, queryState
 
     enable: ->
       @button.removeAttr 'disabled'
@@ -79,7 +82,20 @@
       @refresh()
 
     _createButton: (id, command, label, icon) ->
-      jQuery "<button id=\"#{id}\" class=\"ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only #{command}_button\" title=\"#{label}\"><span class=\"ui-button-text\"><i class=\"#{icon}\"></i></span></button>"
+      classes = [
+        'ui-button'
+        'ui-widget'
+        'ui-state-default'
+        'ui-corner-all'
+        'ui-button-text-only'
+        "#{command}_button"
+      ]
+      jQuery "<button id=\"#{id}\"
+        class=\"#{classes.join(' ')}\" title=\"#{label}\">
+          <span class=\"ui-button-text\">
+            <i class=\"#{icon}\"></i>
+          </span>
+        </button>"
 
 
   jQuery.widget 'IKS.hallobuttonset',
@@ -94,6 +110,10 @@
       rtl = @element.css('direction') == 'rtl'
       @buttons = @element.find '.ui-button'
       @buttons.removeClass 'ui-corner-all ui-corner-left ui-corner-right'
-      @buttons.filter(':first').addClass if rtl then 'ui-corner-right' else 'ui-corner-left'
-      @buttons.filter(':last').addClass if rtl then 'ui-corner-left' else 'ui-corner-right'
+      if rtl
+        @buttons.filter(':first').addClass 'ui-corner-right'
+        @buttons.filter(':last').addClass 'ui-corner-left'
+      else
+        @buttons.filter(':first').addClass 'ui-corner-left'
+        @buttons.filter(':last').addClass 'ui-corner-right'
 )(jQuery)

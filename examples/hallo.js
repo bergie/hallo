@@ -2058,13 +2058,14 @@ http://hallojs.org
         cssClass: null
       },
       _create: function() {
-        var hoverclass, id, _base, _ref,
+        var hoverclass, id, opts, _base, _ref,
           _this = this;
         if ((_ref = (_base = this.options).icon) == null) {
           _base.icon = "icon-" + (this.options.label.toLowerCase());
         }
         id = "" + this.options.uuid + "-" + this.options.label;
-        this.button = this._createButton(id, this.options.command, this.options.label, this.options.icon);
+        opts = this.options;
+        this.button = this._createButton(id, opts.command, opts.label, opts.icon);
         this.element.append(this.button);
         if (this.options.cssClass) {
           this.button.addClass(this.options.cssClass);
@@ -2084,7 +2085,7 @@ http://hallojs.org
         });
       },
       _init: function() {
-        var editableElement, queryState,
+        var editableElement, events, queryState,
           _this = this;
         if (!this.button) {
           this.button = this._prepareButton();
@@ -2112,12 +2113,13 @@ http://hallojs.org
           return;
         }
         editableElement = this.options.editable.element;
-        editableElement.bind('keyup paste change mouseup hallomodified', queryState);
+        events = 'keyup paste change mouseup hallomodified';
+        editableElement.bind(events, queryState);
         editableElement.bind('halloenabled', function() {
-          return editableElement.bind('keyup paste change mouseup hallomodified', queryState);
+          return editableElement.bind(events, queryState);
         });
         return editableElement.bind('hallodisabled', function() {
-          return editableElement.unbind('keyup paste change mouseup hallomodified', queryState);
+          return editableElement.unbind(events, queryState);
         });
       },
       enable: function() {
@@ -2141,7 +2143,9 @@ http://hallojs.org
         return this.refresh();
       },
       _createButton: function(id, command, label, icon) {
-        return jQuery("<button id=\"" + id + "\" class=\"ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only " + command + "_button\" title=\"" + label + "\"><span class=\"ui-button-text\"><i class=\"" + icon + "\"></i></span></button>");
+        var classes;
+        classes = ['ui-button', 'ui-widget', 'ui-state-default', 'ui-corner-all', 'ui-button-text-only', "" + command + "_button"];
+        return jQuery("<button id=\"" + id + "\"        class=\"" + (classes.join(' ')) + "\" title=\"" + label + "\">          <span class=\"ui-button-text\">            <i class=\"" + icon + "\"></i>          </span>        </button>");
       }
     });
     return jQuery.widget('IKS.hallobuttonset', {
@@ -2157,8 +2161,13 @@ http://hallojs.org
         rtl = this.element.css('direction') === 'rtl';
         this.buttons = this.element.find('.ui-button');
         this.buttons.removeClass('ui-corner-all ui-corner-left ui-corner-right');
-        this.buttons.filter(':first').addClass(rtl ? 'ui-corner-right' : 'ui-corner-left');
-        return this.buttons.filter(':last').addClass(rtl ? 'ui-corner-left' : 'ui-corner-right');
+        if (rtl) {
+          this.buttons.filter(':first').addClass('ui-corner-right');
+          return this.buttons.filter(':last').addClass('ui-corner-left');
+        } else {
+          this.buttons.filter(':first').addClass('ui-corner-left');
+          return this.buttons.filter(':last').addClass('ui-corner-right');
+        }
       }
     });
   })(jQuery);
