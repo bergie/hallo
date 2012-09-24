@@ -6,9 +6,13 @@ test 'Hallo widget registered', ->
 test 'Hallo instantiation and destruction', ->
   fixture = jQuery '.hallo-instance p.editable'
 
+  fixture.bind 'halloenabled', ->
+    equal fixture.attr('contentEditable'), 'true'
+    do start
+
   # Instantiate
+  do stop
   do fixture.hallo
-  equal fixture.attr('contentEditable'), 'true'
 
   # Activate to get toolbar
   do fixture.focus
@@ -19,10 +23,14 @@ test 'Hallo instantiation and destruction', ->
   instance = fixture.data 'hallo'
   ok instance
 
+  fixture.bind 'hallodisabled', ->
+    equal fixture.attr('contentEditable'), 'false'
+    do start
+
   # Destroy
+  do stop
   fixture.hallo 'destroy'
   equal fixture.data('hallo'), undefined
-  equal fixture.attr('contentEditable'), 'false'
   equal jQuery('.hallotoolbar').length, 0
   equal fixture.hasClass('inEditMode'), false
 
