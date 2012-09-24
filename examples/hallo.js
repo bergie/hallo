@@ -2366,11 +2366,13 @@ http://hallojs.org
         }
       },
       _getPosition: function(event, selection) {
-        var offset, position;
+        var offset, position, width;
         if (!event) {
           return;
         }
-        offset = parseFloat(this.element.css('outline-width')) + parseFloat(this.element.css('outline-offset'));
+        width = parseFloat(this.element.css('outline-width'));
+        offset = parseFloat(this.element.css('outline-offset'));
+        offset = width + offset;
         return position = {
           top: this.element.offset().top - this.toolbar.outerHeight() - offset,
           left: this.element.offset().left - offset
