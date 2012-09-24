@@ -1804,8 +1804,8 @@ http://hallojs.org
         contentArea = jQuery("<div id=\"" + contentId + "\"></div>");
         containingElement = this.options.editable.element.get(0).tagName.toLowerCase();
         addElement = function(element) {
-          var el, queryState;
-          el = jQuery("<button class='blockselector'><" + element + " class=\"menu-item\">" + element + "</" + element + "></button>");
+          var el, events, queryState;
+          el = jQuery("<button class='blockselector'>          <" + element + " class=\"menu-item\">" + element + "</" + element + ">          </button>");
           if (containingElement === element) {
             el.addClass('selected');
           }
@@ -1813,14 +1813,16 @@ http://hallojs.org
             el.addClass('disabled');
           }
           el.bind('click', function() {
+            var tagName;
+            tagName = element.toUpperCase();
             if (el.hasClass('disabled')) {
               return;
             }
             if (jQuery.browser.msie) {
-              return _this.options.editable.execute('FormatBlock', '<' + element.toUpperCase() + '>');
-            } else {
-              return _this.options.editable.execute('formatBlock', element.toUpperCase());
+              _this.options.editable.execute('FormatBlock', "<" + tagName + ">");
+              return;
             }
+            return _this.options.editable.execute('formatBlock', tagName);
           });
           queryState = function(event) {
             var block;
@@ -1831,12 +1833,13 @@ http://hallojs.org
             }
             return el.removeClass('selected');
           };
-          _this.options.editable.element.bind('keyup paste change mouseup', queryState);
+          events = 'keyup paste change mouseup';
+          _this.options.editable.element.bind(events, queryState);
           _this.options.editable.element.bind('halloenabled', function() {
-            return _this.options.editable.element.bind('keyup paste change mouseup', queryState);
+            return _this.options.editable.element.bind(events, queryState);
           });
           _this.options.editable.element.bind('hallodisabled', function() {
-            return _this.options.editable.element.unbind('keyup paste change mouseup', queryState);
+            return _this.options.editable.element.unbind(events, queryState);
           });
           return el;
         };

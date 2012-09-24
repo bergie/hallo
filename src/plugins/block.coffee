@@ -32,7 +32,9 @@
       containingElement = @options.editable.element.get(0).tagName.toLowerCase()
 
       addElement = (element) =>
-        el = jQuery "<button class='blockselector'><#{element} class=\"menu-item\">#{element}</#{element}></button>"
+        el = jQuery "<button class='blockselector'>
+          <#{element} class=\"menu-item\">#{element}</#{element}>
+        </button>"
         
         if containingElement is element
           el.addClass 'selected'
@@ -41,12 +43,14 @@
           el.addClass 'disabled'
 
         el.bind 'click', =>
+          tagName = element.toUpperCase()
           if el.hasClass 'disabled'
             return
           if jQuery.browser.msie
-            @options.editable.execute 'FormatBlock', '<'+element.toUpperCase()+'>'
-          else
-            @options.editable.execute 'formatBlock', element.toUpperCase()
+            # In IE FormatBlock wants tags inside brackets
+            @options.editable.execute 'FormatBlock', "<#{tagName}>"
+            return
+          @options.editable.execute 'formatBlock', tagName
           
         queryState = (event) =>
           block = document.queryCommandValue 'formatBlock'
@@ -54,14 +58,14 @@
             el.addClass 'selected'
             return
           el.removeClass 'selected'
-          
-          
-        @options.editable.element.bind 'keyup paste change mouseup', queryState
+        
+        events = 'keyup paste change mouseup'
+        @options.editable.element.bind events, queryState
 
         @options.editable.element.bind 'halloenabled', =>
-          @options.editable.element.bind 'keyup paste change mouseup', queryState
+          @options.editable.element.bind events, queryState
         @options.editable.element.bind 'hallodisabled', =>
-          @options.editable.element.unbind 'keyup paste change mouseup', queryState
+          @options.editable.element.unbind events, queryState
 
         el
 
