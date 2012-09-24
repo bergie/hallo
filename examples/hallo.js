@@ -1530,19 +1530,21 @@ http://hallojs.org
         maxHeight: 250
       },
       populateToolbar: function(toolbar) {
-        var buttonHolder, buttonset, dialogId, id, widget;
+        var buttonHolder, buttonset, dialogId, id, tabContent, tabs, widget;
         this.options.toolbar = toolbar;
         widget = this;
         dialogId = "" + this.options.uuid + "-image-dialog";
-        this.options.dialog = jQuery("<div id=\"" + dialogId + "\">                <div class=\"nav\">                    <ul class=\"tabs\">                    </ul>                    <div id=\"" + this.options.uuid + "-tab-activeIndicator\" class=\"tab-activeIndicator\" />                </div>                <div class=\"dialogcontent\">            </div>");
+        this.options.dialog = jQuery("<div id=\"" + dialogId + "\">        <div class=\"nav\">          <ul class=\"tabs\">          </ul>          <div id=\"" + this.options.uuid + "-tab-activeIndicator\"            class=\"tab-activeIndicator\" />        </div>        <div class=\"dialogcontent\">        </div>");
+        tabs = jQuery('.tabs', this.options.dialog);
+        tabContent = jQuery('.dialogcontent', this.options.dialog);
         if (widget.options.suggestions) {
-          this._addGuiTabSuggestions(jQuery(".tabs", this.options.dialog), jQuery(".dialogcontent", this.options.dialog));
+          this._addGuiTabSuggestions(tabs, tabContent);
         }
         if (widget.options.search || widget.options.searchUrl) {
-          this._addGuiTabSearch(jQuery(".tabs", this.options.dialog), jQuery(".dialogcontent", this.options.dialog));
+          this._addGuiTabSearch(tabs, tabContent);
         }
         if (widget.options.upload || widget.options.uploadUrl) {
-          this._addGuiTabUpload(jQuery(".tabs", this.options.dialog), jQuery(".dialogcontent", this.options.dialog));
+          this._addGuiTabUpload(tabs, tabContent);
         }
         this.current = jQuery('<div class="currentImage"></div>').halloimagecurrent({
           uuid: this.options.uuid,
@@ -1593,16 +1595,19 @@ http://hallojs.org
         var widget;
         widget = this;
         jQuery('.nav li', this.options.dialog).bind('click', function() {
-          var id;
+          var id, left;
           jQuery("." + widget.widgetName + "-tab").hide();
           id = jQuery(this).attr('id');
           jQuery("#" + id + "-content").show();
-          return jQuery("#" + widget.options.uuid + "-tab-activeIndicator").css("margin-left", jQuery(this).position().left + (jQuery(this).width() / 2));
+          left = jQuery(this).position().left + (jQuery(this).width() / 2);
+          return jQuery("#" + widget.options.uuid + "-tab-activeIndicator").css({
+            "margin-left": left
+          });
         });
         return jQuery('.nav li', this.options.dialog).first().click();
       },
       _openDialog: function() {
-        var cleanUp, widget, xposition, yposition,
+        var cleanUp, editableEl, getActive, suggestionSelector, toolbarEl, widget, xposition, yposition,
           _this = this;
         widget = this;
         cleanUp = function() {
@@ -1618,11 +1623,17 @@ http://hallojs.org
             });
           }, 15000);
         };
-        jQuery("#" + this.options.uuid + "-sugg-activeImage").attr("src", jQuery("#" + this.options.uuid + "-tab-suggestions-content .imageThumbnailActive").first().attr("src"));
-        jQuery("#" + this.options.uuid + "-sugg-activeImageBg").attr("src", jQuery("#" + this.options.uuid + "-tab-suggestions-content .imageThumbnailActive").first().attr("src"));
+        suggestionSelector = "#" + this.options.uuid + "-tab-suggestions-content";
+        getActive = function() {
+          return jQuery('.imageThumbnailActive', suggestionSelector).first().attr("src");
+        };
+        jQuery("#" + this.options.uuid + "-sugg-activeImage").attr("src", getActive());
+        jQuery("#" + this.options.uuid + "-sugg-activeImageBg").attr("src", getActive());
         this.lastSelection = this.options.editable.getSelection();
-        xposition = jQuery(this.options.editable.element).offset().left + jQuery(this.options.editable.element).outerWidth() - 3;
-        yposition = jQuery(this.options.toolbar).offset().top - jQuery(document).scrollTop() - 29;
+        editableEl = jQuery(this.options.editable.element);
+        toolbarEl = jQuery(this.options.toolbar);
+        xposition = editableEl.offset().left + editableEl.outerWidth() - 3;
+        yposition = toolbarEl.offset().top - jQuery(document).scrollTop() - 29;
         this.options.dialog.dialog("option", "position", [xposition, yposition]);
         cleanUp();
         widget.options.loaded = 1;
@@ -1639,8 +1650,8 @@ http://hallojs.org
       },
       _addGuiTabSuggestions: function(tabs, element) {
         var tab;
-        tabs.append(jQuery("<li id=\"" + this.options.uuid + "-tab-suggestions\" class=\"" + this.widgetName + "-tabselector " + this.widgetName + "-tab-suggestions\"><span>Suggestions</span></li>"));
-        tab = jQuery("<div id=\"" + this.options.uuid + "-tab-suggestions-content\" class=\"" + this.widgetName + "-tab tab-suggestions\"></div>");
+        tabs.append(jQuery("<li id=\"" + this.options.uuid + "-tab-suggestions\"        class=\"" + this.widgetName + "-tabselector " + this.widgetName + "-tab-suggestions\">          <span>Suggestions</span>        </li>"));
+        tab = jQuery("<div id=\"" + this.options.uuid + "-tab-suggestions-content\"        class=\"" + this.widgetName + "-tab tab-suggestions\"></div>");
         element.append(tab);
         return tab.halloimagesuggestions({
           uuid: this.options.uuid,
@@ -1652,8 +1663,8 @@ http://hallojs.org
         var dialogId, tab, widget;
         widget = this;
         dialogId = "" + this.options.uuid + "-image-dialog";
-        tabs.append(jQuery("<li id=\"" + this.options.uuid + "-tab-search\" class=\"" + widget.widgetName + "-tabselector " + widget.widgetName + "-tab-search\"><span>Search</span></li>"));
-        tab = jQuery("<div id=\"" + this.options.uuid + "-tab-search-content\" class=\"" + widget.widgetName + "-tab tab-search\"></div>");
+        tabs.append(jQuery("<li id=\"" + this.options.uuid + "-tab-search\"        class=\"" + this.widgetName + "-tabselector " + this.widgetName + "-tab-search\">          <span>Search</span>        </li>"));
+        tab = jQuery("<div id=\"" + this.options.uuid + "-tab-search-content\"        class=\"" + widget.widgetName + "-tab tab-search\"></div>");
         element.append(tab);
         return tab.halloimagesearch({
           uuid: this.options.uuid,
@@ -1666,8 +1677,8 @@ http://hallojs.org
       },
       _addGuiTabUpload: function(tabs, element) {
         var tab;
-        tabs.append(jQuery("<li id=\"" + this.options.uuid + "-tab-upload\" class=\"" + this.widgetName + "-tabselector " + this.widgetName + "-tab-upload\"><span>Upload</span></li>"));
-        tab = jQuery("<div id=\"" + this.options.uuid + "-tab-upload-content\" class=\"" + this.widgetName + "-tab tab-upload\"></div>");
+        tabs.append(jQuery("<li id=\"" + this.options.uuid + "-tab-upload\"        class=\"" + this.widgetName + "-tabselector " + this.widgetName + "-tab-upload\">          <span>Upload</span>        </li>"));
+        tab = jQuery("<div id=\"" + this.options.uuid + "-tab-upload-content\"        class=\"" + this.widgetName + "-tab tab-upload\"></div>");
         element.append(tab);
         return tab.halloimageupload({
           uuid: this.options.uuid,
@@ -1676,30 +1687,31 @@ http://hallojs.org
           imageWidget: this,
           entity: this.options.entity
         });
-        /*
-                    insertImage = () ->
-                        #This may need to insert an image that does not have the same URL as the preview image, since it may be a different size
-        
-                        # Check if we have a selection and fall back to @lastSelection otherwise
-                        try
-                            if not widget.options.editable.getSelection()
-                                throw new Error "SelectionNotSet"
-                        catch error
-                            widget.options.editable.restoreSelection(widget.lastSelection)
-        
-                        document.execCommand "insertImage", null, jQuery(this).attr('src')
-                        img = document.getSelection().anchorNode.firstChild
-                        jQuery(img).attr "alt", jQuery(".caption").value
-        
-                        triggerModified = () ->
-                            widget.element.trigger "hallomodified"
-                        window.setTimeout triggerModified, 100
-                        widget._closeDialog()
-        
-                    @options.dialog.find(".halloimage-activeImage, ##{widget.options.uuid}-#{widget.widgetName}-addimage").click insertImage
-        */
-
       }
+      /*
+          insertImage = () ->
+          # This may need to insert an image that does not have the same URL as
+          # the preview image, since it may be a different size
+            # Check if we have a selection and fall back to @lastSelection otherwise
+            try
+              if not widget.options.editable.getSelection()
+              throw new Error "SelectionNotSet"
+            catch error
+              widget.options.editable.restoreSelection(widget.lastSelection)
+      
+            document.execCommand "insertImage", null, jQuery(this).attr('src')
+            img = document.getSelection().anchorNode.firstChild
+            jQuery(img).attr "alt", jQuery(".caption").value
+      
+            triggerModified = () ->
+              widget.element.trigger "hallomodified"
+            window.setTimeout triggerModified, 100
+            widget._closeDialog()
+      
+            addImage = "##{widget.options.uuid}-#{widget.widgetName-addimage"
+            @options.dialog.find(".halloimage-activeImage, addImage).click insertImage
+      */
+
     });
   })(jQuery);
 
