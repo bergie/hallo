@@ -1734,9 +1734,10 @@ http://hallojs.org
         _ref = this.options.formattings;
         for (format in _ref) {
           enabled = _ref[format];
-          if (enabled) {
-            buttonize(format);
+          if (!enabled) {
+            continue;
           }
+          buttonize(format);
         }
         buttonset.hallobuttonset();
         return toolbar.append(buttonset);
@@ -1805,7 +1806,7 @@ http://hallojs.org
         containingElement = this.options.editable.element.get(0).tagName.toLowerCase();
         addElement = function(element) {
           var el, events, queryState;
-          el = jQuery("<button class='blockselector'>          <" + element + " class=\"menu-item\">" + element + "</" + element + ">          </button>");
+          el = jQuery("<button class='blockselector'>          <" + element + " class=\"menu-item\">" + element + "</" + element + ">        </button>");
           if (containingElement === element) {
             el.addClass('selected');
           }
