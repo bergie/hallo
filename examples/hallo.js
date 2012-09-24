@@ -170,7 +170,7 @@ http://hallojs.org
         var cleanup, contentClone, plugin;
         contentClone = this.element.clone();
         for (plugin in this.options.plugins) {
-          cleanup = jQuery(this.element).data(plugin)['cleanupContentClone'];
+          cleanup = jQuery(this.element).data(plugin).cleanupContentClone;
           if (!jQuery.isFunction(cleanup)) {
             continue;
           }
@@ -504,13 +504,14 @@ http://hallojs.org
         headers: [1, 2, 3]
       },
       populateToolbar: function(toolbar) {
-        var button, buttonize, buttonset, header, id, label, widget, _i, _len, _ref,
+        var button, buttonize, buttonset, header, id, label, markup, widget, _i, _len, _ref,
           _this = this;
         widget = this;
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         id = "" + this.options.uuid + "-paragraph";
         label = "P";
-        buttonset.append(jQuery("<input id=\"" + id + "\" type=\"radio\" name=\"" + widget.options.uuid + "-headings\"/><label for=\"" + id + "\" class=\"p_button\">" + label + "</label>").button());
+        markup = "<input id=\"" + id + "\" type=\"radio\"        name=\"" + widget.options.uuid + "-headings\"/>        <label for=\"" + id + "\" class=\"p_button\">" + label + "</label>";
+        buttonset.append(jQuery(markup).button());
         button = jQuery("#" + id, buttonset);
         button.attr("hallo-command", "formatBlock");
         button.bind("change", function(event) {
@@ -519,9 +520,11 @@ http://hallojs.org
           return widget.options.editable.execute(cmd, "P");
         });
         buttonize = function(headerSize) {
+          var buttonMarkup;
           label = "H" + headerSize;
           id = "" + _this.options.uuid + "-" + headerSize;
-          buttonset.append(jQuery("<input id=\"" + id + "\" type=\"radio\" name=\"" + widget.options.uuid + "-headings\"/><label for=\"" + id + "\" class=\"h" + headerSize + "_button\">" + label + "</label>").button());
+          buttonMarkup = "<input id=\"" + id + "\" type=\"radio\"          name=\"" + widget.options.uuid + "-headings\"/>          <label for=\"" + id + "\" class=\"h" + headerSize + "_button\">" + label + "</label>";
+          buttonset.append(jQuery(buttonMarkup).button());
           button = jQuery("#" + id, buttonset);
           button.attr("hallo-size", "H" + headerSize);
           return button.bind("change", function(event) {
@@ -560,8 +563,7 @@ http://hallojs.org
           }
         });
         return toolbar.append(buttonset);
-      },
-      _init: function() {}
+      }
     });
   })(jQuery);
 

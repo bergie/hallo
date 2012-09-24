@@ -226,7 +226,7 @@ http://hallojs.org
       # clone
       contentClone = @element.clone()
       for plugin of @options.plugins
-        cleanup = jQuery(@element).data(plugin)['cleanupContentClone']
+        cleanup = jQuery(@element).data(plugin).cleanupContentClone
         continue unless jQuery.isFunction cleanup
         jQuery(@element)[plugin] 'cleanupContentClone', contentClone
       contentClone.html()
