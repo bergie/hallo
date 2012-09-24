@@ -2234,9 +2234,10 @@ http://hallojs.org
         return target.css('left', left - 20);
       },
       _prepareButton: function() {
-        var buttonEl, id;
+        var buttonEl, classes, id;
         id = "" + this.options.uuid + "-" + this.options.label;
-        buttonEl = jQuery("<button id=\"" + id + "\" class=\"ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only\" title=\"" + this.options.label + "\"><i class=\"" + this.options.icon + "\"></i></button>");
+        classes = ['ui-button', 'ui-widget', 'ui-state-default', 'ui-corner-all', 'ui-button-text-only'];
+        buttonEl = jQuery("<button id=\"" + id + "\"        class=\"" + (classes.join(' ')) + "\" title=\"" + this.options.label + "\">         <i class=\"" + this.options.icon + "\"></i>       </button>");
         if (this.options.cssClass) {
           buttonEl.addClass(this.options.cssClass);
         }

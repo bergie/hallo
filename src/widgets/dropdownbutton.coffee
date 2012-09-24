@@ -39,13 +39,13 @@
       @element.append @button
 
     _showTarget: ->
-      target = jQuery @options.target   
+      target = jQuery @options.target
       @_updateTargetPosition()
       target.addClass 'open'
       target.show()
     
     _hideTarget: ->
-      target = jQuery @options.target     
+      target = jQuery @options.target
       target.removeClass 'open'
       target.hide()
 
@@ -58,7 +58,17 @@
 
     _prepareButton: ->
       id = "#{@options.uuid}-#{@options.label}"
-      buttonEl = jQuery "<button id=\"#{id}\" class=\"ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only\" title=\"#{@options.label}\"><i class=\"#{@options.icon}\"></i></button>"
+      classes = [
+        'ui-button'
+        'ui-widget'
+        'ui-state-default'
+        'ui-corner-all'
+        'ui-button-text-only'
+      ]
+      buttonEl = jQuery "<button id=\"#{id}\"
+        class=\"#{classes.join(' ')}\" title=\"#{@options.label}\">
+         <i class=\"#{@options.icon}\"></i>
+       </button>"
       buttonEl.addClass @options.cssClass if @options.cssClass
       buttonEl.button()
 
