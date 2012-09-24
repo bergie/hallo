@@ -2026,8 +2026,7 @@ http://hallojs.org
         buttonize("Right");
         buttonset.hallobuttonset();
         return toolbar.append(buttonset);
-      },
-      _init: function() {}
+      }
     });
   })(jQuery);
 
