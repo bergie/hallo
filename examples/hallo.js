@@ -1789,8 +1789,7 @@ http://hallojs.org
         buttonize("redo", "Redo");
         buttonset.hallobuttonset();
         return toolbar.append(buttonset);
-      },
-      _init: function() {}
+      }
     });
   })(jQuery);
 
