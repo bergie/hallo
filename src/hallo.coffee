@@ -226,7 +226,8 @@ http://hallojs.org
       # clone
       contentClone = @element.clone()
       for plugin of @options.plugins
-        continue unless jQuery.isFunction jQuery(@element).data(plugin)['cleanupContentClone']
+        cleanup = jQuery(@element).data(plugin)['cleanupContentClone']
+        continue unless jQuery.isFunction cleanup
         jQuery(@element)[plugin] 'cleanupContentClone', contentClone
       contentClone.html()
 
@@ -318,7 +319,11 @@ http://hallojs.org
         widget.turnOff()
 
     _rangesEqual: (r1, r2) ->
-      r1.startContainer is r2.startContainer and r1.startOffset is r2.startOffset and r1.endContainer is r2.endContainer and r1.endOffset is r2.endOffset
+      return false unless r1.startContainer is r2.startContainer
+      return false unless r1.startOffset is r2.startOffset
+      return false unless r1.endContainer is r2.endContainer
+      return false unless r1.endOffset is r2.endOffset
+      true
 
     # Check if some text is selected, and if this selection has changed.
     # If it changed, trigger the "halloselected" event

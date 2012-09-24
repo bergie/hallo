@@ -167,10 +167,11 @@ http://hallojs.org
         }
       },
       getContents: function() {
-        var contentClone, plugin;
+        var cleanup, contentClone, plugin;
         contentClone = this.element.clone();
         for (plugin in this.options.plugins) {
-          if (!jQuery.isFunction(jQuery(this.element).data(plugin)['cleanupContentClone'])) {
+          cleanup = jQuery(this.element).data(plugin)['cleanupContentClone'];
+          if (!jQuery.isFunction(cleanup)) {
             continue;
           }
           jQuery(this.element)[plugin]('cleanupContentClone', contentClone);
@@ -283,7 +284,19 @@ http://hallojs.org
         }
       },
       _rangesEqual: function(r1, r2) {
-        return r1.startContainer === r2.startContainer && r1.startOffset === r2.startOffset && r1.endContainer === r2.endContainer && r1.endOffset === r2.endOffset;
+        if (r1.startContainer !== r2.startContainer) {
+          return false;
+        }
+        if (r1.startOffset !== r2.startOffset) {
+          return false;
+        }
+        if (r1.endContainer !== r2.endContainer) {
+          return false;
+        }
+        if (r1.endOffset !== r2.endOffset) {
+          return false;
+        }
+        return true;
       },
       _checkSelection: function(event) {
         var widget;
