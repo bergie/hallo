@@ -284,6 +284,8 @@ http://hallojs.org
         toolbar: @toolbar
 
       for plugin of @options.plugins
+        populate = jQuery(@element).data(plugin).populateToolbar
+        continue unless jQuery.isFunction populate
         @element[plugin] 'populateToolbar', @toolbar
 
       @element[@options.toolbar] 'setPosition'

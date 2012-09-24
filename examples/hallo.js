@@ -226,7 +226,7 @@ http://hallojs.org
         return "" + (S4()) + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + (S4()) + (S4());
       },
       _prepareToolbar: function() {
-        var plugin;
+        var plugin, populate;
         this.toolbar = jQuery('<div class="hallotoolbar"></div>').hide();
         if (this.options.toolbarCssClass) {
           this.toolbar.addClass(this.options.toolbarCssClass);
@@ -237,6 +237,10 @@ http://hallojs.org
           toolbar: this.toolbar
         });
         for (plugin in this.options.plugins) {
+          populate = jQuery(this.element).data(plugin).populateToolbar;
+          if (!jQuery.isFunction(populate)) {
+            continue;
+          }
           this.element[plugin]('populateToolbar', this.toolbar);
         }
         this.element[this.options.toolbar]('setPosition');
