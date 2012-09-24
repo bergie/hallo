@@ -56,8 +56,10 @@
         big: jQuery("<div/>").addClass("bigOverlay").css
           width: @options.third * 2
           height: editable.height()
-        left: jQuery("<div/>").addClass("smallOverlay smallOverlayLeft").css(overlayMiddleConfig)
-        right: jQuery("<div/>").addClass("smallOverlay smallOverlayRight").css(overlayMiddleConfig).css("left", @options.third * 2)
+        left: jQuery("<div/>").addClass("smallOverlay smallOverlayLeft")
+        right: jQuery("<div/>").addClass("smallOverlay smallOverlayRight")
+      @overlay.left.css overlayMiddleConfig
+      @overlay.right.css(overlayMiddleConfig).css("left", @options.third * 2)
 
       editable.bind 'halloactivated', ->
         widget._enableDragging()
@@ -84,11 +86,12 @@
     # Calculate position on an initial drag
     _calcDropPosition: (offset, event) ->
       position = offset.left + @options.third
-      if event.pageX >= position and event.pageX <= (offset.left + @options.third * 2)
+      rightTreshold = offset.left + @options.third * 2
+      if event.pageX >= position and event.pageX <= rightTreshold
         return 'middle'
       else if event.pageX < position
         return 'left'
-      else if event.pageX > (offset.left + @options.third * 2)
+      else if event.pageX > rightTreshold
         return 'right'
 
     # create image to be inserted
@@ -137,7 +140,9 @@
 
     _showOverlay: (position) ->
       editable = jQuery @options.editable.element
-      eHeight = editable.height() + parseFloat(editable.css('paddingTop')) + parseFloat(editable.css('paddingBottom'))
+      eHeight = editable.height()
+      eHeight += parseFloat(editable.css('paddingTop'))
+      eHeight += parseFloat(editable.css('paddingBottom'))
 
       @overlay.big.css height: eHeight
       @overlay.left.css height: eHeight
@@ -145,7 +150,11 @@
 
       switch position
         when 'left'
-          @overlay.big.addClass("bigOverlayLeft").removeClass("bigOverlayRight").css(left: @options.third).show()
+          @overlay.big.addClass("bigOverlayLeft")
+          @overlay.big.removeClass("bigOverlayRight")
+          @overlay.big.css
+            left: @options.third
+          @overlay.big.show()
           @overlay.left.hide()
           @overlay.right.hide()
         when 'middle'
@@ -154,7 +163,11 @@
           @overlay.left.show()
           @overlay.right.show()
         when 'right'
-          @overlay.big.addClass("bigOverlayRight").removeClass("bigOverlayLeft").css(left: 0).show()
+          @overlay.big.addClass("bigOverlayRight")
+          @overlay.big.removeClass("bigOverlayLeft")
+          @overlay.big.css
+            left: 0
+          @overlay.big.show()
           @overlay.left.hide()
           @overlay.right.hide()
 
@@ -164,7 +177,7 @@
         return true
       false
 
-    _createTmpFeedback: (image, position)->
+    _createFeedback: (image, position)->
       if position is 'middle'
         return @_createLineFeedbackElement()
       el = @_createInsertElement image, true
@@ -184,20 +197,23 @@
         editable.append widget.overlay.right
 
         widget._removeFeedbackElements()
-        jQuery(event.target).prepend widget._createTmpFeedback ui.draggable[0], position
+        target = jQuery event.target
+        target.prepend widget._createFeedback ui.draggable[0], position
 
-        # already create the other feedback elements here, because we have a reference to the droppable
+        # already create the other feedback elements here, because we have a
+        # reference to the droppable
         if position is 'middle'
-          jQuery(event.target).prepend widget._createTmpFeedback ui.draggable[0], 'right'
+          target.prepend widget._createFeedback ui.draggable[0], 'right'
           jQuery('.halloTmp', event.target).hide()
         else
-          jQuery(event.target).prepend widget._createTmpFeedback ui.draggable[0], 'middle'
+          target.prepend widget._createFeedback ui.draggable[0], 'middle'
           jQuery('.halloTmpLine', event.target).hide()
 
         widget._showOverlay position
 
-      # we need to postpone the handleOverEvent execution of the function for a tiny bit to avoid
-      # the handleLeaveEvent to be fired after the handleOverEvent. Removing this timeout will break things
+      # we need to postpone the handleOverEvent execution of the function for
+      # a tiny bit to avoid the handleLeaveEvent to be fired after the
+      # handleOverEvent. Removing this timeout will break things
       setTimeout(postPone, 5)
 
     _handleDragEvent: (event, ui) ->
@@ -216,7 +232,9 @@
         tmpFeedbackLR.hide()
       else
         tmpFeedbackMiddle.hide()
-        tmpFeedbackLR.removeClass('inlineImage-left inlineImage-right').addClass("inlineImage-#{position}").show()
+        tmpFeedbackLR.removeClass('inlineImage-left inlineImage-right')
+        tmpFeedbackLR.addClass("inlineImage-#{position}")
+        tmpFeedbackLR.show()
 
       @_showOverlay position
 
@@ -225,7 +243,8 @@
         unless jQuery('div.trashcan', ui.helper).length
           jQuery(ui.helper).append(jQuery('<div class="trashcan"></div>'))
           jQuery('.bigOverlay, .smallOverlay').remove()
-      # only remove the trash after being outside of an editable more than X milliseconds
+      # only remove the trash after being outside of an editable more than
+      # X milliseconds
       window.waitWithTrash = setTimeout(func, 200)
       @_removeFeedbackElements()
 
@@ -257,17 +276,22 @@
       position = @_calcDropPosition @options.offset, event
       @_removeFeedbackElements()
       @_removeCustomHelper()
-      imageInsert = @_createInsertElement ui.draggable[0], false
 
+      imageInsert = @_createInsertElement ui.draggable[0], false
+      classes = 'inlineImage-middle inlineImage-left inlineImage-right'
       if position is 'middle'
         imageInsert.show()
-        imageInsert.removeClass 'inlineImage-middle inlineImage-left inlineImage-right'
+        imageInsert.removeClass classes
+        left = editable.width()
+        left += parseFloat(editable.css('paddingLeft'))
+        left += parseFloat(editable.css('paddingRight'))
+        left -= imageInsert.attr('width')
         imageInsert.addClass("inlineImage-#{position}").css
           position: 'relative'
-          left: ((editable.width() + parseFloat(editable.css('paddingLeft')) + parseFloat(editable.css('paddingRight'))) - imageInsert.attr('width')) / 2
+          left: left / 2
         imageInsert.insertBefore jQuery event.target
       else
-        imageInsert.removeClass 'inlineImage-middle inlineImage-left inlineImage-right'
+        imageInsert.removeClass classes
         imageInsert.addClass("inlineImage-#{position}")
         imageInsert.css 'display', 'block'
         jQuery(event.target).prepend imageInsert

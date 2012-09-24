@@ -33,11 +33,13 @@
               label: ''
 
     _prepareIframe: (widget) ->
-      iframeName = "#{widget.widgetName}_postframe_#{widget.options.uuid}".replace /-/g, '_'
+      iframeName = "#{widget.widgetName}_postframe_#{widget.options.uuid}"
+      iframeName = iframeName.replace /-/g, '_'
       iframe = jQuery "##{iframeName}"
       return iframe if iframe.length
 
-      iframe = jQuery "<iframe name=\"#{iframeName}\" id=\"#{iframeName}\" class=\"hidden\" style=\"display:none\" />"
+      iframe = jQuery "<iframe name=\"#{iframeName}\" id=\"#{iframeName}\"
+        class=\"hidden\" style=\"display:none\" />"
       @element.append iframe
       iframe.get(0).name = iframeName
       iframe

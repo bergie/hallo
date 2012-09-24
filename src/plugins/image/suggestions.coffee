@@ -10,6 +10,7 @@
       vie: null
       dbPediaUrl: null
       getSuggestions: null
+      thumbnailUri: '<http://dbpedia.org/ontology/thumbnail>'
 
     _create: ->
       @element.html '
@@ -52,7 +53,9 @@
 
       # Get suggestions from server
       normalizedTags = @_normalizeRelated tags
-      @options.getSuggestions normalizedTags, widget.options.limit, 0, @_showSuggestions if @options.getSuggestions
+      limit = @options.limit
+      if @options.getSuggestions
+        @options.getSuggestions normalizedTags, limit, 0, @_showSuggestions
 
       do @_prepareVIE
       @_getSuggestionsDbPedia tags if @options.vie.services.dbpedia
@@ -63,23 +66,25 @@
       widget = this
       thumbId = 1
       _.each tags, (tag) ->
-        vie.load(entity: tag).
-        using('dbpedia').
-        execute().
-        done (entities) ->
+        vie.load(entity: tag).using('dbpedia').execute().done (entities) ->
           jQuery('.activitySpinner', @element).hide()
 
           _.each entities, (entity) ->
-            thumbnail = entity.attributes['<http://dbpedia.org/ontology/thumbnail>']
+            thumbnail = entity.attributes[widget.options.thumbnailUri]
             return unless thumbnail
-            img = thumbnail[0].value if _.isObject thumbnail
-            img = widget.options.entity.fromReference thumbnail if _.isString thumbnail
+            if _.isObject thumbnail
+              img = thumbnail[0].value
+            if _.isString thumbnail
+              img = widget.options.entity.fromReference thumbnail
             widget._showSuggestion
               url: img
               label: tag
 
     _showSuggestion: (image) ->
-      html = jQuery "<li><img src=\"#{image.url}\" class=\"imageThumbnail\" title=\"#{image.label}\"></li>"
+      html = jQuery "<li>
+        <img src=\"#{image.url}\" class=\"imageThumbnail\"
+          title=\"#{image.label}\">
+        </li>"
       html.bind 'click', =>
         @options.imageWidget.setCurrent image
       jQuery('.imageThumbnailContainer ul', @element).append html

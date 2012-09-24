@@ -22,26 +22,27 @@
       </div>'
 
     _init: ->
-      widget = @
-
-      if widget.options.searchUrl and !widget.options.searchCallback
-        widget.options.searchCallback = widget._ajaxSearch
+      if @options.searchUrl and !@options.searchCallback
+        @options.searchCallback = @_ajaxSearch
 
       jQuery('.activitySpinner', @element).hide()
 
-      jQuery('form', @element).submit (event) ->
+      jQuery('form', @element).submit (event) =>
         event.preventDefault()
 
         jQuery('.activitySpinner', @element).show()
 
-        query = jQuery('.searchInput', widget.element).val()
-        widget.options.searchCallback query, widget.options.limit, 0, (results) ->
-          widget._showResults results
+        query = jQuery('.searchInput', @element.element).val()
+        @options.searchCallback query, @options.limit, 0, (results) =>
+          @_showResults results
 
     _showResult: (image) ->
       image.label = image.alt unless image.label
 
-      html = jQuery "<li><img src=\"#{image.url}\" class=\"imageThumbnail\" title=\"#{image.label}\"></li>"
+      html = jQuery "<li>
+        <img src=\"#{image.url}\" class=\"imageThumbnail\"
+          title=\"#{image.label}\"></li>"
+
       html.bind 'click', =>
         @options.imageWidget.setCurrent image
 
@@ -53,21 +54,21 @@
       jQuery('.imageThumbnailContainer ul', @element).append html
 
     _showNextPrev: (results) ->
-      widget = @
-
       container = jQuery 'imageThumbnailContainer ul', @element
-      container.prepend jQuery '<div class="pager-prev" style="display:none"></div>'
-      container.append jQuery '<div class="pager-next" style="display:none"></div>'
+      container.prepend jQuery '<div class="pager-prev" style="display:none" />'
+      container.append jQuery '<div class="pager-next" style="display:none" />'
 
       jQuery('.pager-prev', container).show() if results.offset > 0
       jQuery('.pager-next', container).show() if results.offset < results.total
 
-      jQuery('.pager-prev', container).click (event) ->
-          widget.options.searchCallback query, widget.options.limit, response.offset - widget.options.limit, (results) ->
-            widget._showResults results
-       jQuery('.pager-next', container).click (event) ->
-          widget.options.searchCallback query, widget.options.limit, response.offset + widget.options.limit, (results) ->
-            widget._showResults results
+      jQuery('.pager-prev', container).click (event) =>
+        offset = results.offset - @options.limit
+        @options.searchCallback query, @options.limit, offset, (results) =>
+          @_showResults results
+      jQuery('.pager-next', container).click (event) =>
+        offset = results.offset + @options.limit
+        @options.searchCallback query, @options.limit, offset, (results) =>
+          @_showResults results
 
     _showResults: (results) ->
       jQuery('.activitySpinner', @element).hide()

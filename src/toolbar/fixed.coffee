@@ -38,8 +38,7 @@
     _getPosition: (event, selection) ->
       return unless event
       width = parseFloat @element.css 'outline-width'
-      offset = parseFloat @element.css 'outline-offset'
-      offset = width + offset
+      offset = width + parseFloat @element.css 'outline-offset'
       return position =
         top: @element.offset().top - @toolbar.outerHeight() - offset
         left: @element.offset().left - offset

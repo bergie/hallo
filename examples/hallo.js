@@ -727,9 +727,11 @@ http://hallojs.org
             width: this.options.third * 2,
             height: editable.height()
           }),
-          left: jQuery("<div/>").addClass("smallOverlay smallOverlayLeft").css(overlayMiddleConfig),
-          right: jQuery("<div/>").addClass("smallOverlay smallOverlayRight").css(overlayMiddleConfig).css("left", this.options.third * 2)
+          left: jQuery("<div/>").addClass("smallOverlay smallOverlayLeft"),
+          right: jQuery("<div/>").addClass("smallOverlay smallOverlayRight")
         };
+        this.overlay.left.css(overlayMiddleConfig);
+        this.overlay.right.css(overlayMiddleConfig).css("left", this.options.third * 2);
         editable.bind('halloactivated', function() {
           return widget._enableDragging();
         });
@@ -757,13 +759,14 @@ http://hallojs.org
         }
       },
       _calcDropPosition: function(offset, event) {
-        var position;
+        var position, rightTreshold;
         position = offset.left + this.options.third;
-        if (event.pageX >= position && event.pageX <= (offset.left + this.options.third * 2)) {
+        rightTreshold = offset.left + this.options.third * 2;
+        if (event.pageX >= position && event.pageX <= rightTreshold) {
           return 'middle';
         } else if (event.pageX < position) {
           return 'left';
-        } else if (event.pageX > (offset.left + this.options.third * 2)) {
+        } else if (event.pageX > rightTreshold) {
           return 'right';
         }
       },
@@ -812,7 +815,9 @@ http://hallojs.org
       _showOverlay: function(position) {
         var eHeight, editable;
         editable = jQuery(this.options.editable.element);
-        eHeight = editable.height() + parseFloat(editable.css('paddingTop')) + parseFloat(editable.css('paddingBottom'));
+        eHeight = editable.height();
+        eHeight += parseFloat(editable.css('paddingTop'));
+        eHeight += parseFloat(editable.css('paddingBottom'));
         this.overlay.big.css({
           height: eHeight
         });
@@ -824,9 +829,12 @@ http://hallojs.org
         });
         switch (position) {
           case 'left':
-            this.overlay.big.addClass("bigOverlayLeft").removeClass("bigOverlayRight").css({
+            this.overlay.big.addClass("bigOverlayLeft");
+            this.overlay.big.removeClass("bigOverlayRight");
+            this.overlay.big.css({
               left: this.options.third
-            }).show();
+            });
+            this.overlay.big.show();
             this.overlay.left.hide();
             return this.overlay.right.hide();
           case 'middle':
@@ -835,9 +843,12 @@ http://hallojs.org
             this.overlay.left.show();
             return this.overlay.right.show();
           case 'right':
-            this.overlay.big.addClass("bigOverlayRight").removeClass("bigOverlayLeft").css({
+            this.overlay.big.addClass("bigOverlayRight");
+            this.overlay.big.removeClass("bigOverlayLeft");
+            this.overlay.big.css({
               left: 0
-            }).show();
+            });
+            this.overlay.big.show();
             this.overlay.left.hide();
             return this.overlay.right.hide();
         }
@@ -848,7 +859,7 @@ http://hallojs.org
         }
         return false;
       },
-      _createTmpFeedback: function(image, position) {
+      _createFeedback: function(image, position) {
         var el;
         if (position === 'middle') {
           return this._createLineFeedbackElement();
@@ -861,7 +872,7 @@ http://hallojs.org
         widget = this;
         editable = jQuery(this.options.editable);
         postPone = function() {
-          var position;
+          var position, target;
           window.waitWithTrash = clearTimeout(window.waitWithTrash);
           position = widget._calcDropPosition(widget.options.offset, event);
           jQuery('.trashcan', ui.helper).remove();
@@ -869,12 +880,13 @@ http://hallojs.org
           editable.append(widget.overlay.left);
           editable.append(widget.overlay.right);
           widget._removeFeedbackElements();
-          jQuery(event.target).prepend(widget._createTmpFeedback(ui.draggable[0], position));
+          target = jQuery(event.target);
+          target.prepend(widget._createFeedback(ui.draggable[0], position));
           if (position === 'middle') {
-            jQuery(event.target).prepend(widget._createTmpFeedback(ui.draggable[0], 'right'));
+            target.prepend(widget._createFeedback(ui.draggable[0], 'right'));
             jQuery('.halloTmp', event.target).hide();
           } else {
-            jQuery(event.target).prepend(widget._createTmpFeedback(ui.draggable[0], 'middle'));
+            target.prepend(widget._createFeedback(ui.draggable[0], 'middle'));
             jQuery('.halloTmpLine', event.target).hide();
           }
           return widget._showOverlay(position);
@@ -895,7 +907,9 @@ http://hallojs.org
           tmpFeedbackLR.hide();
         } else {
           tmpFeedbackMiddle.hide();
-          tmpFeedbackLR.removeClass('inlineImage-left inlineImage-right').addClass("inlineImage-" + position).show();
+          tmpFeedbackLR.removeClass('inlineImage-left inlineImage-right');
+          tmpFeedbackLR.addClass("inlineImage-" + position);
+          tmpFeedbackLR.show();
         }
         return this._showOverlay(position);
       },
@@ -933,23 +947,28 @@ http://hallojs.org
         return jQuery(document).trigger('stopPreventSave');
       },
       _handleDropEvent: function(event, ui) {
-        var editable, imageInsert, internalDrop, position;
+        var classes, editable, imageInsert, internalDrop, left, position;
         editable = jQuery(this.options.editable.element);
         internalDrop = this._checkOrigin(event);
         position = this._calcDropPosition(this.options.offset, event);
         this._removeFeedbackElements();
         this._removeCustomHelper();
         imageInsert = this._createInsertElement(ui.draggable[0], false);
+        classes = 'inlineImage-middle inlineImage-left inlineImage-right';
         if (position === 'middle') {
           imageInsert.show();
-          imageInsert.removeClass('inlineImage-middle inlineImage-left inlineImage-right');
+          imageInsert.removeClass(classes);
+          left = editable.width();
+          left += parseFloat(editable.css('paddingLeft'));
+          left += parseFloat(editable.css('paddingRight'));
+          left -= imageInsert.attr('width');
           imageInsert.addClass("inlineImage-" + position).css({
             position: 'relative',
-            left: ((editable.width() + parseFloat(editable.css('paddingLeft')) + parseFloat(editable.css('paddingRight'))) - imageInsert.attr('width')) / 2
+            left: left / 2
           });
           imageInsert.insertBefore(jQuery(event.target));
         } else {
-          imageInsert.removeClass('inlineImage-middle inlineImage-left inlineImage-right');
+          imageInsert.removeClass(classes);
           imageInsert.addClass("inlineImage-" + position);
           imageInsert.css('display', 'block');
           jQuery(event.target).prepend(imageInsert);
@@ -1052,12 +1071,13 @@ http://hallojs.org
       },
       _prepareIframe: function(widget) {
         var iframe, iframeName;
-        iframeName = ("" + widget.widgetName + "_postframe_" + widget.options.uuid).replace(/-/g, '_');
+        iframeName = "" + widget.widgetName + "_postframe_" + widget.options.uuid;
+        iframeName = iframeName.replace(/-/g, '_');
         iframe = jQuery("#" + iframeName);
         if (iframe.length) {
           return iframe;
         }
-        iframe = jQuery("<iframe name=\"" + iframeName + "\" id=\"" + iframeName + "\" class=\"hidden\" style=\"display:none\" />");
+        iframe = jQuery("<iframe name=\"" + iframeName + "\" id=\"" + iframeName + "\"        class=\"hidden\" style=\"display:none\" />");
         this.element.append(iframe);
         iframe.get(0).name = iframeName;
         return iframe;
@@ -1109,19 +1129,18 @@ http://hallojs.org
       </div>');
       },
       _init: function() {
-        var widget;
-        widget = this;
-        if (widget.options.searchUrl && !widget.options.searchCallback) {
-          widget.options.searchCallback = widget._ajaxSearch;
+        var _this = this;
+        if (this.options.searchUrl && !this.options.searchCallback) {
+          this.options.searchCallback = this._ajaxSearch;
         }
         jQuery('.activitySpinner', this.element).hide();
         return jQuery('form', this.element).submit(function(event) {
           var query;
           event.preventDefault();
-          jQuery('.activitySpinner', this.element).show();
-          query = jQuery('.searchInput', widget.element).val();
-          return widget.options.searchCallback(query, widget.options.limit, 0, function(results) {
-            return widget._showResults(results);
+          jQuery('.activitySpinner', _this.element).show();
+          query = jQuery('.searchInput', _this.element.element).val();
+          return _this.options.searchCallback(query, _this.options.limit, 0, function(results) {
+            return _this._showResults(results);
           });
         });
       },
@@ -1131,7 +1150,7 @@ http://hallojs.org
         if (!image.label) {
           image.label = image.alt;
         }
-        html = jQuery("<li><img src=\"" + image.url + "\" class=\"imageThumbnail\" title=\"" + image.label + "\"></li>");
+        html = jQuery("<li>        <img src=\"" + image.url + "\" class=\"imageThumbnail\"          title=\"" + image.label + "\"></li>");
         html.bind('click', function() {
           return _this.options.imageWidget.setCurrent(image);
         });
@@ -1142,11 +1161,11 @@ http://hallojs.org
         return jQuery('.imageThumbnailContainer ul', this.element).append(html);
       },
       _showNextPrev: function(results) {
-        var container, widget;
-        widget = this;
+        var container,
+          _this = this;
         container = jQuery('imageThumbnailContainer ul', this.element);
-        container.prepend(jQuery('<div class="pager-prev" style="display:none"></div>'));
-        container.append(jQuery('<div class="pager-next" style="display:none"></div>'));
+        container.prepend(jQuery('<div class="pager-prev" style="display:none" />'));
+        container.append(jQuery('<div class="pager-next" style="display:none" />'));
         if (results.offset > 0) {
           jQuery('.pager-prev', container).show();
         }
@@ -1154,13 +1173,17 @@ http://hallojs.org
           jQuery('.pager-next', container).show();
         }
         jQuery('.pager-prev', container).click(function(event) {
-          return widget.options.searchCallback(query, widget.options.limit, response.offset - widget.options.limit, function(results) {
-            return widget._showResults(results);
+          var offset;
+          offset = results.offset - _this.options.limit;
+          return _this.options.searchCallback(query, _this.options.limit, offset, function(results) {
+            return _this._showResults(results);
           });
         });
         return jQuery('.pager-next', container).click(function(event) {
-          return widget.options.searchCallback(query, widget.options.limit, response.offset + widget.options.limit, function(results) {
-            return widget._showResults(results);
+          var offset;
+          offset = results.offset + _this.options.limit;
+          return _this.options.searchCallback(query, _this.options.limit, offset, function(results) {
+            return _this._showResults(results);
           });
         });
       },
@@ -1196,7 +1219,8 @@ http://hallojs.org
         entity: null,
         vie: null,
         dbPediaUrl: null,
-        getSuggestions: null
+        getSuggestions: null,
+        thumbnailUri: '<http://dbpedia.org/ontology/thumbnail>'
       },
       _create: function() {
         return this.element.html('\
@@ -1235,7 +1259,7 @@ http://hallojs.org
         }));
       },
       _getSuggestions: function() {
-        var normalizedTags, tags;
+        var limit, normalizedTags, tags;
         if (this.loaded) {
           return;
         }
@@ -1250,8 +1274,9 @@ http://hallojs.org
         }
         jQuery('.imageThumbnailContainer ul', this.element).empty();
         normalizedTags = this._normalizeRelated(tags);
+        limit = this.options.limit;
         if (this.options.getSuggestions) {
-          this.options.getSuggestions(normalizedTags, widget.options.limit, 0, this._showSuggestions);
+          this.options.getSuggestions(normalizedTags, limit, 0, this._showSuggestions);
         }
         this._prepareVIE();
         if (this.options.vie.services.dbpedia) {
@@ -1270,7 +1295,7 @@ http://hallojs.org
             jQuery('.activitySpinner', this.element).hide();
             return _.each(entities, function(entity) {
               var img, thumbnail;
-              thumbnail = entity.attributes['<http://dbpedia.org/ontology/thumbnail>'];
+              thumbnail = entity.attributes[widget.options.thumbnailUri];
               if (!thumbnail) {
                 return;
               }
@@ -1291,7 +1316,7 @@ http://hallojs.org
       _showSuggestion: function(image) {
         var html,
           _this = this;
-        html = jQuery("<li><img src=\"" + image.url + "\" class=\"imageThumbnail\" title=\"" + image.label + "\"></li>");
+        html = jQuery("<li>        <img src=\"" + image.url + "\" class=\"imageThumbnail\"          title=\"" + image.label + "\">        </li>");
         html.bind('click', function() {
           return _this.options.imageWidget.setCurrent(image);
         });
@@ -2371,8 +2396,7 @@ http://hallojs.org
           return;
         }
         width = parseFloat(this.element.css('outline-width'));
-        offset = parseFloat(this.element.css('outline-offset'));
-        offset = width + offset;
+        offset = width + parseFloat(this.element.css('outline-offset'));
         return position = {
           top: this.element.offset().top - this.toolbar.outerHeight() - offset,
           left: this.element.offset().left - offset
