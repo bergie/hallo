@@ -16,8 +16,11 @@ test 'Hallo instantiation and destruction', ->
 
   # Activate to get toolbar
   do fixture.focus
-  equal jQuery('.hallotoolbar').length, 1
   ok fixture.hasClass 'inEditMode'
+  ok fixture.data('halloToolbarContextual')
+  equal jQuery('.hallotoolbar').length, 1
+  # Contextual toolbar shouldn't be visible without a selection
+  equal jQuery('.hallotoolbar:visible').length, 0
 
   # Check also the instance data
   instance = fixture.data 'hallo'
@@ -31,6 +34,7 @@ test 'Hallo instantiation and destruction', ->
   do stop
   fixture.hallo 'destroy'
   equal fixture.data('hallo'), undefined
+  equal fixture.data('halloToolbarContextual'), undefined
   equal jQuery('.hallotoolbar').length, 0
   equal fixture.hasClass('inEditMode'), false
 
@@ -89,3 +93,33 @@ test 'Hallo modification events', ->
   fixture.html 'h'
   do stop
   fixture.trigger press
+
+test 'Hallo fixed toolbar', ->
+  fixture = jQuery '.hallo-modified p.editable'
+
+  # Instantiate
+  fixture.hallo
+    toolbar: 'halloToolbarFixed'
+  instance = fixture.data 'hallo'
+
+  # We shouldn't have a toolbar before first focus
+  equal fixture.data('halloToolbarFixed'), undefined
+
+  do fixture.focus
+  ok fixture.data('halloToolbarFixed')
+  equal fixture.data('halloToolbarContextual'), undefined
+  equal jQuery('.hallotoolbar:visible').length, 1
+  equal jQuery('.hallotoolbar:hidden').length, 0
+
+  do fixture.blur
+  equal jQuery('.hallotoolbar:visible').length, 0
+  equal jQuery('.hallotoolbar:hidden').length, 1
+  ok fixture.data('halloToolbarFixed')
+
+  do fixture.focus
+  equal jQuery('.hallotoolbar:visible').length, 1
+  equal jQuery('.hallotoolbar:hidden').length, 0
+
+  do fixture.blur
+  equal jQuery('.hallotoolbar:visible').length, 0
+  equal jQuery('.hallotoolbar:hidden').length, 1

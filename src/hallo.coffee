@@ -132,7 +132,10 @@ http://hallojs.org
 
     destroy: ->
       @disable()
-      @toolbar.remove() if @toolbar
+
+      if @toolbar
+        @toolbar.remove()
+        @element[@options.toolbar] 'destroy'
 
       for plugin, options of @options.plugins
         jQuery(@element)[plugin] 'destroy'

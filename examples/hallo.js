@@ -69,6 +69,7 @@ http://hallojs.org
         this.disable();
         if (this.toolbar) {
           this.toolbar.remove();
+          this.element[this.options.toolbar]('destroy');
         }
         _ref = this.options.plugins;
         for (plugin in _ref) {
