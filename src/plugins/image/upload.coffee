@@ -12,9 +12,10 @@
     _create: ->
       @element.html '
         <form class="upload">
-          <input type="file" class="file" name="userfile" accept="image/*" />
-          <input type="hidden" name="tags" value="" />
-          <button class="uploadSubmit">Upload</button>
+        <input type="file" class="file" name="userfile" accept="image/*" />
+        <input type="hidden" name="tags" value="" />
+        <input type="text" class="caption" name="caption" placeholder="Title" />
+        <button class="uploadSubmit">Upload</button>
         </form>
       '
     _init: ->

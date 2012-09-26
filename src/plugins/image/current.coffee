@@ -19,9 +19,6 @@
             </div>
             <img src="" class="activeImage activeImageBg" />
           </div>
-          <div class="metadata" style="display: none;">
-            <input type="text" class="caption" name="caption" />
-          </div>
         </div>'
       @element.hide()
       @_prepareDnD()
@@ -30,7 +27,6 @@
       editable = jQuery @options.editable.element
       widget = @
       jQuery('img', editable).each (index, elem) ->
-        elem.contentEditable = false
         widget._initDraggable elem, editable
 
       jQuery('p', editable).each (index, elem) ->
@@ -74,7 +70,6 @@
 
       if image.label
         jQuery('input', @element).val image.label
-        jQuery('.metadata', @element).show()
 
       @_initImage jQuery @options.editable.element
 
@@ -100,31 +95,13 @@
 
       tmpImg = new Image()
 
-      # Calculate the size for the image
-      maxWidth = @options.maxWidth
-      maxHeight = @options.maxHeight
       jQuery(tmpImg).bind 'load', ->
-        width = tmpImg.width
-        height = tmpImg.height
-
-        if width > maxWidth or height > maxHeight
-          if width > height
-            ratio = (tmpImg.width / maxWidth).toFixed()
-          else
-            ratio = (tmpImg.height / maxHeight).toFixed()
-          width = (tmpImg.width / ratio).toFixed()
-          height = (tmpImg.height / ratio).toFixed()
-
-        imageInsert.attr
-          width: width
-          height: height
-
       tmpImg.src = image.src
       
       imageInsert.attr
         src: tmpImg.src
         alt: jQuery(image).attr('alt') unless tmp
-        class: if tmp then 'halloTmp' else ''
+        class: if tmp then 'halloTmp' else 'imageInText'
 
       imageInsert.show()
       imageInsert
@@ -133,6 +110,9 @@
       jQuery('<div/>').addClass 'halloTmpLine'
 
     _removeFeedbackElements: ->
+      @overlay.big.remove()
+      @overlay.left.remove()
+      @overlay.right.remove()
       jQuery('.halloTmp, .halloTmpLine', @options.editable.element).remove()
 
     _removeCustomHelper: ->
@@ -192,9 +172,9 @@
 
         jQuery('.trashcan', ui.helper).remove()
 
-        editable.append widget.overlay.big
-        editable.append widget.overlay.left
-        editable.append widget.overlay.right
+        editable[0].element.append widget.overlay.big
+        editable[0].element.append widget.overlay.left
+        editable[0].element.append widget.overlay.right
 
         widget._removeFeedbackElements()
         target = jQuery event.target

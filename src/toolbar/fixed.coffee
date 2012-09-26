@@ -21,11 +21,11 @@
       @_bindEvents()
 
       jQuery(window).resize (event) =>
-        @_updatePosition @_getPosition event
+        @setPosition()
 
       # Make sure the toolbar has not got the full width of the editable
       # element when floating is set to true
-      if @options.parentElement is 'body' and not @options.floating
+      if @options.parentElement is 'body'
         el = jQuery(@element)
         widthToAdd = parseFloat el.css('padding-left')
         widthToAdd += parseFloat el.css('padding-right')
@@ -60,7 +60,7 @@
       return unless @options.parentElement is 'body'
       @toolbar.css 'position', 'absolute'
       @toolbar.css 'top', @element.offset().top - @toolbar.outerHeight()
-      @toolbar.css 'left', @element.offset().left
+      @toolbar.css 'left', @element.offset().left + 10
 
     _updatePosition: (position) ->
       return
@@ -68,7 +68,7 @@
     _bindEvents: ->
       # catch activate -> show
       @element.bind 'halloactivated', (event, data) =>
-        @_updatePosition @_getPosition event
+        @setPosition()
         @toolbar.show()
 
       # catch deactivate -> hide
