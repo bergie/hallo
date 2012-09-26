@@ -30,7 +30,6 @@
       editable = jQuery @options.editable.element
       widget = @
       jQuery('img', editable).each (index, elem) ->
-        elem.contentEditable = false
         widget._initDraggable elem, editable
 
       jQuery('p', editable).each (index, elem) ->
