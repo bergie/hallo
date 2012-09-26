@@ -60,7 +60,7 @@
       return unless @options.parentElement is 'body'
       @toolbar.css 'position', 'absolute'
       @toolbar.css 'top', @element.offset().top - @toolbar.outerHeight()
-      @toolbar.css 'left', @element.offset().left
+      @toolbar.css 'left', @element.offset().left + 10
 
     _updatePosition: (position) ->
       return
