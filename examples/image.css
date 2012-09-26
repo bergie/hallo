@@ -113,6 +113,10 @@
     margin-bottom: 13px;
 }
 
+.imageThumbnailContainer ul {
+    overflow: hidden;
+}
+
 .halloimage-dialog .imageThumbnail:hover {
     border: 1px solid #01add2;
 }
