@@ -95,31 +95,13 @@
 
       tmpImg = new Image()
 
-      # Calculate the size for the image
-      maxWidth = @options.maxWidth
-      maxHeight = @options.maxHeight
       jQuery(tmpImg).bind 'load', ->
-        width = tmpImg.width
-        height = tmpImg.height
-
-        if width > maxWidth or height > maxHeight
-          if width > height
-            ratio = (tmpImg.width / maxWidth).toFixed()
-          else
-            ratio = (tmpImg.height / maxHeight).toFixed()
-          width = (tmpImg.width / ratio).toFixed()
-          height = (tmpImg.height / ratio).toFixed()
-
-        imageInsert.attr
-          width: width
-          height: height
-
       tmpImg.src = image.src
       
       imageInsert.attr
         src: tmpImg.src
         alt: jQuery(image).attr('alt') unless tmp
-        class: if tmp then 'halloTmp' else ''
+        class: if tmp then 'halloTmp' else 'imageInText'
 
       imageInsert.show()
       imageInsert
@@ -128,6 +110,9 @@
       jQuery('<div/>').addClass 'halloTmpLine'
 
     _removeFeedbackElements: ->
+      @overlay.big.remove()
+      @overlay.left.remove()
+      @overlay.right.remove()
       jQuery('.halloTmp, .halloTmpLine', @options.editable.element).remove()
 
     _removeCustomHelper: ->
