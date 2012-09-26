@@ -19,9 +19,6 @@
             </div>
             <img src="" class="activeImage activeImageBg" />
           </div>
-          <div class="metadata" style="display: none;">
-            <input type="text" class="caption" name="caption" />
-          </div>
         </div>'
       @element.hide()
       @_prepareDnD()
@@ -73,7 +70,6 @@
 
       if image.label
         jQuery('input', @element).val image.label
-        jQuery('.metadata', @element).show()
 
       @_initImage jQuery @options.editable.element
 

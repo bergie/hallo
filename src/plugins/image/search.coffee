@@ -12,7 +12,7 @@
     _create: ->
       @element.html '<div>
         <form method="get">
-          <input type="text" class="searchInput" />
+          <input type="text" class="searchInput" placeholder="Search" />
           <input type="submit" class="btn searchButton" value="OK" />
         </form>
         <div class="searchResults imageThumbnailContainer">
