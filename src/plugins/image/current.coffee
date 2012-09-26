@@ -192,9 +192,9 @@
 
         jQuery('.trashcan', ui.helper).remove()
 
-        editable.append widget.overlay.big
-        editable.append widget.overlay.left
-        editable.append widget.overlay.right
+        editable[0].element.append widget.overlay.big
+        editable[0].element.append widget.overlay.left
+        editable[0].element.append widget.overlay.right
 
         widget._removeFeedbackElements()
         target = jQuery event.target
