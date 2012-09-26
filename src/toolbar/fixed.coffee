@@ -21,7 +21,7 @@
       @_bindEvents()
 
       jQuery(window).resize (event) =>
-        @_updatePosition @_getPosition event
+        @setPosition()
 
       # Make sure the toolbar has not got the full width of the editable
       # element when floating is set to true
@@ -68,7 +68,7 @@
     _bindEvents: ->
       # catch activate -> show
       @element.bind 'halloactivated', (event, data) =>
-        @_updatePosition @_getPosition event
+        @setPosition()
         @toolbar.show()
 
       # catch deactivate -> hide
