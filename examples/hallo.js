@@ -2127,15 +2127,27 @@ http://hallojs.org
         this.toolbar.css('top', this.element.offset().top - 20);
         return this.toolbar.css('left', this.element.offset().left);
       },
-      _updatePosition: function(position) {
+      _updatePosition: function(position, selection) {
+        var left, selectionRect, top;
+        if (selection == null) {
+          selection = null;
+        }
         if (!position) {
           return;
         }
         if (!(position.top && position.left)) {
           return;
         }
-        this.toolbar.css('top', position.top);
-        return this.toolbar.css('left', position.left);
+        if (selection && !selection.collapsed && selection.nativeRange) {
+          selectionRect = selection.nativeRange.getBoundingClientRect();
+          top = $(window).scrollTop() + selectionRect.top;
+          left = $(window).scrollLeft() + selectionRect.left;
+        } else {
+          top = position.top - 10;
+          left = position.left - this.toolbar.outerWidth() / 2 + 30;
+        }
+        this.toolbar.css('top', top - (this.toolbar.outerHeight() + 10));
+        return this.toolbar.css('left', left);
       },
       _bindEvents: function() {
         var _this = this;
@@ -2145,7 +2157,7 @@ http://hallojs.org
           if (!position) {
             return;
           }
-          _this._updatePosition(position);
+          _this._updatePosition(position, data.selection);
           return _this.toolbar.show();
         });
         this.element.bind('hallounselected', function(event, data) {
