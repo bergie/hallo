@@ -59,8 +59,9 @@
       return unless position
       return unless position.top and position.left
 
-      # In case there is a selction, move toolbar on top of a selection
-      # else move it on top of current position, center it and move
+      # In case there is a selection, move toolbar on top of it and align with
+      # start of selection.
+      # Else move it on top of current position, center it and move
       # it slightly to the right.
       if selection and !selection.collapsed and selection.nativeRange
         selectionRect = selection.nativeRange.getBoundingClientRect()
