@@ -126,7 +126,6 @@
       jQuery(@options.editable.element).delegate "img", "click", (event) ->
         widget._openDialog()
 
-      buttonset.buttonset()
       toolbar.append buttonset
 
       @options.dialog.dialog(@options.dialogOpts)

@@ -1628,7 +1628,6 @@ http://hallojs.org
         jQuery(this.options.editable.element).delegate("img", "click", function(event) {
           return widget._openDialog();
         });
-        buttonset.buttonset();
         toolbar.append(buttonset);
         this.options.dialog.dialog(this.options.dialogOpts);
         return this._handleTabs();
