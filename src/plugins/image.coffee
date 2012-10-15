@@ -174,7 +174,7 @@
       toolbarEl = jQuery @options.toolbar
       xposition = editableEl.offset().left + editableEl.outerWidth() - 3
       # 3 is the border width of the contenteditable border
-      yposition = toolbarEl.offset().top - jQuery(document).scrollTop() - 29
+      yposition = toolbarEl.offset().top + toolbarEl.outerHeight() - jQuery(document).scrollTop() + 29
       @options.dialog.dialog("option", "position", [xposition, yposition])
       # do @_getSuggestions
  
