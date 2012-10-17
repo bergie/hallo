@@ -55,18 +55,30 @@
       @toolbar.css 'top', @element.offset().top - 20
       @toolbar.css 'left', @element.offset().left
 
-    _updatePosition: (position) ->
+    _updatePosition: (position, selection=null) ->
       return unless position
       return unless position.top and position.left
-      @toolbar.css 'top', position.top
-      @toolbar.css 'left', position.left
+
+      # In case there is a selection, move toolbar on top of it and align with
+      # start of selection.
+      # Else move it on top of current position, center it and move
+      # it slightly to the right.
+      if selection and !selection.collapsed and selection.nativeRange
+        selectionRect = selection.nativeRange.getBoundingClientRect()
+        top = $(window).scrollTop() + selectionRect.top
+        left = $(window).scrollLeft() + selectionRect.left
+      else
+        top = position.top - 10
+        left = position.left - @toolbar.outerWidth() / 2 + 30
+      @toolbar.css 'top', top - (@toolbar.outerHeight() + 10)
+      @toolbar.css 'left', left
 
     _bindEvents: ->
       # catch select -> show (and reposition?)
       @element.bind 'halloselected', (event, data) =>
         position = @_getPosition data.originalEvent, data.selection
         return unless position
-        @_updatePosition position
+        @_updatePosition position, data.selection
         @toolbar.show()
 
       # catch deselect -> hide
