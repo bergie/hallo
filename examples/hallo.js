@@ -27,6 +27,7 @@ http://hallojs.org
         parentElement: 'body',
         buttonCssClass: null,
         toolbarCssClass: null,
+        toolbarPositionAbove: false,
         placeholder: '',
         forceStructured: true,
         checkTouch: true,
@@ -250,7 +251,8 @@ http://hallojs.org
         this.element[this.options.toolbar]({
           editable: this,
           parentElement: this.options.parentElement,
-          toolbar: this.toolbar
+          toolbar: this.toolbar,
+          positionAbove: this.options.toolbarPositionAbove
         });
         for (plugin in this.options.plugins) {
           populate = jQuery(this.element).data(plugin).populateToolbar;
@@ -2074,7 +2076,8 @@ http://hallojs.org
       options: {
         parentElement: 'body',
         editable: null,
-        toolbar: null
+        toolbar: null,
+        positionAbove: false
       },
       _create: function() {
         var _this = this;
@@ -2128,7 +2131,7 @@ http://hallojs.org
         return this.toolbar.css('left', this.element.offset().left);
       },
       _updatePosition: function(position, selection) {
-        var left, selectionRect, top;
+        var left, selectionRect, toolbar_height_offset, top, top_offset;
         if (selection == null) {
           selection = null;
         }
@@ -2138,15 +2141,18 @@ http://hallojs.org
         if (!(position.top && position.left)) {
           return;
         }
+        toolbar_height_offset = this.toolbar.outerHeight() + 10;
         if (selection && !selection.collapsed && selection.nativeRange) {
           selectionRect = selection.nativeRange.getBoundingClientRect();
-          top = $(window).scrollTop() + selectionRect.top;
+          top_offset = this.options.positionAbove ? selectionRect.top - toolbar_height_offset : selectionRect.bottom + 10;
+          top = $(window).scrollTop() + top_offset;
           left = $(window).scrollLeft() + selectionRect.left;
         } else {
-          top = position.top - 10;
+          top_offset = this.options.positionAbove ? -10 - toolbar_height_offset : 20;
+          top = position.top + top_offset;
           left = position.left - this.toolbar.outerWidth() / 2 + 30;
         }
-        this.toolbar.css('top', top - (this.toolbar.outerHeight() + 10));
+        this.toolbar.css('top', top);
         return this.toolbar.css('left', left);
       },
       _bindEvents: function() {
