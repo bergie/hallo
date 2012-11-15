@@ -98,6 +98,7 @@ http://hallojs.org
       parentElement: 'body'
       buttonCssClass: null
       toolbarCssClass: null
+      toolbarPositionAbove: false
       placeholder: ''
       forceStructured: true
       checkTouch: true
@@ -296,6 +297,7 @@ http://hallojs.org
         editable: @
         parentElement: @options.parentElement
         toolbar: @toolbar
+        positionAbove: @options.toolbarPositionAbove
 
       for plugin of @options.plugins
         populate = jQuery(@element).data(plugin).populateToolbar

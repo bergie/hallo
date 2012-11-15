@@ -14,6 +14,7 @@
         width: 540
         height: 95
         title: "Enter Link"
+        buttonTitle: "Insert"
         modal: true
         resizable: false
         draggable: false
@@ -24,11 +25,12 @@
       widget = this
 
       dialogId = "#{@options.uuid}-dialog"
+      butTitle = @options.dialogOpts.buttonTitle
       dialog = jQuery "<div id=\"#{dialogId}\">
         <form action=\"#\" method=\"post\" class=\"linkForm\">
           <input class=\"url\" type=\"text\" name=\"url\"
             value=\"#{@options.defaultUrl}\" />
-          <input type=\"submit\" id=\"addlinkButton\" value=\"Insert\" />
+          <input type=\"submit\" id=\"addlinkButton\" value=\"#{butTitle}\"/>
         </form></div>"
       urlInput = jQuery('input[name=url]', dialog).focus (e)->
         this.select()
