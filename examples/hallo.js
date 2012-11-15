@@ -1929,9 +1929,10 @@ http://hallojs.org
       return $.ajax({
         url: this.options.insert_file_dialog_ui_url,
         success: function(data, textStatus, jqXHR) {
-          var file_select_title, t;
+          var $properties, file_select_title, t;
           file_select_title = '';
-          if (widget.options.dialog.children('#hallo_img_properties').is(':visible')) {
+          $properties = widget.options.dialog.children('#hallo_img_properties');
+          if ($properties.is(':visible')) {
             file_select_title = widget.texts.change_image;
           }
           t = "<div id='hallo_img_file_select_title'>" + file_select_title + "</div>";
@@ -2035,7 +2036,9 @@ http://hallojs.org
           button = "<button id=\"insert_image_btn\">" + this.texts.insert + "</button>";
           $img_properties.after(button);
           return $('#insert_image_btn').click(function() {
-            return widget._insert_image($('#hallo_img_properties #hallo_img_source').val());
+            var $img_source;
+            $img_source = $('#hallo_img_properties #hallo_img_source');
+            return widget._insert_image($img_source.val());
           });
         }
       }
@@ -2199,11 +2202,12 @@ http://hallojs.org
         buttonCssClass: null
       },
       populateToolbar: function(toolbar) {
-        var buttonize, buttonset, dialog, dialogId, dialogSubmitCb, isEmptyLink, urlInput, widget,
+        var butTitle, buttonize, buttonset, dialog, dialogId, dialogSubmitCb, isEmptyLink, urlInput, widget,
           _this = this;
         widget = this;
         dialogId = "" + this.options.uuid + "-dialog";
-        dialog = jQuery("<div id=\"" + dialogId + "\">        <form action=\"#\" method=\"post\" class=\"linkForm\">          <input class=\"url\" type=\"text\" name=\"url\"            value=\"" + this.options.defaultUrl + "\" />          <input type=\"submit\" id=\"addlinkButton\" value=\"" + this.options.dialogOpts.buttonTitle + "\" />        </form></div>");
+        butTitle = this.options.dialogOpts.buttonTitle;
+        dialog = jQuery("<div id=\"" + dialogId + "\">        <form action=\"#\" method=\"post\" class=\"linkForm\">          <input class=\"url\" type=\"text\" name=\"url\"            value=\"" + this.options.defaultUrl + "\" />          <input type=\"submit\" id=\"addlinkButton\" value=\"" + butTitle + "\"/>        </form></div>");
         urlInput = jQuery('input[name=url]', dialog).focus(function(e) {
           return this.select();
         });
@@ -2587,11 +2591,19 @@ http://hallojs.org
         toolbar_height_offset = this.toolbar.outerHeight() + 10;
         if (selection && !selection.collapsed && selection.nativeRange) {
           selectionRect = selection.nativeRange.getBoundingClientRect();
-          top_offset = this.options.positionAbove ? selectionRect.top - toolbar_height_offset : selectionRect.bottom + 10;
+          if (this.options.positionAbove) {
+            top_offset = selectionRect.top - toolbar_height_offset;
+          } else {
+            top_offset = selectionRect.bottom + 10;
+          }
           top = $(window).scrollTop() + top_offset;
           left = $(window).scrollLeft() + selectionRect.left;
         } else {
-          top_offset = this.options.positionAbove ? -10 - toolbar_height_offset : 20;
+          if (this.options.positionAbove) {
+            top_offset = -10 - toolbar_height_offset;
+          } else {
+            top_offset = 20;
+          }
           top = position.top + top_offset;
           left = position.left - this.toolbar.outerWidth() / 2 + 30;
         }
@@ -2890,7 +2902,7 @@ http://hallojs.org
         var buttonEl, classes, id;
         id = "" + this.options.uuid + "-" + this.options.label;
         classes = ['ui-button', 'ui-widget', 'ui-state-default', 'ui-corner-all', 'ui-button-text-only'];
-        buttonEl = jQuery("<button id=\"" + id + "\"        class=\"" + (classes.join(' ')) + "\" title=\"" + this.options.label + "\">         <span class=\"ui-button-text\"> <i class=\"" + this.options.icon + "\"></i> </span>       </button>");
+        buttonEl = jQuery("<button id=\"" + id + "\"       class=\"" + (classes.join(' ')) + "\" title=\"" + this.options.label + "\">       <span class=\"ui-button-text\"><i class=\"" + this.options.icon + "\"></i></span>       </button>");
         if (this.options.cssClass) {
           buttonEl.addClass(this.options.cssClass);
         }

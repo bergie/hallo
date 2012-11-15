@@ -66,8 +66,8 @@
         'ui-button-text-only'
       ]
       buttonEl = jQuery "<button id=\"#{id}\"
-        class=\"#{classes.join(' ')}\" title=\"#{@options.label}\">
-         <span class=\"ui-button-text\"> <i class=\"#{@options.icon}\"></i> </span>
+       class=\"#{classes.join(' ')}\" title=\"#{@options.label}\">
+       <span class=\"ui-button-text\"><i class=\"#{@options.icon}\"></i></span>
        </button>"
       buttonEl.addClass @options.cssClass if @options.cssClass
       buttonEl

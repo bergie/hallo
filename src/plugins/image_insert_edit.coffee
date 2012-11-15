@@ -199,7 +199,8 @@ $.widget "ncri.hallo-image-insert-edit",
       url: @options.insert_file_dialog_ui_url
       success: (data, textStatus, jqXHR) ->
         file_select_title = ''
-        if widget.options.dialog.children('#hallo_img_properties').is(':visible')
+        $properties = widget.options.dialog.children('#hallo_img_properties')
+        if $properties.is(':visible')
           file_select_title = widget.texts.change_image
 
         t = "<div id='hallo_img_file_select_title'>#{file_select_title}</div>"
@@ -239,7 +240,8 @@ $.widget "ncri.hallo-image-insert-edit",
           @$image.css('float') == 'right',
           { label: @texts.float_right, row: false } ) +
         @_property_cb_html( 'unfloat',
-          @$image.css('float') == 'none', { label: @texts.float_none, row: false } ),
+          @$image.css('float') == 'none',
+          { label: @texts.float_none, row: false } ),
       @texts.float)
       $img_properties.html html
       $img_properties.show()
@@ -296,7 +298,8 @@ $.widget "ncri.hallo-image-insert-edit",
         button = "<button id=\"insert_image_btn\">#{@texts.insert}</button>"
         $img_properties.after button
         $('#insert_image_btn').click ->
-          widget._insert_image $('#hallo_img_properties #hallo_img_source').val()
+          $img_source = $('#hallo_img_properties #hallo_img_source')
+          widget._insert_image $img_source.val()
 
 
   _property_col_html: (col_html) ->
