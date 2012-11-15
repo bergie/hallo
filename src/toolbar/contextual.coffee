@@ -11,6 +11,7 @@
       parentElement: 'body'
       editable: null
       toolbar: null
+      positionAbove: false
 
     _create: ->
       @toolbar = @options.toolbar
@@ -63,14 +64,24 @@
       # start of selection.
       # Else move it on top of current position, center it and move
       # it slightly to the right.
+      toolbar_height_offset = this.toolbar.outerHeight() + 10
       if selection and !selection.collapsed and selection.nativeRange
         selectionRect = selection.nativeRange.getBoundingClientRect()
-        top = $(window).scrollTop() + selectionRect.top
+        if this.options.positionAbove
+          top_offset = selectionRect.top - toolbar_height_offset
+        else
+          top_offset = selectionRect.bottom + 10
+
+        top = $(window).scrollTop() + top_offset
         left = $(window).scrollLeft() + selectionRect.left
       else
-        top = position.top - 10
+        if this.options.positionAbove
+          top_offset = -10 - toolbar_height_offset
+        else
+          top_offset = 20
+        top = position.top + top_offset
         left = position.left - @toolbar.outerWidth() / 2 + 30
-      @toolbar.css 'top', top - (@toolbar.outerHeight() + 10)
+      @toolbar.css 'top', top
       @toolbar.css 'left', left
 
     _bindEvents: ->
@@ -79,7 +90,8 @@
         position = @_getPosition data.originalEvent, data.selection
         return unless position
         @_updatePosition position, data.selection
-        @toolbar.show()
+        if @toolbar.html() != ''
+          @toolbar.show()
 
       # catch deselect -> hide
       @element.bind 'hallounselected', (event, data) =>
