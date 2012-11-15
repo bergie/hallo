@@ -14,6 +14,7 @@
         width: 540
         height: 95
         title: "Enter Link"
+        buttonTitle: "Insert"
         modal: true
         resizable: false
         draggable: false
@@ -28,7 +29,7 @@
         <form action=\"#\" method=\"post\" class=\"linkForm\">
           <input class=\"url\" type=\"text\" name=\"url\"
             value=\"#{@options.defaultUrl}\" />
-          <input type=\"submit\" id=\"addlinkButton\" value=\"Insert\" />
+          <input type=\"submit\" id=\"addlinkButton\" value=\"#{@options.dialogOpts.buttonTitle}\" />
         </form></div>"
       urlInput = jQuery('input[name=url]', dialog).focus (e)->
         this.select()

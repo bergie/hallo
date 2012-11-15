@@ -589,6 +589,100 @@ http://hallojs.org
     });
   })(jQuery);
 
+  $.widget("ncri.hallohtml", {
+    options: {
+      editable: null,
+      toolbar: null,
+      uuid: "",
+      lang: 'en',
+      dialogOpts: {
+        autoOpen: false,
+        width: 600,
+        height: 'auto',
+        modal: false,
+        resizable: true,
+        draggable: true,
+        dialogClass: 'htmledit-dialog'
+      },
+      dialog: null,
+      buttonCssClass: null
+    },
+    translations: {
+      en: {
+        title: 'Edit HTML',
+        update: 'Update'
+      },
+      de: {
+        title: 'HTML bearbeiten',
+        update: 'Aktualisieren'
+      }
+    },
+    texts: null,
+    populateToolbar: function($toolbar) {
+      var $buttonHolder, $buttonset, id, widget;
+      widget = this;
+      this.texts = this.translations[this.options.lang];
+      this.options.toolbar = $toolbar;
+      this.options.dialog = $("<div>").attr('id', "" + this.options.uuid + "-htmledit-dialog");
+      $buttonset = $("<span>").addClass(widget.widgetName);
+      id = "" + this.options.uuid + "-htmledit";
+      $buttonHolder = $('<span>');
+      $buttonHolder.hallobutton({
+        label: this.texts.title,
+        icon: 'icon-list-alt',
+        editable: this.options.editable,
+        command: null,
+        queryState: false,
+        uuid: this.options.uuid,
+        cssClass: this.options.buttonCssClass
+      });
+      $buttonset.append($buttonHolder);
+      this.button = $buttonHolder;
+      this.button.click(function() {
+        if (widget.options.dialog.dialog("isOpen")) {
+          widget._closeDialog();
+        } else {
+          widget._openDialog();
+        }
+        return false;
+      });
+      this.options.editable.element.on("hallodeactivated", function() {
+        return widget._closeDialog();
+      });
+      $toolbar.append($buttonset);
+      this.options.dialog.dialog(this.options.dialogOpts);
+      return this.options.dialog.dialog("option", "title", this.texts.title);
+    },
+    _openDialog: function() {
+      var $editableEl, html, widget, xposition, yposition,
+        _this = this;
+      widget = this;
+      $editableEl = $(this.options.editable.element);
+      xposition = $editableEl.offset().left + $editableEl.outerWidth() + 10;
+      yposition = this.options.toolbar.offset().top - $(document).scrollTop();
+      this.options.dialog.dialog("option", "position", [xposition, yposition]);
+      this.options.editable.keepActivated(true);
+      this.options.dialog.dialog("open");
+      this.options.dialog.bind('dialogclose', function() {
+        $('label', _this.button).removeClass('ui-state-active');
+        _this.options.editable.element.focus();
+        return _this.options.editable.keepActivated(false);
+      });
+      this.options.dialog.html($("<textarea>").addClass('html_source'));
+      html = this.options.editable.element.html();
+      this.options.dialog.children('.html_source').val(html);
+      this.options.dialog.prepend($("<button>" + this.texts.update + "</button>"));
+      return this.options.dialog.on('click', 'button', function() {
+        widget.options.editable.element.html(widget.options.dialog.children('.html_source').val());
+        widget.options.editable.element.trigger('change');
+        return false;
+      });
+    },
+    _closeDialog: function() {
+      return this.options.dialog.dialog("close");
+    }
+  });
+
   (function(jQuery) {
     return jQuery.widget("Liip.hallooverlay", {
       options: {
@@ -1742,6 +1836,334 @@ http://hallojs.org
     });
   })(jQuery);
 
+  $.widget("ncri.hallo-image-insert-edit", {
+    options: {
+      editable: null,
+      toolbar: null,
+      uuid: "",
+      insert_file_dialog_ui_url: null,
+      lang: 'en',
+      dialogOpts: {
+        autoOpen: false,
+        width: 560,
+        height: 'auto',
+        modal: false,
+        resizable: true,
+        draggable: true,
+        dialogClass: 'insert-image-dialog'
+      },
+      dialog: null,
+      buttonCssClass: null
+    },
+    translations: {
+      en: {
+        title_insert: 'Insert Image',
+        title_properties: 'Image Properties',
+        insert: 'Insert',
+        chage_image: 'Change Image:',
+        source: 'URL',
+        width: 'Width',
+        height: 'Height',
+        alt: 'Alt Text',
+        padding: 'Padding',
+        float: 'Float',
+        float_left: 'left',
+        float_right: 'right',
+        float_none: 'No'
+      },
+      de: {
+        title_insert: 'Bild einfügen',
+        title_properties: 'Bild Eigenschaften',
+        insert: 'Einfügen',
+        chage_image: 'Bild ändern:',
+        source: 'URL',
+        width: 'Breite',
+        height: 'Höhe',
+        alt: 'Alt Text',
+        padding: 'Padding',
+        float: 'Float',
+        float_left: 'Links',
+        float_right: 'Rechts',
+        float_none: 'Nein'
+      }
+    },
+    texts: null,
+    dialog_image_selection_ui_loaded: false,
+    $image: null,
+    populateToolbar: function($toolbar) {
+      var $buttonHolder, $buttonset, dialog_html, widget;
+      widget = this;
+      this.texts = this.translations[this.options.lang];
+      this.options.toolbar = $toolbar;
+      dialog_html = "<div id='hallo_img_properties'></div>";
+      if (this.options.insert_file_dialog_ui_url) {
+        dialog_html += "<div id='hallo_img_file_select_ui'></div>";
+      }
+      this.options.dialog = $("<div>").attr('id', "" + this.options.uuid + "-insert-image-dialog").html(dialog_html);
+      $buttonset = $("<span>").addClass(this.widgetName);
+      $buttonHolder = $('<span>');
+      $buttonHolder.hallobutton({
+        label: this.texts.title_insert,
+        icon: 'icon-picture',
+        editable: this.options.editable,
+        command: null,
+        queryState: false,
+        uuid: this.options.uuid,
+        cssClass: this.options.buttonCssClass
+      });
+      $buttonset.append($buttonHolder);
+      this.button = $buttonHolder;
+      this.button.click(function() {
+        if (widget.options.dialog.dialog("isOpen")) {
+          widget._closeDialog();
+        } else {
+          widget.lastSelection = widget.options.editable.getSelection();
+          widget._openDialog();
+        }
+        return false;
+      });
+      this.options.editable.element.on("halloselected, hallounselected", function() {
+        if (widget.options.dialog.dialog("isOpen")) {
+          return widget.lastSelection = widget.options.editable.getSelection();
+        }
+      });
+      this.options.editable.element.on("hallodeactivated", function() {
+        return widget._closeDialog();
+      });
+      $(this.options.editable.element).on("click", "img", function(e) {
+        widget._openDialog($(this));
+        return false;
+      });
+      this.options.editable.element.on('halloselected', function(event, data) {
+        if (widget.options.editable.options.toolbar === "halloToolbarContextual" && $(data.originalEvent.target).is('img')) {
+          $toolbar.hide();
+          return false;
+        }
+      });
+      $toolbar.append($buttonset);
+      return this.options.dialog.dialog(this.options.dialogOpts);
+    },
+    _openDialog: function($image) {
+      var $editableEl, widget, xposition, yposition,
+        _this = this;
+      this.$image = $image;
+      widget = this;
+      $editableEl = $(this.options.editable.element);
+      xposition = $editableEl.offset().left + $editableEl.outerWidth() + 10;
+      if (this.$image) {
+        yposition = this.$image.offset().top - $(document).scrollTop();
+      } else {
+        yposition = this.options.toolbar.offset().top - $(document).scrollTop();
+      }
+      this.options.dialog.dialog("option", "position", [xposition, yposition]);
+      this.options.editable.keepActivated(true);
+      this.options.dialog.dialog("open");
+      if (this.$image) {
+        this.options.dialog.dialog("option", "title", this.texts.title_properties);
+        $(document).keyup(function(e) {
+          if (e.keyCode === 46 || e.keyCode === 8) {
+            $(document).off();
+            widget._closeDialog();
+            widget.$image.remove();
+            widget.$image = null;
+          }
+          return e.preventDefault();
+        });
+        this.options.editable.element.on("click", function() {
+          widget.$image = null;
+          return widget._closeDialog();
+        });
+      } else {
+        this.options.dialog.children('#hallo_img_properties').hide();
+        this.options.dialog.dialog("option", "title", this.texts.title_insert);
+        if ($('#hallo_img_file_select_title').length > 0) {
+          $('#hallo_img_file_select_title').text('');
+        }
+      }
+      this._load_dialog_image_properties_ui();
+      this.options.dialog.bind('dialogclose', function() {
+        var scrollbar_pos;
+        $('label', _this.button).removeClass('ui-state-active');
+        scrollbar_pos = $(document).scrollTop();
+        _this.options.editable.element.focus();
+        $(document).scrollTop(scrollbar_pos);
+        return _this.options.editable.keepActivated(false);
+      });
+      if (this.options.insert_file_dialog_ui_url && !this.dialog_image_selection_ui_loaded) {
+        this.options.dialog.on('click', ".reload_link", function() {
+          widget._load_dialog_image_selection_ui();
+          return false;
+        });
+        this.options.dialog.on('click', '.file_preview img', function() {
+          var new_source;
+          if (widget.$image) {
+            new_source = $(this).attr('src').replace(/-thumb/, '');
+            widget.$image.attr('src', new_source);
+            $('#hallo_img_source').val(new_source);
+          } else {
+            widget._insert_image($(this).attr('src').replace(/-thumb/, ''));
+          }
+          return false;
+        });
+        return this._load_dialog_image_selection_ui();
+      }
+    },
+    _insert_image: function(source) {
+      this.options.editable.restoreSelection(this.lastSelection);
+      document.execCommand("insertImage", null, source);
+      this.options.editable.element.trigger('change');
+      this.options.editable.removeAllSelections();
+      return this._closeDialog();
+    },
+    _closeDialog: function() {
+      return this.options.dialog.dialog("close");
+    },
+    _load_dialog_image_selection_ui: function() {
+      var widget;
+      widget = this;
+      return $.ajax({
+        url: this.options.insert_file_dialog_ui_url,
+        success: function(data, textStatus, jqXHR) {
+          var file_select_title;
+          file_select_title = widget.options.dialog.children('#hallo_img_properties').is(':visible') ? widget.texts.change_image : '';
+          widget.options.dialog.children('#hallo_img_file_select_ui').html(("<div id='hallo_img_file_select_title'>" + file_select_title + "</div>") + data);
+          return widget.dialog_image_selection_ui_loaded = true;
+        },
+        beforeSend: function() {
+          return widget.options.dialog.children('#hallo_img_file_select_ui').html('<div class="hallo_insert_file_loader"></div>');
+        }
+      });
+    },
+    _load_dialog_image_properties_ui: function() {
+      var $img_properties, html, widget;
+      widget = this;
+      $img_properties = this.options.dialog.children('#hallo_img_properties');
+      if (this.$image) {
+        html = this._property_input_html('source', this.$image.attr('src'), {
+          label: this.texts.source
+        }) + this._property_input_html('alt', this.$image.attr('alt') || '', {
+          label: this.texts.alt
+        }) + this._property_row_html(this._property_input_html('width', (this.$image.is('[width]') ? this.$image.attr('width') : ''), {
+          label: this.texts.width,
+          row: false
+        }) + this._property_input_html('height', (this.$image.is('[height]') ? this.$image.attr('height') : ''), {
+          label: this.texts.height,
+          row: false
+        })) + this._property_input_html('padding', this.$image.css('padding'), {
+          label: this.texts.padding
+        }) + this._property_row_html(this._property_cb_html('float_left', this.$image.css('float') === 'left', {
+          label: this.texts.float_left,
+          row: false
+        }) + this._property_cb_html('float_right', this.$image.css('float') === 'right', {
+          label: this.texts.float_right,
+          row: false
+        }) + this._property_cb_html('unfloat', this.$image.css('float') === 'none', {
+          label: this.texts.float_none,
+          row: false
+        }), this.texts.float);
+        $img_properties.html(html);
+        $img_properties.show();
+      } else {
+        if (!this.options.insert_file_dialog_ui_url) {
+          $img_properties.html(this._property_input_html('source', '', {
+            label: this.texts.source
+          }));
+          $img_properties.show();
+        }
+      }
+      if (this.$image) {
+        if (!this.options.insert_file_dialog_ui_url) {
+          $('#insert_image_btn').remove();
+        }
+        if ($('#hallo_img_file_select_title').length > 0) {
+          $('#hallo_img_file_select_title').text(this.texts.chage_image);
+        }
+        $('#hallo_img_properties #hallo_img_source').keyup(function() {
+          return widget.$image.attr('src', this.value);
+        });
+        $('#hallo_img_properties #hallo_img_alt').keyup(function() {
+          return widget.$image.attr('alt', this.value);
+        });
+        $('#hallo_img_properties #hallo_img_padding').keyup(function() {
+          return widget.$image.css('padding', this.value);
+        });
+        $('#hallo_img_properties #hallo_img_height').keyup(function() {
+          widget.$image.css('height', this.value);
+          return widget.$image.attr('height', this.value);
+        });
+        $('#hallo_img_properties #hallo_img_width').keyup(function() {
+          widget.$image.css('width', this.value);
+          return widget.$image.attr('width', this.value);
+        });
+        $('#hallo_img_properties #hallo_img_float_left').click(function() {
+          if (!this.checked) {
+            return false;
+          }
+          widget.$image.css('float', 'left');
+          $('#hallo_img_properties #hallo_img_float_right').removeAttr('checked');
+          return $('#hallo_img_properties #hallo_img_unfloat').removeAttr('checked');
+        });
+        $('#hallo_img_properties #hallo_img_float_right').click(function() {
+          if (!this.checked) {
+            return false;
+          }
+          widget.$image.css('float', 'right');
+          $('#hallo_img_properties #hallo_img_unfloat').removeAttr('checked');
+          return $('#hallo_img_properties #hallo_img_float_left').removeAttr('checked');
+        });
+        return $('#hallo_img_properties #hallo_img_unfloat').click(function() {
+          if (!this.checked) {
+            return false;
+          }
+          widget.$image.css('float', 'none');
+          $('#hallo_img_properties #hallo_img_float_right').removeAttr('checked');
+          return $('#hallo_img_properties #hallo_img_float_left').removeAttr('checked');
+        });
+      } else {
+        if (!this.options.insert_file_dialog_ui_url) {
+          $img_properties.after("<button id=\"insert_image_btn\">" + this.texts.insert + "</button>");
+          return $('#insert_image_btn').click(function() {
+            return widget._insert_image($('#hallo_img_properties #hallo_img_source').val());
+          });
+        }
+      }
+    },
+    _property_col_html: function(col_html) {
+      return "<div class='hallo_img_property_col'>" + col_html + "</div>";
+    },
+    _property_row_html: function(row_html, label) {
+      if (label == null) {
+        label = '';
+      }
+      return "<div class='hallo_img_property_row'>" + (this._property_col_html(label) + this._property_col_html(row_html)) + "</div>";
+    },
+    _property_html: function(property_html, options) {
+      if (options == null) {
+        options = {};
+      }
+      if (options.row === false) {
+        if (options.label) {
+          property_html = "<span class='img_property_entry'>" + options.label + " " + property_html + "</span>";
+        }
+        return property_html;
+      } else {
+        return this._property_row_html("<span class='img_property_entry'>" + property_html + "</span>", options.label);
+      }
+    },
+    _property_input_html: function(id, value, options) {
+      if (options == null) {
+        options = {};
+      }
+      return this._property_html("<input type='text' id='hallo_img_" + id + "' value='" + value + "'>", options);
+    },
+    _property_cb_html: function(id, checked, options) {
+      if (options == null) {
+        options = {};
+      }
+      return this._property_html("<input type='checkbox' id='hallo_img_" + id + "' " + (checked ? 'checked=checked' : '') + "'>", options);
+    }
+  });
+
   (function(jQuery) {
     return jQuery.widget("IKS.halloformat", {
       options: {
@@ -1920,6 +2342,7 @@ http://hallojs.org
           width: 540,
           height: 95,
           title: "Enter Link",
+          buttonTitle: "Insert",
           modal: true,
           resizable: false,
           draggable: false,
@@ -1932,7 +2355,7 @@ http://hallojs.org
           _this = this;
         widget = this;
         dialogId = "" + this.options.uuid + "-dialog";
-        dialog = jQuery("<div id=\"" + dialogId + "\">        <form action=\"#\" method=\"post\" class=\"linkForm\">          <input class=\"url\" type=\"text\" name=\"url\"            value=\"" + this.options.defaultUrl + "\" />          <input type=\"submit\" id=\"addlinkButton\" value=\"Insert\" />        </form></div>");
+        dialog = jQuery("<div id=\"" + dialogId + "\">        <form action=\"#\" method=\"post\" class=\"linkForm\">          <input class=\"url\" type=\"text\" name=\"url\"            value=\"" + this.options.defaultUrl + "\" />          <input type=\"submit\" id=\"addlinkButton\" value=\"" + this.options.dialogOpts.buttonTitle + "\" />        </form></div>");
         urlInput = jQuery('input[name=url]', dialog).focus(function(e) {
           return this.select();
         });
@@ -2336,7 +2759,9 @@ http://hallojs.org
             return;
           }
           _this._updatePosition(position, data.selection);
-          return _this.toolbar.show();
+          if (_this.toolbar.html() !== '') {
+            return _this.toolbar.show();
+          }
         });
         this.element.bind('hallounselected', function(event, data) {
           return _this.toolbar.hide();
@@ -2612,11 +3037,11 @@ http://hallojs.org
         var buttonEl, classes, id;
         id = "" + this.options.uuid + "-" + this.options.label;
         classes = ['ui-button', 'ui-widget', 'ui-state-default', 'ui-corner-all', 'ui-button-text-only'];
-        buttonEl = jQuery("<button id=\"" + id + "\"        class=\"" + (classes.join(' ')) + "\" title=\"" + this.options.label + "\">         <i class=\"" + this.options.icon + "\"></i>       </button>");
+        buttonEl = jQuery("<button id=\"" + id + "\"        class=\"" + (classes.join(' ')) + "\" title=\"" + this.options.label + "\">         <span class=\"ui-button-text\"> <i class=\"" + this.options.icon + "\"></i> </span>       </button>");
         if (this.options.cssClass) {
           buttonEl.addClass(this.options.cssClass);
         }
-        return buttonEl.button();
+        return buttonEl;
       }
     });
   })(jQuery);

@@ -83,7 +83,8 @@
         position = @_getPosition data.originalEvent, data.selection
         return unless position
         @_updatePosition position, data.selection
-        @toolbar.show()
+        if @toolbar.html() != ''
+          @toolbar.show()
 
       # catch deselect -> hide
       @element.bind 'hallounselected', (event, data) =>
