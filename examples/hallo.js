@@ -419,97 +419,283 @@ http://hallojs.org
   })(jQuery);
 
   (function(jQuery) {
-    return jQuery.widget('IKS.halloindicator', {
+    var z;
+    z = null;
+    if (this.VIE !== void 0) {
+      z = new VIE;
+      z.use(new z.StanbolService({
+        proxyDisabled: true,
+        url: 'http://dev.iks-project.eu:8081'
+      }));
+    }
+    return jQuery.widget('IKS.halloannotate', {
       options: {
+        vie: z,
         editable: null,
-        className: 'halloEditIndicator'
+        toolbar: null,
+        uuid: '',
+        select: function() {},
+        decline: function() {},
+        remove: function() {},
+        buttonCssClass: null
       },
       _create: function() {
-        var _this = this;
-        return this.element.bind('halloenabled', function() {
-          return _this.buildIndicator();
-        });
+        var editableElement, turnOffAnnotate, widget;
+        widget = this;
+        if (this.options.vie === void 0) {
+          throw new Error('The halloannotate plugin requires VIE');
+          return;
+        }
+        if (typeof this.element.annotate !== 'function') {
+          throw new Error('The halloannotate plugin requires annotate.js');
+          return;
+        }
+        this.state = 'off';
+        this.instantiate();
+        turnOffAnnotate = function() {
+          var editable;
+          editable = this;
+          return jQuery(editable).halloannotate('turnOff');
+        };
+        editableElement = this.options.editable.element;
+        return editableElement.bind('hallodisabled', turnOffAnnotate);
       },
-      populateToolbar: function() {},
-      buildIndicator: function() {
-        var editButton;
-        editButton = jQuery('<div><i class="icon-edit"></i> Edit</div>');
-        editButton.addClass(this.options.className);
-        editButton.hide();
-        this.element.before(editButton);
-        this.bindIndicator(editButton);
-        return this.setIndicatorPosition(editButton);
-      },
-      bindIndicator: function(indicator) {
-        var _this = this;
-        indicator.bind('click', function() {
-          return _this.options.editable.element.focus();
+      populateToolbar: function(toolbar) {
+        var buttonHolder,
+          _this = this;
+        buttonHolder = jQuery("<span class=\"" + this.widgetName + "\"></span>");
+        this.button = buttonHolder.hallobutton({
+          label: 'Annotate',
+          icon: 'icon-tags',
+          editable: this.options.editable,
+          command: null,
+          uuid: this.options.uuid,
+          cssClass: this.options.buttonCssClass,
+          queryState: false
         });
-        this.element.bind('halloactivated', function() {
-          return indicator.hide();
-        });
-        this.element.bind('hallodisabled', function() {
-          return indicator.remove();
-        });
-        return this.options.editable.element.hover(function() {
-          if (jQuery(this).hasClass('inEditMode')) {
+        buttonHolder.bind('change', function(event) {
+          if (_this.state === "pending") {
             return;
           }
-          return indicator.show();
-        }, function(data) {
-          if (jQuery(this).hasClass('inEditMode')) {
-            return;
+          if (_this.state === "off") {
+            return _this.turnOn();
           }
-          if (data.relatedTarget === indicator.get(0)) {
-            return;
-          }
-          return indicator.hide();
+          return _this.turnOff();
+        });
+        buttonHolder.buttonset();
+        return toolbar.append(this.button);
+      },
+      cleanupContentClone: function(el) {
+        if (this.state === 'on') {
+          return el.find(".entity:not([about])").each(function() {
+            return jQuery(this).replaceWith(jQuery(this).html());
+          });
+        }
+      },
+      instantiate: function() {
+        var widget;
+        widget = this;
+        return this.options.editable.element.annotate({
+          vie: this.options.vie,
+          debug: false,
+          showTooltip: true,
+          select: this.options.select,
+          remove: this.options.remove,
+          success: this.options.success,
+          error: this.options.error
+        }).bind('annotateselect', function(event, data) {
+          return widget.options.editable.setModified();
+        }).bind('annotateremove', function() {
+          return jQuery.noop();
         });
       },
-      setIndicatorPosition: function(indicator) {
-        var offset;
-        indicator.css('position', 'absolute');
-        offset = this.element.position();
-        indicator.css('top', offset.top + 2);
-        return indicator.css('left', offset.left + 2);
+      turnPending: function() {
+        this.state = 'pending';
+        this.button.hallobutton('checked', false);
+        return this.button.hallobutton('disable');
+      },
+      turnOn: function() {
+        var widget,
+          _this = this;
+        this.turnPending();
+        widget = this;
+        try {
+          return this.options.editable.element.annotate('enable', function(success) {
+            if (!success) {
+              return;
+            }
+            _this.state = 'on';
+            _this.button.hallobutton('checked', true);
+            return _this.button.hallobutton('enable');
+          });
+        } catch (e) {
+          return alert(e);
+        }
+      },
+      turnOff: function() {
+        this.options.editable.element.annotate('disable');
+        this.state = 'off';
+        if (!this.button) {
+          return;
+        }
+        this.button.attr('checked', false);
+        this.button.find("label").removeClass("ui-state-clicked");
+        return this.button.button('refresh');
       }
     });
   })(jQuery);
 
   (function(jQuery) {
-    return jQuery.widget("IKS.hallolists", {
+    return jQuery.widget('IKS.halloblacklist', {
+      options: {
+        tags: []
+      },
+      _init: function() {
+        if (this.options.tags.indexOf('br') !== -1) {
+          return this.element.bind('keydown', function(event) {
+            if (event.originalEvent.keyCode === 13) {
+              return event.preventDefault();
+            }
+          });
+        }
+      },
+      cleanupContentClone: function(el) {
+        var tag, _i, _len, _ref, _results;
+        _ref = this.options.tags;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          tag = _ref[_i];
+          _results.push(jQuery(tag, el).remove());
+        }
+        return _results;
+      }
+    });
+  })(jQuery);
+
+  (function(jQuery) {
+    return jQuery.widget('IKS.halloblock', {
       options: {
         editable: null,
         toolbar: null,
         uuid: '',
-        lists: {
-          ordered: true,
-          unordered: true
+        elements: ['h1', 'h2', 'h3', 'p', 'pre', 'blockquote'],
+        buttonCssClass: null
+      },
+      populateToolbar: function(toolbar) {
+        var buttonset, contentId, target;
+        buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
+        contentId = "" + this.options.uuid + "-" + this.widgetName + "-data";
+        target = this._prepareDropdown(contentId);
+        toolbar.append(buttonset);
+        buttonset.hallobuttonset();
+        buttonset.append(target);
+        return buttonset.append(this._prepareButton(target));
+      },
+      _prepareDropdown: function(contentId) {
+        var addElement, containingElement, contentArea, element, _i, _len, _ref,
+          _this = this;
+        contentArea = jQuery("<div id=\"" + contentId + "\"></div>");
+        containingElement = this.options.editable.element.get(0).tagName.toLowerCase();
+        addElement = function(element) {
+          var el, events, queryState;
+          el = jQuery("<button class='blockselector'>          <" + element + " class=\"menu-item\">" + element + "</" + element + ">        </button>");
+          if (containingElement === element) {
+            el.addClass('selected');
+          }
+          if (containingElement !== 'div') {
+            el.addClass('disabled');
+          }
+          el.bind('click', function() {
+            var tagName;
+            tagName = element.toUpperCase();
+            if (el.hasClass('disabled')) {
+              return;
+            }
+            if (jQuery.browser.msie) {
+              _this.options.editable.execute('FormatBlock', "<" + tagName + ">");
+              return;
+            }
+            return _this.options.editable.execute('formatBlock', tagName);
+          });
+          queryState = function(event) {
+            var block;
+            block = document.queryCommandValue('formatBlock');
+            if (block.toLowerCase() === element) {
+              el.addClass('selected');
+              return;
+            }
+            return el.removeClass('selected');
+          };
+          events = 'keyup paste change mouseup';
+          _this.options.editable.element.bind(events, queryState);
+          _this.options.editable.element.bind('halloenabled', function() {
+            return _this.options.editable.element.bind(events, queryState);
+          });
+          _this.options.editable.element.bind('hallodisabled', function() {
+            return _this.options.editable.element.unbind(events, queryState);
+          });
+          return el;
+        };
+        _ref = this.options.elements;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          element = _ref[_i];
+          contentArea.append(addElement(element));
+        }
+        return contentArea;
+      },
+      _prepareButton: function(target) {
+        var buttonElement;
+        buttonElement = jQuery('<span></span>');
+        buttonElement.hallodropdownbutton({
+          uuid: this.options.uuid,
+          editable: this.options.editable,
+          label: 'block',
+          icon: 'icon-text-height',
+          target: target,
+          cssClass: this.options.buttonCssClass
+        });
+        return buttonElement;
+      }
+    });
+  })(jQuery);
+
+  (function(jQuery) {
+    return jQuery.widget("IKS.halloformat", {
+      options: {
+        editable: null,
+        uuid: '',
+        formattings: {
+          bold: true,
+          italic: true,
+          strikeThrough: false,
+          underline: false
         },
         buttonCssClass: null
       },
       populateToolbar: function(toolbar) {
-        var buttonize, buttonset,
+        var buttonize, buttonset, enabled, format, widget, _ref,
           _this = this;
-        buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
-        buttonize = function(type, label) {
-          var buttonElement;
-          buttonElement = jQuery('<span></span>');
-          buttonElement.hallobutton({
-            uuid: _this.options.uuid,
+        widget = this;
+        buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
+        buttonize = function(format) {
+          var buttonHolder;
+          buttonHolder = jQuery('<span></span>');
+          buttonHolder.hallobutton({
+            label: format,
             editable: _this.options.editable,
-            label: label,
-            command: "insert" + type + "List",
-            icon: "icon-list-" + (label.toLowerCase()),
+            command: format,
+            uuid: _this.options.uuid,
             cssClass: _this.options.buttonCssClass
           });
-          return buttonset.append(buttonElement);
+          return buttonset.append(buttonHolder);
         };
-        if (this.options.lists.ordered) {
-          buttonize("Ordered", "OL");
-        }
-        if (this.options.lists.unordered) {
-          buttonize("Unordered", "UL");
+        _ref = this.options.formattings;
+        for (format in _ref) {
+          enabled = _ref[format];
+          if (!enabled) {
+            continue;
+          }
+          buttonize(format);
         }
         buttonset.hallobuttonset();
         return toolbar.append(buttonset);
@@ -673,7 +859,8 @@ http://hallojs.org
       this.options.dialog.children('.html_source').val(html);
       this.options.dialog.prepend($("<button>" + this.texts.update + "</button>"));
       return this.options.dialog.on('click', 'button', function() {
-        widget.options.editable.element.html(widget.options.dialog.children('.html_source').val());
+        html = widget.options.dialog.children('.html_source').val();
+        widget.options.editable.element.html(html);
         widget.options.editable.element.trigger('change');
         return false;
       });
@@ -682,99 +869,6 @@ http://hallojs.org
       return this.options.dialog.dialog("close");
     }
   });
-
-  (function(jQuery) {
-    return jQuery.widget("Liip.hallooverlay", {
-      options: {
-        editable: null,
-        toolbar: null,
-        uuid: "",
-        overlay: null,
-        padding: 10,
-        background: null
-      },
-      _create: function() {
-        var widget;
-        widget = this;
-        if (!this.options.bound) {
-          this.options.bound = true;
-          this.options.editable.element.bind("halloactivated", function(event, data) {
-            widget.options.currentEditable = jQuery(event.target);
-            if (!widget.options.visible) {
-              return widget.showOverlay();
-            }
-          });
-          this.options.editable.element.bind("hallomodified", function(event, data) {
-            widget.options.currentEditable = jQuery(event.target);
-            if (widget.options.visible) {
-              return widget.resizeOverlay();
-            }
-          });
-          return this.options.editable.element.bind("hallodeactivated", function(event, data) {
-            widget.options.currentEditable = jQuery(event.target);
-            if (widget.options.visible) {
-              return widget.hideOverlay();
-            }
-          });
-        }
-      },
-      showOverlay: function() {
-        this.options.visible = true;
-        if (this.options.overlay === null) {
-          if (jQuery("#halloOverlay").length > 0) {
-            this.options.overlay = jQuery("#halloOverlay");
-          } else {
-            this.options.overlay = jQuery("<div id=\"halloOverlay\"            class=\"halloOverlay\">");
-            jQuery(document.body).append(this.options.overlay);
-          }
-          this.options.overlay.bind('click', jQuery.proxy(this.options.editable.turnOff, this.options.editable));
-        }
-        this.options.overlay.show();
-        if (this.options.background === null) {
-          if (jQuery("#halloBackground").length > 0) {
-            this.options.background = jQuery("#halloBackground");
-          } else {
-            this.options.background = jQuery("<div id=\"halloBackground\"            class=\"halloBackground\">");
-            jQuery(document.body).append(this.options.background);
-          }
-        }
-        this.resizeOverlay();
-        this.options.background.show();
-        if (!this.options.originalZIndex) {
-          this.options.originalZIndex = this.options.currentEditable.css("z-index");
-        }
-        return this.options.currentEditable.css('z-index', '350');
-      },
-      resizeOverlay: function() {
-        var offset;
-        offset = this.options.currentEditable.offset();
-        return this.options.background.css({
-          top: offset.top - this.options.padding,
-          left: offset.left - this.options.padding,
-          width: this.options.currentEditable.width() + 2 * this.options.padding,
-          height: this.options.currentEditable.height() + 2 * this.options.padding
-        });
-      },
-      hideOverlay: function() {
-        this.options.visible = false;
-        this.options.overlay.hide();
-        this.options.background.hide();
-        return this.options.currentEditable.css('z-index', this.options.originalZIndex);
-      },
-      _findBackgroundColor: function(jQueryfield) {
-        var color;
-        color = jQueryfield.css("background-color");
-        if (color !== 'rgba(0, 0, 0, 0)' && color !== 'transparent') {
-          return color;
-        }
-        if (jQueryfield.is("body")) {
-          return "white";
-        } else {
-          return this._findBackgroundColor(jQueryfield.parent());
-        }
-      }
-    });
-  })(jQuery);
 
   (function(jQuery) {
     return jQuery.widget('IKS.halloimagecurrent', {
@@ -1128,83 +1222,6 @@ http://hallojs.org
   })(jQuery);
 
   (function(jQuery) {
-    return jQuery.widget('IKS.halloimageupload', {
-      options: {
-        uploadCallback: null,
-        uploadUrl: null,
-        imageWidget: null,
-        entity: null
-      },
-      _create: function() {
-        return this.element.html('\
-        <form class="upload">\
-        <input type="file" class="file" name="userfile" accept="image/*" />\
-        <input type="hidden" name="tags" value="" />\
-        <input type="text" class="caption" name="caption" placeholder="Title" />\
-        <button class="uploadSubmit">Upload</button>\
-        </form>\
-      ');
-      },
-      _init: function() {
-        var widget;
-        widget = this;
-        if (widget.options.uploadUrl && !widget.options.uploadCallback) {
-          widget.options.uploadCallback = widget._iframeUpload;
-        }
-        return jQuery('.uploadSubmit', this.element).bind('click', function(event) {
-          event.preventDefault();
-          event.stopPropagation();
-          return widget.options.uploadCallback({
-            widget: widget,
-            success: function(url) {
-              return widget.options.imageWidget.setCurrent({
-                url: url,
-                label: ''
-              });
-            }
-          });
-        });
-      },
-      _prepareIframe: function(widget) {
-        var iframe, iframeName;
-        iframeName = "" + widget.widgetName + "_postframe_" + widget.options.uuid;
-        iframeName = iframeName.replace(/-/g, '_');
-        iframe = jQuery("#" + iframeName);
-        if (iframe.length) {
-          return iframe;
-        }
-        iframe = jQuery("<iframe name=\"" + iframeName + "\" id=\"" + iframeName + "\"        class=\"hidden\" style=\"display:none\" />");
-        this.element.append(iframe);
-        iframe.get(0).name = iframeName;
-        return iframe;
-      },
-      _iframeUpload: function(data) {
-        var iframe, uploadForm, uploadUrl, widget;
-        widget = data.widget;
-        iframe = widget._prepareIframe(widget);
-        uploadForm = jQuery('form.upload', widget.element);
-        if (typeof widget.options.uploadUrl === 'function') {
-          uploadUrl = widget.options.uploadUrl(widget.options.entity);
-        } else {
-          uploadUrl = widget.options.uploadUrl;
-        }
-        iframe.bind('load', function() {
-          var imageUrl;
-          imageUrl = iframe.get(0).contentWindow.location.href;
-          widget.element.hide();
-          return data.success(imageUrl);
-        });
-        uploadForm.attr('action', uploadUrl);
-        uploadForm.attr('method', 'post');
-        uploadForm.attr('target', iframe.get(0).name);
-        uploadForm.attr('enctype', 'multipart/form-data');
-        uploadForm.attr('encoding', 'multipart/form-data');
-        return uploadForm.submit();
-      }
-    });
-  })(jQuery);
-
-  (function(jQuery) {
     return jQuery.widget('IKS.halloimagesearch', {
       options: {
         imageWidget: null,
@@ -1429,192 +1446,78 @@ http://hallojs.org
   })(jQuery);
 
   (function(jQuery) {
-    return jQuery.widget("Liip.hallotoolbarlinebreak", {
+    return jQuery.widget('IKS.halloimageupload', {
       options: {
-        editable: null,
-        uuid: "",
-        breakAfter: []
-      },
-      populateToolbar: function(toolbar) {
-        var buttonRow, buttonset, buttonsets, queuedButtonsets, row, rowcounter, _i, _j, _len, _len1, _ref;
-        buttonsets = jQuery('.ui-buttonset', toolbar);
-        queuedButtonsets = jQuery();
-        rowcounter = 0;
-        _ref = this.options.breakAfter;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          row = _ref[_i];
-          rowcounter++;
-          buttonRow = "<div          class=\"halloButtonrow halloButtonrow-" + rowcounter + "\" />";
-          for (_j = 0, _len1 = buttonsets.length; _j < _len1; _j++) {
-            buttonset = buttonsets[_j];
-            queuedButtonsets = jQuery(queuedButtonsets).add(jQuery(buttonset));
-            if (jQuery(buttonset).hasClass(row)) {
-              queuedButtonsets.wrapAll(buttonRow);
-              buttonsets = buttonsets.not(queuedButtonsets);
-              queuedButtonsets = jQuery();
-              break;
-            }
-          }
-        }
-        if (buttonsets.length > 0) {
-          rowcounter++;
-          buttonRow = "<div          class=\"halloButtonrow halloButtonrow-" + rowcounter + "\" />";
-          return buttonsets.wrapAll(buttonRow);
-        }
-      }
-    });
-  })(jQuery);
-
-  (function(jQuery) {
-    var z;
-    z = null;
-    if (this.VIE !== void 0) {
-      z = new VIE;
-      z.use(new z.StanbolService({
-        proxyDisabled: true,
-        url: 'http://dev.iks-project.eu:8081'
-      }));
-    }
-    return jQuery.widget('IKS.halloannotate', {
-      options: {
-        vie: z,
-        editable: null,
-        toolbar: null,
-        uuid: '',
-        select: function() {},
-        decline: function() {},
-        remove: function() {},
-        buttonCssClass: null
+        uploadCallback: null,
+        uploadUrl: null,
+        imageWidget: null,
+        entity: null
       },
       _create: function() {
-        var editableElement, turnOffAnnotate, widget;
-        widget = this;
-        if (this.options.vie === void 0) {
-          throw new Error('The halloannotate plugin requires VIE');
-          return;
-        }
-        if (typeof this.element.annotate !== 'function') {
-          throw new Error('The halloannotate plugin requires annotate.js');
-          return;
-        }
-        this.state = 'off';
-        this.instantiate();
-        turnOffAnnotate = function() {
-          var editable;
-          editable = this;
-          return jQuery(editable).halloannotate('turnOff');
-        };
-        editableElement = this.options.editable.element;
-        return editableElement.bind('hallodisabled', turnOffAnnotate);
-      },
-      populateToolbar: function(toolbar) {
-        var buttonHolder,
-          _this = this;
-        buttonHolder = jQuery("<span class=\"" + this.widgetName + "\"></span>");
-        this.button = buttonHolder.hallobutton({
-          label: 'Annotate',
-          icon: 'icon-tags',
-          editable: this.options.editable,
-          command: null,
-          uuid: this.options.uuid,
-          cssClass: this.options.buttonCssClass,
-          queryState: false
-        });
-        buttonHolder.bind('change', function(event) {
-          if (_this.state === "pending") {
-            return;
-          }
-          if (_this.state === "off") {
-            return _this.turnOn();
-          }
-          return _this.turnOff();
-        });
-        buttonHolder.buttonset();
-        return toolbar.append(this.button);
-      },
-      cleanupContentClone: function(el) {
-        if (this.state === 'on') {
-          return el.find(".entity:not([about])").each(function() {
-            return jQuery(this).replaceWith(jQuery(this).html());
-          });
-        }
-      },
-      instantiate: function() {
-        var widget;
-        widget = this;
-        return this.options.editable.element.annotate({
-          vie: this.options.vie,
-          debug: false,
-          showTooltip: true,
-          select: this.options.select,
-          remove: this.options.remove,
-          success: this.options.success,
-          error: this.options.error
-        }).bind('annotateselect', function(event, data) {
-          return widget.options.editable.setModified();
-        }).bind('annotateremove', function() {
-          return jQuery.noop();
-        });
-      },
-      turnPending: function() {
-        this.state = 'pending';
-        this.button.hallobutton('checked', false);
-        return this.button.hallobutton('disable');
-      },
-      turnOn: function() {
-        var widget,
-          _this = this;
-        this.turnPending();
-        widget = this;
-        try {
-          return this.options.editable.element.annotate('enable', function(success) {
-            if (!success) {
-              return;
-            }
-            _this.state = 'on';
-            _this.button.hallobutton('checked', true);
-            return _this.button.hallobutton('enable');
-          });
-        } catch (e) {
-          return alert(e);
-        }
-      },
-      turnOff: function() {
-        this.options.editable.element.annotate('disable');
-        this.state = 'off';
-        if (!this.button) {
-          return;
-        }
-        this.button.attr('checked', false);
-        this.button.find("label").removeClass("ui-state-clicked");
-        return this.button.button('refresh');
-      }
-    });
-  })(jQuery);
-
-  (function(jQuery) {
-    return jQuery.widget('IKS.halloblacklist', {
-      options: {
-        tags: []
+        return this.element.html('\
+        <form class="upload">\
+        <input type="file" class="file" name="userfile" accept="image/*" />\
+        <input type="hidden" name="tags" value="" />\
+        <input type="text" class="caption" name="caption" placeholder="Title" />\
+        <button class="uploadSubmit">Upload</button>\
+        </form>\
+      ');
       },
       _init: function() {
-        if (this.options.tags.indexOf('br') !== -1) {
-          return this.element.bind('keydown', function(event) {
-            if (event.originalEvent.keyCode === 13) {
-              return event.preventDefault();
+        var widget;
+        widget = this;
+        if (widget.options.uploadUrl && !widget.options.uploadCallback) {
+          widget.options.uploadCallback = widget._iframeUpload;
+        }
+        return jQuery('.uploadSubmit', this.element).bind('click', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          return widget.options.uploadCallback({
+            widget: widget,
+            success: function(url) {
+              return widget.options.imageWidget.setCurrent({
+                url: url,
+                label: ''
+              });
             }
           });
-        }
+        });
       },
-      cleanupContentClone: function(el) {
-        var tag, _i, _len, _ref, _results;
-        _ref = this.options.tags;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          tag = _ref[_i];
-          _results.push(jQuery(tag, el).remove());
+      _prepareIframe: function(widget) {
+        var iframe, iframeName;
+        iframeName = "" + widget.widgetName + "_postframe_" + widget.options.uuid;
+        iframeName = iframeName.replace(/-/g, '_');
+        iframe = jQuery("#" + iframeName);
+        if (iframe.length) {
+          return iframe;
         }
-        return _results;
+        iframe = jQuery("<iframe name=\"" + iframeName + "\" id=\"" + iframeName + "\"        class=\"hidden\" style=\"display:none\" />");
+        this.element.append(iframe);
+        iframe.get(0).name = iframeName;
+        return iframe;
+      },
+      _iframeUpload: function(data) {
+        var iframe, uploadForm, uploadUrl, widget;
+        widget = data.widget;
+        iframe = widget._prepareIframe(widget);
+        uploadForm = jQuery('form.upload', widget.element);
+        if (typeof widget.options.uploadUrl === 'function') {
+          uploadUrl = widget.options.uploadUrl(widget.options.entity);
+        } else {
+          uploadUrl = widget.options.uploadUrl;
+        }
+        iframe.bind('load', function() {
+          var imageUrl;
+          imageUrl = iframe.get(0).contentWindow.location.href;
+          widget.element.hide();
+          return data.success(imageUrl);
+        });
+        uploadForm.attr('action', uploadUrl);
+        uploadForm.attr('method', 'post');
+        uploadForm.attr('target', iframe.get(0).name);
+        uploadForm.attr('enctype', 'multipart/form-data');
+        uploadForm.attr('encoding', 'multipart/form-data');
+        return uploadForm.submit();
       }
     });
   })(jQuery);
@@ -1935,7 +1838,9 @@ http://hallojs.org
         return false;
       });
       this.options.editable.element.on('halloselected', function(event, data) {
-        if (widget.options.editable.options.toolbar === "halloToolbarContextual" && $(data.originalEvent.target).is('img')) {
+        var toolbar_option;
+        toolbar_option = widget.options.editable.options.toolbar;
+        if (toolbar_option === "halloToolbarContextual" && $(data.originalEvent.target).is('img')) {
           $toolbar.hide();
           return false;
         }
@@ -2024,9 +1929,13 @@ http://hallojs.org
       return $.ajax({
         url: this.options.insert_file_dialog_ui_url,
         success: function(data, textStatus, jqXHR) {
-          var file_select_title;
-          file_select_title = widget.options.dialog.children('#hallo_img_properties').is(':visible') ? widget.texts.change_image : '';
-          widget.options.dialog.children('#hallo_img_file_select_ui').html(("<div id='hallo_img_file_select_title'>" + file_select_title + "</div>") + data);
+          var file_select_title, t;
+          file_select_title = '';
+          if (widget.options.dialog.children('#hallo_img_properties').is(':visible')) {
+            file_select_title = widget.texts.change_image;
+          }
+          t = "<div id='hallo_img_file_select_title'>" + file_select_title + "</div>";
+          widget.options.dialog.children('#hallo_img_file_select_ui').html(t + data);
           return widget.dialog_image_selection_ui_loaded = true;
         },
         beforeSend: function() {
@@ -2035,18 +1944,20 @@ http://hallojs.org
       });
     },
     _load_dialog_image_properties_ui: function() {
-      var $img_properties, html, widget;
+      var $img_properties, button, height, html, widget, width;
       widget = this;
       $img_properties = this.options.dialog.children('#hallo_img_properties');
       if (this.$image) {
+        width = this.$image.is('[width]') ? this.$image.attr('width') : '';
+        height = this.$image.is('[height]') ? this.$image.attr('height') : '';
         html = this._property_input_html('source', this.$image.attr('src'), {
           label: this.texts.source
         }) + this._property_input_html('alt', this.$image.attr('alt') || '', {
           label: this.texts.alt
-        }) + this._property_row_html(this._property_input_html('width', (this.$image.is('[width]') ? this.$image.attr('width') : ''), {
+        }) + this._property_row_html(this._property_input_html('width', width, {
           label: this.texts.width,
           row: false
-        }) + this._property_input_html('height', (this.$image.is('[height]') ? this.$image.attr('height') : ''), {
+        }) + this._property_input_html('height', height, {
           label: this.texts.height,
           row: false
         })) + this._property_input_html('padding', this.$image.css('padding'), {
@@ -2121,7 +2032,8 @@ http://hallojs.org
         });
       } else {
         if (!this.options.insert_file_dialog_ui_url) {
-          $img_properties.after("<button id=\"insert_image_btn\">" + this.texts.insert + "</button>");
+          button = "<button id=\"insert_image_btn\">" + this.texts.insert + "</button>";
+          $img_properties.after(button);
           return $('#insert_image_btn').click(function() {
             return widget._insert_image($('#hallo_img_properties #hallo_img_source').val());
           });
@@ -2135,81 +2047,104 @@ http://hallojs.org
       if (label == null) {
         label = '';
       }
-      return "<div class='hallo_img_property_row'>" + (this._property_col_html(label) + this._property_col_html(row_html)) + "</div>";
+      row_html = this._property_col_html(label) + this._property_col_html(row_html);
+      return "<div class='hallo_img_property_row'>" + row_html + "</div>";
     },
     _property_html: function(property_html, options) {
+      var entry;
       if (options == null) {
         options = {};
       }
       if (options.row === false) {
         if (options.label) {
-          property_html = "<span class='img_property_entry'>" + options.label + " " + property_html + "</span>";
+          entry = "" + options.label + " " + property_html;
+          property_html = "<span class='img_property_entry'>" + entry + "</span>";
         }
         return property_html;
       } else {
-        return this._property_row_html("<span class='img_property_entry'>" + property_html + "</span>", options.label);
+        entry = "<span class='img_property_entry'>" + property_html + "</span>";
+        return this._property_row_html(entry, options.label);
       }
     },
     _property_input_html: function(id, value, options) {
+      var text_field;
       if (options == null) {
         options = {};
       }
-      return this._property_html("<input type='text' id='hallo_img_" + id + "' value='" + value + "'>", options);
+      text_field = "<input type='text' id='hallo_img_" + id + "' value='" + value + "'>";
+      return this._property_html(text_field, options);
     },
     _property_cb_html: function(id, checked, options) {
+      var cb, checked_attr;
       if (options == null) {
         options = {};
       }
-      return this._property_html("<input type='checkbox' id='hallo_img_" + id + "' " + (checked ? 'checked=checked' : '') + "'>", options);
+      checked_attr = checked ? 'checked=checked' : '';
+      cb = "<input type='checkbox' id='hallo_img_" + id + "' " + checked_attr + "'>";
+      return this._property_html(cb, options);
     }
   });
 
   (function(jQuery) {
-    return jQuery.widget("IKS.halloformat", {
+    return jQuery.widget('IKS.halloindicator', {
       options: {
         editable: null,
-        uuid: '',
-        formattings: {
-          bold: true,
-          italic: true,
-          strikeThrough: false,
-          underline: false
-        },
-        buttonCssClass: null
+        className: 'halloEditIndicator'
       },
-      populateToolbar: function(toolbar) {
-        var buttonize, buttonset, enabled, format, widget, _ref,
-          _this = this;
-        widget = this;
-        buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
-        buttonize = function(format) {
-          var buttonHolder;
-          buttonHolder = jQuery('<span></span>');
-          buttonHolder.hallobutton({
-            label: format,
-            editable: _this.options.editable,
-            command: format,
-            uuid: _this.options.uuid,
-            cssClass: _this.options.buttonCssClass
-          });
-          return buttonset.append(buttonHolder);
-        };
-        _ref = this.options.formattings;
-        for (format in _ref) {
-          enabled = _ref[format];
-          if (!enabled) {
-            continue;
+      _create: function() {
+        var _this = this;
+        return this.element.bind('halloenabled', function() {
+          return _this.buildIndicator();
+        });
+      },
+      populateToolbar: function() {},
+      buildIndicator: function() {
+        var editButton;
+        editButton = jQuery('<div><i class="icon-edit"></i> Edit</div>');
+        editButton.addClass(this.options.className);
+        editButton.hide();
+        this.element.before(editButton);
+        this.bindIndicator(editButton);
+        return this.setIndicatorPosition(editButton);
+      },
+      bindIndicator: function(indicator) {
+        var _this = this;
+        indicator.bind('click', function() {
+          return _this.options.editable.element.focus();
+        });
+        this.element.bind('halloactivated', function() {
+          return indicator.hide();
+        });
+        this.element.bind('hallodisabled', function() {
+          return indicator.remove();
+        });
+        return this.options.editable.element.hover(function() {
+          if (jQuery(this).hasClass('inEditMode')) {
+            return;
           }
-          buttonize(format);
-        }
-        buttonset.hallobuttonset();
-        return toolbar.append(buttonset);
+          return indicator.show();
+        }, function(data) {
+          if (jQuery(this).hasClass('inEditMode')) {
+            return;
+          }
+          if (data.relatedTarget === indicator.get(0)) {
+            return;
+          }
+          return indicator.hide();
+        });
+      },
+      setIndicatorPosition: function(indicator) {
+        var offset;
+        indicator.css('position', 'absolute');
+        offset = this.element.position();
+        indicator.css('top', offset.top + 2);
+        return indicator.css('left', offset.left + 2);
       }
     });
   })(jQuery);
 
   (function(jQuery) {
-    return jQuery.widget("IKS.halloreundo", {
+    return jQuery.widget("IKS.hallojustify", {
       options: {
         editable: null,
         toolbar: null,
@@ -2220,111 +2155,24 @@ http://hallojs.org
         var buttonize, buttonset,
           _this = this;
         buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
-        buttonize = function(cmd, label) {
+        buttonize = function(alignment) {
           var buttonElement;
           buttonElement = jQuery('<span></span>');
           buttonElement.hallobutton({
             uuid: _this.options.uuid,
             editable: _this.options.editable,
-            label: label,
-            icon: cmd === 'undo' ? 'icon-undo' : 'icon-repeat',
-            command: cmd,
-            queryState: false,
+            label: alignment,
+            command: "justify" + alignment,
+            icon: "icon-align-" + (alignment.toLowerCase()),
             cssClass: _this.options.buttonCssClass
           });
           return buttonset.append(buttonElement);
         };
-        buttonize("undo", "Undo");
-        buttonize("redo", "Redo");
+        buttonize("Left");
+        buttonize("Center");
+        buttonize("Right");
         buttonset.hallobuttonset();
         return toolbar.append(buttonset);
-      }
-    });
-  })(jQuery);
-
-  (function(jQuery) {
-    return jQuery.widget('IKS.halloblock', {
-      options: {
-        editable: null,
-        toolbar: null,
-        uuid: '',
-        elements: ['h1', 'h2', 'h3', 'p', 'pre', 'blockquote'],
-        buttonCssClass: null
-      },
-      populateToolbar: function(toolbar) {
-        var buttonset, contentId, target;
-        buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
-        contentId = "" + this.options.uuid + "-" + this.widgetName + "-data";
-        target = this._prepareDropdown(contentId);
-        toolbar.append(buttonset);
-        buttonset.hallobuttonset();
-        buttonset.append(target);
-        return buttonset.append(this._prepareButton(target));
-      },
-      _prepareDropdown: function(contentId) {
-        var addElement, containingElement, contentArea, element, _i, _len, _ref,
-          _this = this;
-        contentArea = jQuery("<div id=\"" + contentId + "\"></div>");
-        containingElement = this.options.editable.element.get(0).tagName.toLowerCase();
-        addElement = function(element) {
-          var el, events, queryState;
-          el = jQuery("<button class='blockselector'>          <" + element + " class=\"menu-item\">" + element + "</" + element + ">        </button>");
-          if (containingElement === element) {
-            el.addClass('selected');
-          }
-          if (containingElement !== 'div') {
-            el.addClass('disabled');
-          }
-          el.bind('click', function() {
-            var tagName;
-            tagName = element.toUpperCase();
-            if (el.hasClass('disabled')) {
-              return;
-            }
-            if (jQuery.browser.msie) {
-              _this.options.editable.execute('FormatBlock', "<" + tagName + ">");
-              return;
-            }
-            return _this.options.editable.execute('formatBlock', tagName);
-          });
-          queryState = function(event) {
-            var block;
-            block = document.queryCommandValue('formatBlock');
-            if (block.toLowerCase() === element) {
-              el.addClass('selected');
-              return;
-            }
-            return el.removeClass('selected');
-          };
-          events = 'keyup paste change mouseup';
-          _this.options.editable.element.bind(events, queryState);
-          _this.options.editable.element.bind('halloenabled', function() {
-            return _this.options.editable.element.bind(events, queryState);
-          });
-          _this.options.editable.element.bind('hallodisabled', function() {
-            return _this.options.editable.element.unbind(events, queryState);
-          });
-          return el;
-        };
-        _ref = this.options.elements;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          element = _ref[_i];
-          contentArea.append(addElement(element));
-        }
-        return contentArea;
-      },
-      _prepareButton: function(target) {
-        var buttonElement;
-        buttonElement = jQuery('<span></span>');
-        buttonElement.hallodropdownbutton({
-          uuid: this.options.uuid,
-          editable: this.options.editable,
-          label: 'block',
-          icon: 'icon-text-height',
-          target: target,
-          cssClass: this.options.buttonCssClass
-        });
-        return buttonElement;
       }
     });
   })(jQuery);
@@ -2801,45 +2649,50 @@ http://hallojs.org
           widthToAdd += (parseFloat(el.css('outline-offset'))) * 2;
           return jQuery(this.toolbar).css("width", el.width() + widthToAdd);
         }
-        if (this.options.link) {
-          toolbar.append(buttonset);
-          buttonset.hallobuttonset();
-          return dialog.dialog(this.options.dialogOpts);
-        }
-      }
-    });
-  })(jQuery);
-
-  (function(jQuery) {
-    return jQuery.widget("IKS.hallojustify", {
-      options: {
-        editable: null,
-        toolbar: null,
-        uuid: '',
-        buttonCssClass: null
       },
-      populateToolbar: function(toolbar) {
-        var buttonize, buttonset,
-          _this = this;
-        buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
-        buttonize = function(alignment) {
-          var buttonElement;
-          buttonElement = jQuery('<span></span>');
-          buttonElement.hallobutton({
-            uuid: _this.options.uuid,
-            editable: _this.options.editable,
-            label: alignment,
-            command: "justify" + alignment,
-            icon: "icon-align-" + (alignment.toLowerCase()),
-            cssClass: _this.options.buttonCssClass
-          });
-          return buttonset.append(buttonElement);
+      _getPosition: function(event, selection) {
+        var offset, position, width;
+        if (!event) {
+          return;
+        }
+        width = parseFloat(this.element.css('outline-width'));
+        offset = width + parseFloat(this.element.css('outline-offset'));
+        return position = {
+          top: this.element.offset().top - this.toolbar.outerHeight() - offset,
+          left: this.element.offset().left - offset
         };
-        buttonize("Left");
-        buttonize("Center");
-        buttonize("Right");
-        buttonset.hallobuttonset();
-        return toolbar.append(buttonset);
+      },
+      _getCaretPosition: function(range) {
+        var newRange, position, tmpSpan;
+        tmpSpan = jQuery("<span/>");
+        newRange = rangy.createRange();
+        newRange.setStart(range.endContainer, range.endOffset);
+        newRange.insertNode(tmpSpan.get(0));
+        position = {
+          top: tmpSpan.offset().top,
+          left: tmpSpan.offset().left
+        };
+        tmpSpan.remove();
+        return position;
+      },
+      setPosition: function() {
+        if (this.options.parentElement !== 'body') {
+          return;
+        }
+        this.toolbar.css('position', 'absolute');
+        this.toolbar.css('top', this.element.offset().top - this.toolbar.outerHeight());
+        return this.toolbar.css('left', this.element.offset().left + 10);
+      },
+      _updatePosition: function(position) {},
+      _bindEvents: function() {
+        var _this = this;
+        this.element.bind('halloactivated', function(event, data) {
+          _this.setPosition();
+          return _this.toolbar.show();
+        });
+        return this.element.bind('hallodeactivated', function(event, data) {
+          return _this.toolbar.hide();
+        });
       }
     });
   })(jQuery);
@@ -3042,184 +2895,6 @@ http://hallojs.org
           buttonEl.addClass(this.options.cssClass);
         }
         return buttonEl;
-      }
-    });
-  })(jQuery);
-
-  (function(jQuery) {
-    return jQuery.widget('Hallo.halloToolbarContextual', {
-      toolbar: null,
-      options: {
-        parentElement: 'body',
-        editable: null,
-        toolbar: null
-      },
-      _create: function() {
-        var _this = this;
-        this.toolbar = this.options.toolbar;
-        jQuery(this.options.parentElement).append(this.toolbar);
-        this._bindEvents();
-        return jQuery(window).resize(function(event) {
-          return _this._updatePosition(_this._getPosition(event));
-        });
-      },
-      _getPosition: function(event, selection) {
-        var eventType, position;
-        if (!event) {
-          return;
-        }
-        eventType = event.type;
-        switch (eventType) {
-          case 'keydown':
-          case 'keyup':
-          case 'keypress':
-            return this._getCaretPosition(selection);
-          case 'click':
-          case 'mousedown':
-          case 'mouseup':
-            return position = {
-              top: event.pageY,
-              left: event.pageX
-            };
-        }
-      },
-      _getCaretPosition: function(range) {
-        var newRange, position, tmpSpan;
-        tmpSpan = jQuery("<span/>");
-        newRange = rangy.createRange();
-        newRange.setStart(range.endContainer, range.endOffset);
-        newRange.insertNode(tmpSpan.get(0));
-        position = {
-          top: tmpSpan.offset().top,
-          left: tmpSpan.offset().left
-        };
-        tmpSpan.remove();
-        return position;
-      },
-      setPosition: function() {
-        if (this.options.parentElement !== 'body') {
-          this.options.parentElement = 'body';
-          jQuery(this.options.parentElement).append(this.toolbar);
-        }
-        this.toolbar.css('position', 'absolute');
-        this.toolbar.css('top', this.element.offset().top - 20);
-        return this.toolbar.css('left', this.element.offset().left);
-      },
-      _updatePosition: function(position, selection) {
-        var left, selectionRect, top;
-        if (selection == null) {
-          selection = null;
-        }
-        if (!position) {
-          return;
-        }
-        if (!(position.top && position.left)) {
-          return;
-        }
-        if (selection && !selection.collapsed && selection.nativeRange) {
-          selectionRect = selection.nativeRange.getBoundingClientRect();
-          top = $(window).scrollTop() + selectionRect.top;
-          left = $(window).scrollLeft() + selectionRect.left;
-        } else {
-          top = position.top - 10;
-          left = position.left - this.toolbar.outerWidth() / 2 + 30;
-        }
-        this.toolbar.css('top', top - (this.toolbar.outerHeight() + 10));
-        return this.toolbar.css('left', left);
-      },
-      _bindEvents: function() {
-        var _this = this;
-        this.element.bind('halloselected', function(event, data) {
-          var position;
-          position = _this._getPosition(data.originalEvent, data.selection);
-          if (!position) {
-            return;
-          }
-          _this._updatePosition(position, data.selection);
-          return _this.toolbar.show();
-        });
-        this.element.bind('hallounselected', function(event, data) {
-          return _this.toolbar.hide();
-        });
-        return this.element.bind('hallodeactivated', function(event, data) {
-          return _this.toolbar.hide();
-        });
-      }
-    });
-  })(jQuery);
-
-  (function(jQuery) {
-    return jQuery.widget('Hallo.halloToolbarFixed', {
-      toolbar: null,
-      options: {
-        parentElement: 'body',
-        editable: null,
-        toolbar: null
-      },
-      _create: function() {
-        var el, widthToAdd,
-          _this = this;
-        this.toolbar = this.options.toolbar;
-        this.toolbar.show();
-        jQuery(this.options.parentElement).append(this.toolbar);
-        this._bindEvents();
-        jQuery(window).resize(function(event) {
-          return _this.setPosition();
-        });
-        if (this.options.parentElement === 'body') {
-          el = jQuery(this.element);
-          widthToAdd = parseFloat(el.css('padding-left'));
-          widthToAdd += parseFloat(el.css('padding-right'));
-          widthToAdd += parseFloat(el.css('border-left-width'));
-          widthToAdd += parseFloat(el.css('border-right-width'));
-          widthToAdd += (parseFloat(el.css('outline-width'))) * 2;
-          widthToAdd += (parseFloat(el.css('outline-offset'))) * 2;
-          return jQuery(this.toolbar).css("width", el.width() + widthToAdd);
-        }
-      },
-      _getPosition: function(event, selection) {
-        var offset, position, width;
-        if (!event) {
-          return;
-        }
-        width = parseFloat(this.element.css('outline-width'));
-        offset = width + parseFloat(this.element.css('outline-offset'));
-        return position = {
-          top: this.element.offset().top - this.toolbar.outerHeight() - offset,
-          left: this.element.offset().left - offset
-        };
-      },
-      _getCaretPosition: function(range) {
-        var newRange, position, tmpSpan;
-        tmpSpan = jQuery("<span/>");
-        newRange = rangy.createRange();
-        newRange.setStart(range.endContainer, range.endOffset);
-        newRange.insertNode(tmpSpan.get(0));
-        position = {
-          top: tmpSpan.offset().top,
-          left: tmpSpan.offset().left
-        };
-        tmpSpan.remove();
-        return position;
-      },
-      setPosition: function() {
-        if (this.options.parentElement !== 'body') {
-          return;
-        }
-        this.toolbar.css('position', 'absolute');
-        this.toolbar.css('top', this.element.offset().top - this.toolbar.outerHeight());
-        return this.toolbar.css('left', this.element.offset().left + 10);
-      },
-      _updatePosition: function(position) {},
-      _bindEvents: function() {
-        var _this = this;
-        this.element.bind('halloactivated', function(event, data) {
-          _this.setPosition();
-          return _this.toolbar.show();
-        });
-        return this.element.bind('hallodeactivated', function(event, data) {
-          return _this.toolbar.hide();
-        });
       }
     });
   })(jQuery);

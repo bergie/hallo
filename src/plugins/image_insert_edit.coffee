@@ -33,7 +33,7 @@ $.widget "ncri.hallo-image-insert-edit",
       float_none: 'No'
     de:
       title_insert: 'Bild einfügen'
-      title_properties: 'Bild Eigenschaften'
+      title_properties: 'Bildeigenschaften'
       insert: 'Einfügen'
       chage_image: 'Bild ändern:'
       source: 'URL'
@@ -59,9 +59,12 @@ $.widget "ncri.hallo-image-insert-edit",
     @options.toolbar = $toolbar
 
     dialog_html = "<div id='hallo_img_properties'></div>"
-    dialog_html += "<div id='hallo_img_file_select_ui'></div>" if @options.insert_file_dialog_ui_url
+    if @options.insert_file_dialog_ui_url
+      dialog_html += "<div id='hallo_img_file_select_ui'></div>"
 
-    @options.dialog = $("<div>").attr('id', "#{@options.uuid}-insert-image-dialog").html dialog_html
+    @options.dialog = $("<div>").
+      attr('id', "#{@options.uuid}-insert-image-dialog").
+      html(dialog_html)
 
     $buttonset = $("<span>").addClass @widgetName
 
@@ -99,7 +102,9 @@ $.widget "ncri.hallo-image-insert-edit",
 
     # Prevent contextual toolbar from showing when image is clicked.
     @options.editable.element.on 'halloselected', (event, data) ->
-      if widget.options.editable.options.toolbar == "halloToolbarContextual" and $(data.originalEvent.target).is('img')
+      toolbar_option = widget.options.editable.options.toolbar
+      if toolbar_option == "halloToolbarContextual" and
+       $(data.originalEvent.target).is('img')
         $toolbar.hide()
         false
 
@@ -155,7 +160,8 @@ $.widget "ncri.hallo-image-insert-edit",
       $(document).scrollTop(scrollbar_pos)  # restore scrollbar pos
       @options.editable.keepActivated false
 
-    if @options.insert_file_dialog_ui_url and not @dialog_image_selection_ui_loaded
+    if @options.insert_file_dialog_ui_url and not
+     @dialog_image_selection_ui_loaded
 
       @options.dialog.on 'click', ".reload_link", ->
         widget._load_dialog_image_selection_ui()
@@ -192,11 +198,18 @@ $.widget "ncri.hallo-image-insert-edit",
     $.ajax
       url: @options.insert_file_dialog_ui_url
       success: (data, textStatus, jqXHR) ->
-        file_select_title = if widget.options.dialog.children('#hallo_img_properties').is(':visible') then widget.texts.change_image else ''
-        widget.options.dialog.children('#hallo_img_file_select_ui').html("<div id='hallo_img_file_select_title'>#{file_select_title}</div>" + data)
+        file_select_title = ''
+        if widget.options.dialog.children('#hallo_img_properties').is(':visible')
+          file_select_title = widget.texts.change_image
+
+        t = "<div id='hallo_img_file_select_title'>#{file_select_title}</div>"
+        widget.options.dialog.children('#hallo_img_file_select_ui').
+         html( t + data)
+
         widget.dialog_image_selection_ui_loaded = true
       beforeSend: ->
-        widget.options.dialog.children('#hallo_img_file_select_ui').html('<div class="hallo_insert_file_loader"></div>')
+        widget.options.dialog.children('#hallo_img_file_select_ui').
+          html('<div class="hallo_insert_file_loader"></div>')
 
 
   _load_dialog_image_properties_ui: ->
@@ -204,20 +217,37 @@ $.widget "ncri.hallo-image-insert-edit",
     $img_properties = @options.dialog.children('#hallo_img_properties')
 
     if @$image
-      html = @_property_input_html( 'source', @$image.attr('src'), { label: @texts.source } ) +
-      @_property_input_html( 'alt', @$image.attr('alt') || '', { label: @texts.alt } ) +
-      @_property_row_html( @_property_input_html('width', (if @$image.is('[width]') then @$image.attr('width') else ''), { label: @texts.width, row: false }) +
-      @_property_input_html('height', (if @$image.is('[height]') then @$image.attr('height') else ''), { label: @texts.height, row: false })) +
-      @_property_input_html( 'padding', @$image.css('padding'), { label: @texts.padding } ) +
-      @_property_row_html( @_property_cb_html( 'float_left', @$image.css('float') == 'left', { label: @texts.float_left, row: false } ) +
-      @_property_cb_html( 'float_right', @$image.css('float') == 'right', { label: @texts.float_right, row: false } ) +
-      @_property_cb_html( 'unfloat', @$image.css('float') == 'none', { label: @texts.float_none, row: false } ),
+
+      width = if @$image.is('[width]') then @$image.attr('width') else ''
+      height = if @$image.is('[height]') then @$image.attr('height') else ''
+      html = @_property_input_html( 'source',
+        @$image.attr('src'), { label: @texts.source } ) +
+      @_property_input_html( 'alt',
+        @$image.attr('alt') || '', { label: @texts.alt } ) +
+      @_property_row_html(
+        @_property_input_html('width',
+          width, { label: @texts.width, row: false }) +
+        @_property_input_html('height',
+          height, { label: @texts.height, row: false })) +
+      @_property_input_html( 'padding',
+        @$image.css('padding'), { label: @texts.padding } ) +
+      @_property_row_html(
+        @_property_cb_html( 'float_left',
+          @$image.css('float') == 'left',
+          { label: @texts.float_left, row: false } ) +
+        @_property_cb_html( 'float_right',
+          @$image.css('float') == 'right',
+          { label: @texts.float_right, row: false } ) +
+        @_property_cb_html( 'unfloat',
+          @$image.css('float') == 'none', { label: @texts.float_none, row: false } ),
       @texts.float)
       $img_properties.html html
       $img_properties.show()
     else
       unless @options.insert_file_dialog_ui_url
-        $img_properties.html @_property_input_html( 'source', '', { label: @texts.source } )
+        $img_properties.html( @_property_input_html( 'source',
+                                                     '',
+                                                    { label: @texts.source } ))
         $img_properties.show()
 
     if @$image
@@ -263,7 +293,8 @@ $.widget "ncri.hallo-image-insert-edit",
 
     else
       unless @options.insert_file_dialog_ui_url
-        $img_properties.after "<button id=\"insert_image_btn\">#{@texts.insert}</button>"
+        button = "<button id=\"insert_image_btn\">#{@texts.insert}</button>"
+        $img_properties.after button
         $('#insert_image_btn').click ->
           widget._insert_image $('#hallo_img_properties #hallo_img_source').val()
 
@@ -272,21 +303,27 @@ $.widget "ncri.hallo-image-insert-edit",
     "<div class='hallo_img_property_col'>#{col_html}</div>"
 
   _property_row_html: (row_html, label = '') ->
-    "<div class='hallo_img_property_row'>#{ @_property_col_html(label) + @_property_col_html(row_html) }</div>"
+    row_html = @_property_col_html(label) + @_property_col_html(row_html)
+    "<div class='hallo_img_property_row'>#{ row_html }</div>"
 
   _property_html: (property_html, options = {}) ->
     if options.row == false
       if options.label
-        property_html = "<span class='img_property_entry'>#{options.label} #{property_html}</span>"
+        entry = "#{options.label} #{property_html}"
+        property_html = "<span class='img_property_entry'>#{entry}</span>"
       property_html
     else
-      @_property_row_html("<span class='img_property_entry'>#{property_html}</span>", options.label)
+      entry = "<span class='img_property_entry'>#{property_html}</span>"
+      @_property_row_html(entry, options.label)
 
   _property_input_html: (id, value, options = {}) ->
-    @_property_html "<input type='text' id='hallo_img_#{id}' value='#{value}'>", options
+    text_field = "<input type='text' id='hallo_img_#{id}' value='#{value}'>"
+    @_property_html text_field, options
 
   _property_cb_html: (id, checked, options = {}) ->
-    @_property_html "<input type='checkbox' id='hallo_img_#{id}' #{ if checked then 'checked=checked' else '' }'>", options
+    checked_attr = if checked then 'checked=checked' else ''
+    cb = "<input type='checkbox' id='hallo_img_#{id}' #{ checked_attr }'>"
+    @_property_html cb, options
 
 
 

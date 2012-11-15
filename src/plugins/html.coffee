@@ -91,7 +91,8 @@ $.widget "ncri.hallohtml",
     @options.dialog.prepend $("<button>#{@texts.update}</button>")
 
     @options.dialog.on 'click', 'button', ->
-      widget.options.editable.element.html widget.options.dialog.children('.html_source').val()
+      html = widget.options.dialog.children('.html_source').val()
+      widget.options.editable.element.html html
       widget.options.editable.element.trigger('change')
       false
 
