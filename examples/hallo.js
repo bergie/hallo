@@ -1776,7 +1776,7 @@ http://hallojs.org
       },
       de: {
         title_insert: 'Bild einfügen',
-        title_properties: 'Bild Eigenschaften',
+        title_properties: 'Bildeigenschaften',
         insert: 'Einfügen',
         chage_image: 'Bild ändern:',
         source: 'URL',
