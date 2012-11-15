@@ -1,6 +1,8 @@
 Hallo - contentEditable for jQuery UI [![Build Status](https://secure.travis-ci.org/bergie/hallo.png)](http://travis-ci.org/bergie/hallo)
 =====================================
 
+![Hallo Editor logo](https://raw.github.com/bergie/hallo/master/design/logo-200x59.png)
+
 Hallo is a very simple in-place rich text editor for web pages. It uses jQuery UI and the [HTML5 contentEditable functionality](https://developer.mozilla.org/en/rich-text_editing_in_mozilla) to edit web content.
 
 The widget has been written as a simple and liberally licensed editor. It doesn't aim to replace popular editors like [Aloha](http://aloha-editor.org), but instead to provide a simpler and more reusable option.

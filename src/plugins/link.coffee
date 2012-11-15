@@ -53,7 +53,7 @@
           document.execCommand "unlink", null, ""
         else
           # link does not have ://, add http:// as default protocol
-          if !((new RegExp(/:\/\//)).test link)
+          if !(/:\/\//.test link) && !(/^mailto:/.test link)
             link = 'http://' + link
           if widget.lastSelection.startContainer.parentNode.href is undefined
             document.execCommand "createLink", null, link
