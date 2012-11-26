@@ -24,16 +24,16 @@
       target.hide()
       @button = @_prepareButton() unless @button
 
-      @button.bind 'click', =>
+      @button.on 'click', =>
         if target.hasClass 'open'
           @_hideTarget()
           return
         @_showTarget()
 
-      target.bind 'click', =>
+      target.on 'click', =>
         @_hideTarget()
 
-      @options.editable.element.bind 'hallodeactivated', =>
+      @options.editable.element.on 'hallodeactivated', =>
         @_hideTarget()
 
       @element.append @button

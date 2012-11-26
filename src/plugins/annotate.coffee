@@ -35,7 +35,7 @@
         editable = @
         jQuery(editable).halloannotate 'turnOff'
       editableElement = @options.editable.element
-      editableElement.bind 'hallodisabled', turnOffAnnotate
+      editableElement.on 'hallodisabled', turnOffAnnotate
 
     populateToolbar: (toolbar) ->
       buttonHolder = jQuery "<span class=\"#{@widgetName}\"></span>"
@@ -48,7 +48,7 @@
         cssClass: @options.buttonCssClass
         queryState: false
  
-      buttonHolder.bind 'change', (event) =>
+      buttonHolder.on 'change', (event) =>
         return if @state is "pending"
         return @turnOn() if @state is "off"
         @turnOff()
@@ -72,10 +72,10 @@
         remove: @options.remove
         success: @options.success
         error: @options.error
-      .bind 'annotateselect', (event, data) ->
+      .on 'annotateselect', (event, data) ->
         widget.options.editable.setModified()
         # console.info @, arguments
-      .bind 'annotateremove', ->
+      .on 'annotateremove', ->
         jQuery.noop()
         # console.info @, arguments
 

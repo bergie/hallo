@@ -82,7 +82,7 @@
           cssClass: @options.buttonCssClass
         buttonset.append buttonHolder
         button = buttonHolder
-        button.bind "click", (event) ->
+        button.on "click", (event) ->
           # we need to save the current selection because we will lose focus
           widget.lastSelection = widget.options.editable.getSelection()
           urlInput = jQuery 'input[name=url]', dialog
@@ -96,13 +96,13 @@
           widget.options.editable.keepActivated true
           dialog.dialog('open')
 
-          dialog.bind 'dialogclose', ->
+          dialog.on 'dialogclose', ->
             jQuery('label', buttonHolder).removeClass 'ui-state-active'
             do widget.options.editable.element.focus
             widget.options.editable.keepActivated false
           return false
 
-        @element.bind "keyup paste change mouseup", (event) ->
+        @element.on "keyup paste change mouseup", (event) ->
           start = jQuery(widget.options.editable.getSelection().startContainer)
           if start.prop('nodeName')
             nodeName = start.prop('nodeName')

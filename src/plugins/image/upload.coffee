@@ -23,7 +23,7 @@
       if widget.options.uploadUrl and !widget.options.uploadCallback
         widget.options.uploadCallback = widget._iframeUpload
 
-      jQuery('.uploadSubmit', @element).bind 'click', (event) ->
+      jQuery('.uploadSubmit', @element).on 'click', (event) ->
         event.preventDefault()
         event.stopPropagation()
         widget.options.uploadCallback
@@ -56,7 +56,7 @@
       else
         uploadUrl = widget.options.uploadUrl
 
-      iframe.bind 'load', ->
+      iframe.on 'load', ->
         imageUrl = iframe.get(0).contentWindow.location.href
         widget.element.hide()
         data.success imageUrl

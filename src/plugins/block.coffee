@@ -42,7 +42,7 @@
         unless containingElement is 'div'
           el.addClass 'disabled'
 
-        el.bind 'click', =>
+        el.on 'click', =>
           tagName = element.toUpperCase()
           if el.hasClass 'disabled'
             return
@@ -60,12 +60,12 @@
           el.removeClass 'selected'
         
         events = 'keyup paste change mouseup'
-        @options.editable.element.bind events, queryState
+        @options.editable.element.on events, queryState
 
-        @options.editable.element.bind 'halloenabled', =>
-          @options.editable.element.bind events, queryState
-        @options.editable.element.bind 'hallodisabled', =>
-          @options.editable.element.unbind events, queryState
+        @options.editable.element.on 'halloenabled', =>
+          @options.editable.element.on events, queryState
+        @options.editable.element.on 'hallodisabled', =>
+          @options.editable.element.off events, queryState
 
         el
 

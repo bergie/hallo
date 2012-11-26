@@ -85,7 +85,7 @@
         <img src=\"#{image.url}\" class=\"imageThumbnail\"
           title=\"#{image.label}\">
         </li>"
-      html.bind 'click', =>
+      html.on 'click', =>
         @options.imageWidget.setCurrent image
       jQuery('.imageThumbnailContainer ul', @element).append html
 

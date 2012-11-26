@@ -153,7 +153,7 @@ $.widget "ncri.hallo-image-insert-edit",
 
     @_load_dialog_image_properties_ui()
 
-    @options.dialog.bind 'dialogclose', =>
+    @options.dialog.on 'dialogclose', =>
       $('label', @button).removeClass 'ui-state-active'
       scrollbar_pos = $(document).scrollTop()
       @options.editable.element.focus()

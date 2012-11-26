@@ -20,7 +20,7 @@
       buttonset.append jQuery(markup).button()
       button = jQuery "##{id}", buttonset
       button.attr "hallo-command", "formatBlock"
-      button.bind "change", (event) ->
+      button.on "change", (event) ->
         cmd = jQuery(this).attr "hallo-command"
         widget.options.editable.execute cmd, "P"
 
@@ -33,7 +33,7 @@
         buttonset.append jQuery(buttonMarkup).button()
         button = jQuery "##{id}", buttonset
         button.attr "hallo-size", "H"+headerSize
-        button.bind "change", (event) ->
+        button.on "change", (event) ->
           size = jQuery(this).attr "hallo-size"
           widget.options.editable.execute "formatBlock", size
 
@@ -41,7 +41,7 @@
 
       buttonset.buttonset()
 
-      @element.bind "keyup paste change mouseup", (event) ->
+      @element.on "keyup paste change mouseup", (event) ->
         try
           format = document.queryCommandValue("formatBlock").toUpperCase()
         catch e

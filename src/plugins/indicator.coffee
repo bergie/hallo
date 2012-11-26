@@ -8,7 +8,7 @@
       className: 'halloEditIndicator'
 
     _create: ->
-      this.element.bind 'halloenabled', =>
+      this.element.on 'halloenabled', =>
         do @buildIndicator
 
     populateToolbar: ->
@@ -24,13 +24,13 @@
       @setIndicatorPosition editButton
 
     bindIndicator: (indicator) ->
-      indicator.bind 'click', =>
+      indicator.on 'click', =>
         do @options.editable.element.focus
 
-      this.element.bind 'halloactivated', ->
+      this.element.on 'halloactivated', ->
         do indicator.hide
 
-      this.element.bind 'hallodisabled', ->
+      this.element.on 'hallodisabled', ->
         do indicator.remove
 
       @options.editable.element.hover ->

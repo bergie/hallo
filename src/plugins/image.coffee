@@ -113,14 +113,14 @@
       buttonset.append buttonHolder
 
       @button = buttonHolder
-      @button.bind "click", (event) ->
+      @button.on "click", (event) ->
         if widget.options.dialog.dialog "isOpen"
           widget._closeDialog()
         else
           widget._openDialog()
         return false
 
-      @options.editable.element.bind "hallodeactivated", (event) ->
+      @options.editable.element.on "hallodeactivated", (event) ->
         widget._closeDialog()
 
       jQuery(@options.editable.element).delegate "img", "click", (event) ->
@@ -136,7 +136,7 @@
 
     _handleTabs: ->
       widget = @
-      jQuery('.nav li', @options.dialog).bind 'click', ->
+      jQuery('.nav li', @options.dialog).on 'click', ->
         jQuery(".#{widget.widgetName}-tab").hide()
         id = jQuery(this).attr 'id'
         jQuery("##{id}-content").show()
@@ -184,7 +184,7 @@
       @options.editable.keepActivated true
       @options.dialog.dialog("open")
 
-      @options.dialog.bind 'dialogclose', =>
+      @options.dialog.on 'dialogclose', =>
         jQuery('label', @button).removeClass 'ui-state-active'
         do @options.editable.element.focus
         @options.editable.keepActivated false

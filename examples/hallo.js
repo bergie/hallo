@@ -82,11 +82,11 @@ http://hallojs.org
       disable: function() {
         var _this = this;
         this.element.attr("contentEditable", false);
-        this.element.unbind("focus", this._activated);
-        this.element.unbind("blur", this._deactivated);
-        this.element.unbind("keyup paste change", this._checkModified);
-        this.element.unbind("keyup", this._keys);
-        this.element.unbind("keyup mouseup", this._checkSelection);
+        this.element.off("focus", this._activated);
+        this.element.off("blur", this._deactivated);
+        this.element.off("keyup paste change", this._checkModified);
+        this.element.off("keyup", this._keys);
+        this.element.off("keyup mouseup", this._checkSelection);
         this.bound = false;
         jQuery(this.element).removeClass('isModified');
         jQuery(this.element).removeClass('inEditMode');
@@ -123,11 +123,11 @@ http://hallojs.org
           });
         }
         if (!this.bound) {
-          this.element.bind("focus", this, this._activated);
-          this.element.bind("blur", this, this._deactivated);
-          this.element.bind("keyup paste change", this, this._checkModified);
-          this.element.bind("keyup", this, this._keys);
-          this.element.bind("keyup mouseup", this, this._checkSelection);
+          this.element.on("focus", this, this._activated);
+          this.element.on("blur", this, this._deactivated);
+          this.element.on("keyup paste change", this, this._checkModified);
+          this.element.on("keyup", this, this._keys);
+          this.element.on("keyup mouseup", this, this._checkSelection);
           this.bound = true;
         }
         if (this.options.forceStructured) {
@@ -224,7 +224,7 @@ http://hallojs.org
       },
       protectFocusFrom: function(el) {
         var _this = this;
-        return el.bind("mousedown", function(event) {
+        return el.on("mousedown", function(event) {
           event.preventDefault();
           _this._protectToolbarFocus = true;
           return setTimeout(function() {
@@ -426,7 +426,7 @@ http://hallojs.org
       },
       _create: function() {
         var _this = this;
-        return this.element.bind('halloenabled', function() {
+        return this.element.on('halloenabled', function() {
           return _this.buildIndicator();
         });
       },
@@ -442,13 +442,13 @@ http://hallojs.org
       },
       bindIndicator: function(indicator) {
         var _this = this;
-        indicator.bind('click', function() {
+        indicator.on('click', function() {
           return _this.options.editable.element.focus();
         });
-        this.element.bind('halloactivated', function() {
+        this.element.on('halloactivated', function() {
           return indicator.hide();
         });
-        this.element.bind('hallodisabled', function() {
+        this.element.on('hallodisabled', function() {
           return indicator.remove();
         });
         return this.options.editable.element.hover(function() {
@@ -623,7 +623,7 @@ http://hallojs.org
         }
       }
       this._load_dialog_image_properties_ui();
-      this.options.dialog.bind('dialogclose', function() {
+      this.options.dialog.on('dialogclose', function() {
         var scrollbar_pos;
         $('label', _this.button).removeClass('ui-state-active');
         scrollbar_pos = $(document).scrollTop();
@@ -885,7 +885,7 @@ http://hallojs.org
         buttonset.append(jQuery(markup).button());
         button = jQuery("#" + id, buttonset);
         button.attr("hallo-command", "formatBlock");
-        button.bind("change", function(event) {
+        button.on("change", function(event) {
           var cmd;
           cmd = jQuery(this).attr("hallo-command");
           return widget.options.editable.execute(cmd, "P");
@@ -898,7 +898,7 @@ http://hallojs.org
           buttonset.append(jQuery(buttonMarkup).button());
           button = jQuery("#" + id, buttonset);
           button.attr("hallo-size", "H" + headerSize);
-          return button.bind("change", function(event) {
+          return button.on("change", function(event) {
             var size;
             size = jQuery(this).attr("hallo-size");
             return widget.options.editable.execute("formatBlock", size);
@@ -910,7 +910,7 @@ http://hallojs.org
           buttonize(header);
         }
         buttonset.buttonset();
-        this.element.bind("keyup paste change mouseup", function(event) {
+        this.element.on("keyup paste change mouseup", function(event) {
           var format, formatNumber, labelParent, matches, selectedButton;
           try {
             format = document.queryCommandValue("formatBlock").toUpperCase();
@@ -953,19 +953,19 @@ http://hallojs.org
         widget = this;
         if (!this.options.bound) {
           this.options.bound = true;
-          this.options.editable.element.bind("halloactivated", function(event, data) {
+          this.options.editable.element.on("halloactivated", function(event, data) {
             widget.options.currentEditable = jQuery(event.target);
             if (!widget.options.visible) {
               return widget.showOverlay();
             }
           });
-          this.options.editable.element.bind("hallomodified", function(event, data) {
+          this.options.editable.element.on("hallomodified", function(event, data) {
             widget.options.currentEditable = jQuery(event.target);
             if (widget.options.visible) {
               return widget.resizeOverlay();
             }
           });
-          return this.options.editable.element.bind("hallodeactivated", function(event, data) {
+          return this.options.editable.element.on("hallodeactivated", function(event, data) {
             widget.options.currentEditable = jQuery(event.target);
             if (widget.options.visible) {
               return widget.hideOverlay();
@@ -982,7 +982,7 @@ http://hallojs.org
             this.options.overlay = jQuery("<div id=\"halloOverlay\"            class=\"halloOverlay\">");
             jQuery(document.body).append(this.options.overlay);
           }
-          this.options.overlay.bind('click', jQuery.proxy(this.options.editable.turnOff, this.options.editable));
+          this.options.overlay.on('click', jQuery.proxy(this.options.editable.turnOff, this.options.editable));
         }
         this.options.overlay.show();
         if (this.options.background === null) {
@@ -1099,10 +1099,10 @@ http://hallojs.org
         };
         this.overlay.left.css(overlayMiddleConfig);
         this.overlay.right.css(overlayMiddleConfig).css("left", this.options.third * 2);
-        editable.bind('halloactivated', function() {
+        editable.on('halloactivated', function() {
           return widget._enableDragging();
         });
-        return editable.bind('hallodeactivated', function() {
+        return editable.on('hallodeactivated', function() {
           return widget._disableDragging();
         });
       },
@@ -1140,7 +1140,7 @@ http://hallojs.org
         var imageInsert, tmpImg;
         imageInsert = jQuery('<img>');
         tmpImg = new Image();
-        jQuery(tmpImg).bind('load', function() {});
+        jQuery(tmpImg).on('load', function() {});
         tmpImg.src = image.src;
         imageInsert.attr({
           src: tmpImg.src,
@@ -1406,7 +1406,7 @@ http://hallojs.org
         if (widget.options.uploadUrl && !widget.options.uploadCallback) {
           widget.options.uploadCallback = widget._iframeUpload;
         }
-        return jQuery('.uploadSubmit', this.element).bind('click', function(event) {
+        return jQuery('.uploadSubmit', this.element).on('click', function(event) {
           event.preventDefault();
           event.stopPropagation();
           return widget.options.uploadCallback({
@@ -1443,7 +1443,7 @@ http://hallojs.org
         } else {
           uploadUrl = widget.options.uploadUrl;
         }
-        iframe.bind('load', function() {
+        iframe.on('load', function() {
           var imageUrl;
           imageUrl = iframe.get(0).contentWindow.location.href;
           widget.element.hide();
@@ -1502,10 +1502,10 @@ http://hallojs.org
           image.label = image.alt;
         }
         html = jQuery("<li>        <img src=\"" + image.url + "\" class=\"imageThumbnail\"          title=\"" + image.label + "\"></li>");
-        html.bind('click', function() {
+        html.on('click', function() {
           return _this.options.imageWidget.setCurrent(image);
         });
-        jQuery('img', html).bind('mousedown', function(event) {
+        jQuery('img', html).on('mousedown', function(event) {
           event.preventDefault();
           return _this.options.imageWidget.setCurrent(image);
         });
@@ -1668,7 +1668,7 @@ http://hallojs.org
         var html,
           _this = this;
         html = jQuery("<li>        <img src=\"" + image.url + "\" class=\"imageThumbnail\"          title=\"" + image.label + "\">        </li>");
-        html.bind('click', function() {
+        html.on('click', function() {
           return _this.options.imageWidget.setCurrent(image);
         });
         return jQuery('.imageThumbnailContainer ul', this.element).append(html);
@@ -1760,7 +1760,7 @@ http://hallojs.org
           return jQuery(editable).halloannotate('turnOff');
         };
         editableElement = this.options.editable.element;
-        return editableElement.bind('hallodisabled', turnOffAnnotate);
+        return editableElement.on('hallodisabled', turnOffAnnotate);
       },
       populateToolbar: function(toolbar) {
         var buttonHolder,
@@ -1775,7 +1775,7 @@ http://hallojs.org
           cssClass: this.options.buttonCssClass,
           queryState: false
         });
-        buttonHolder.bind('change', function(event) {
+        buttonHolder.on('change', function(event) {
           if (_this.state === "pending") {
             return;
           }
@@ -1805,9 +1805,9 @@ http://hallojs.org
           remove: this.options.remove,
           success: this.options.success,
           error: this.options.error
-        }).bind('annotateselect', function(event, data) {
+        }).on('annotateselect', function(event, data) {
           return widget.options.editable.setModified();
-        }).bind('annotateremove', function() {
+        }).on('annotateremove', function() {
           return jQuery.noop();
         });
       },
@@ -1921,7 +1921,7 @@ http://hallojs.org
       this.options.dialog.dialog("option", "position", [xposition, yposition]);
       this.options.editable.keepActivated(true);
       this.options.dialog.dialog("open");
-      this.options.dialog.bind('dialogclose', function() {
+      this.options.dialog.on('dialogclose', function() {
         $('label', _this.button).removeClass('ui-state-active');
         _this.options.editable.element.focus();
         return _this.options.editable.keepActivated(false);
@@ -1949,7 +1949,7 @@ http://hallojs.org
       },
       _init: function() {
         if (this.options.tags.indexOf('br') !== -1) {
-          return this.element.bind('keydown', function(event) {
+          return this.element.on('keydown', function(event) {
             if (event.originalEvent.keyCode === 13) {
               return event.preventDefault();
             }
@@ -2040,7 +2040,7 @@ http://hallojs.org
         });
         buttonset.append(buttonHolder);
         this.button = buttonHolder;
-        this.button.bind("click", function(event) {
+        this.button.on("click", function(event) {
           if (widget.options.dialog.dialog("isOpen")) {
             widget._closeDialog();
           } else {
@@ -2048,7 +2048,7 @@ http://hallojs.org
           }
           return false;
         });
-        this.options.editable.element.bind("hallodeactivated", function(event) {
+        this.options.editable.element.on("hallodeactivated", function(event) {
           return widget._closeDialog();
         });
         jQuery(this.options.editable.element).delegate("img", "click", function(event) {
@@ -2064,7 +2064,7 @@ http://hallojs.org
       _handleTabs: function() {
         var widget;
         widget = this;
-        jQuery('.nav li', this.options.dialog).bind('click', function() {
+        jQuery('.nav li', this.options.dialog).on('click', function() {
           var id, left;
           jQuery("." + widget.widgetName + "-tab").hide();
           id = jQuery(this).attr('id');
@@ -2110,7 +2110,7 @@ http://hallojs.org
         widget.options.loaded = 1;
         this.options.editable.keepActivated(true);
         this.options.dialog.dialog("open");
-        return this.options.dialog.bind('dialogclose', function() {
+        return this.options.dialog.on('dialogclose', function() {
           jQuery('label', _this.button).removeClass('ui-state-active');
           _this.options.editable.element.focus();
           return _this.options.editable.keepActivated(false);
@@ -2297,7 +2297,7 @@ http://hallojs.org
           if (containingElement !== 'div') {
             el.addClass('disabled');
           }
-          el.bind('click', function() {
+          el.on('click', function() {
             var tagName;
             tagName = element.toUpperCase();
             if (el.hasClass('disabled')) {
@@ -2319,12 +2319,12 @@ http://hallojs.org
             return el.removeClass('selected');
           };
           events = 'keyup paste change mouseup';
-          _this.options.editable.element.bind(events, queryState);
-          _this.options.editable.element.bind('halloenabled', function() {
-            return _this.options.editable.element.bind(events, queryState);
+          _this.options.editable.element.on(events, queryState);
+          _this.options.editable.element.on('halloenabled', function() {
+            return _this.options.editable.element.on(events, queryState);
           });
-          _this.options.editable.element.bind('hallodisabled', function() {
-            return _this.options.editable.element.unbind(events, queryState);
+          _this.options.editable.element.on('hallodisabled', function() {
+            return _this.options.editable.element.off(events, queryState);
           });
           return el;
         };
@@ -2436,7 +2436,7 @@ http://hallojs.org
           });
           buttonset.append(buttonHolder);
           button = buttonHolder;
-          button.bind("click", function(event) {
+          button.on("click", function(event) {
             var selectionParent;
             widget.lastSelection = widget.options.editable.getSelection();
             urlInput = jQuery('input[name=url]', dialog);
@@ -2449,14 +2449,14 @@ http://hallojs.org
             }
             widget.options.editable.keepActivated(true);
             dialog.dialog('open');
-            dialog.bind('dialogclose', function() {
+            dialog.on('dialogclose', function() {
               jQuery('label', buttonHolder).removeClass('ui-state-active');
               widget.options.editable.element.focus();
               return widget.options.editable.keepActivated(false);
             });
             return false;
           });
-          return _this.element.bind("keyup paste change mouseup", function(event) {
+          return _this.element.on("keyup paste change mouseup", function(event) {
             var nodeName, start;
             start = jQuery(widget.options.editable.getSelection().startContainer);
             if (start.prop('nodeName')) {
@@ -2548,12 +2548,12 @@ http://hallojs.org
         }
         this.button.data('hallo-command', this.options.command);
         hoverclass = 'ui-state-hover';
-        this.button.bind('mouseenter', function(event) {
+        this.button.on('mouseenter', function(event) {
           if (_this.isEnabled()) {
             return _this.button.addClass(hoverclass);
           }
         });
-        return this.button.bind('mouseleave', function(event) {
+        return this.button.on('mouseleave', function(event) {
           return _this.button.removeClass(hoverclass);
         });
       },
@@ -2575,7 +2575,7 @@ http://hallojs.org
           }
         };
         if (this.options.command) {
-          this.button.bind('click', function(event) {
+          this.button.on('click', function(event) {
             _this.options.editable.execute(_this.options.command);
             queryState;
 
@@ -2587,12 +2587,12 @@ http://hallojs.org
         }
         editableElement = this.options.editable.element;
         events = 'keyup paste change mouseup hallomodified';
-        editableElement.bind(events, queryState);
-        editableElement.bind('halloenabled', function() {
-          return editableElement.bind(events, queryState);
+        editableElement.on(events, queryState);
+        editableElement.on('halloenabled', function() {
+          return editableElement.on(events, queryState);
         });
-        return editableElement.bind('hallodisabled', function() {
-          return editableElement.unbind(events, queryState);
+        return editableElement.on('hallodisabled', function() {
+          return editableElement.off(events, queryState);
         });
       },
       enable: function() {
@@ -2670,17 +2670,17 @@ http://hallojs.org
         if (!this.button) {
           this.button = this._prepareButton();
         }
-        this.button.bind('click', function() {
+        this.button.on('click', function() {
           if (target.hasClass('open')) {
             _this._hideTarget();
             return;
           }
           return _this._showTarget();
         });
-        target.bind('click', function() {
+        target.on('click', function() {
           return _this._hideTarget();
         });
-        this.options.editable.element.bind('hallodeactivated', function() {
+        this.options.editable.element.on('hallodeactivated', function() {
           return _this._hideTarget();
         });
         return this.element.append(this.button);
@@ -2814,7 +2814,7 @@ http://hallojs.org
       },
       _bindEvents: function() {
         var _this = this;
-        this.element.bind('halloselected', function(event, data) {
+        this.element.on('halloselected', function(event, data) {
           var position;
           position = _this._getPosition(data.originalEvent, data.selection);
           if (!position) {
@@ -2825,10 +2825,10 @@ http://hallojs.org
             return _this.toolbar.show();
           }
         });
-        this.element.bind('hallounselected', function(event, data) {
+        this.element.on('hallounselected', function(event, data) {
           return _this.toolbar.hide();
         });
-        return this.element.bind('hallodeactivated', function(event, data) {
+        return this.element.on('hallodeactivated', function(event, data) {
           return _this.toolbar.hide();
         });
       }
@@ -2900,11 +2900,11 @@ http://hallojs.org
       _updatePosition: function(position) {},
       _bindEvents: function() {
         var _this = this;
-        this.element.bind('halloactivated', function(event, data) {
+        this.element.on('halloactivated', function(event, data) {
           _this.setPosition();
           return _this.toolbar.show();
         });
-        return this.element.bind('hallodeactivated', function(event, data) {
+        return this.element.on('hallodeactivated', function(event, data) {
           return _this.toolbar.hide();
         });
       }

@@ -67,11 +67,11 @@
 
     _bindEvents: ->
       # catch activate -> show
-      @element.bind 'halloactivated', (event, data) =>
+      @element.on 'halloactivated', (event, data) =>
         @setPosition()
         @toolbar.show()
 
       # catch deactivate -> hide
-      @element.bind 'hallodeactivated', (event, data) =>
+      @element.on 'hallodeactivated', (event, data) =>
         @toolbar.hide()
 ) jQuery

@@ -43,11 +43,11 @@
         <img src=\"#{image.url}\" class=\"imageThumbnail\"
           title=\"#{image.label}\"></li>"
 
-      html.bind 'click', =>
+      html.on 'click', =>
         @options.imageWidget.setCurrent image
 
       # Prevent users from dragging from the thumbnails list
-      jQuery('img', html).bind 'mousedown', (event) =>
+      jQuery('img', html).on 'mousedown', (event) =>
         event.preventDefault()
         @options.imageWidget.setCurrent image
 

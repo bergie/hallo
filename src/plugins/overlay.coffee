@@ -27,17 +27,17 @@
 
       unless @options.bound
         @options.bound = true
-        @options.editable.element.bind "halloactivated", (event, data) ->
+        @options.editable.element.on "halloactivated", (event, data) ->
           widget.options.currentEditable = jQuery(event.target)
           if !widget.options.visible
             widget.showOverlay()
 
-        @options.editable.element.bind "hallomodified", (event, data) ->
+        @options.editable.element.on "hallomodified", (event, data) ->
           widget.options.currentEditable = jQuery(event.target)
           if widget.options.visible
             widget.resizeOverlay()
 
-        @options.editable.element.bind "hallodeactivated", (event, data) ->
+        @options.editable.element.on "hallodeactivated", (event, data) ->
           widget.options.currentEditable = jQuery(event.target)
           if widget.options.visible
             widget.hideOverlay()
@@ -52,7 +52,7 @@
             class=\"halloOverlay\">"
           jQuery(document.body).append @options.overlay
 
-        @options.overlay.bind 'click'
+        @options.overlay.on 'click'
         , jQuery.proxy @options.editable.turnOff, @options.editable
 
       @options.overlay.show()

@@ -57,9 +57,9 @@
       @overlay.left.css overlayMiddleConfig
       @overlay.right.css(overlayMiddleConfig).css("left", @options.third * 2)
 
-      editable.bind 'halloactivated', ->
+      editable.on 'halloactivated', ->
         widget._enableDragging()
-      editable.bind 'hallodeactivated', ->
+      editable.on 'hallodeactivated', ->
         widget._disableDragging()
 
     setImage: (image) ->
@@ -95,7 +95,7 @@
 
       tmpImg = new Image()
 
-      jQuery(tmpImg).bind 'load', ->
+      jQuery(tmpImg).on 'load', ->
       tmpImg.src = image.src
       
       imageInsert.attr

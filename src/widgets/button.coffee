@@ -30,10 +30,10 @@
       @button.data 'hallo-command', @options.command
 
       hoverclass = 'ui-state-hover'
-      @button.bind 'mouseenter', (event) =>
+      @button.on 'mouseenter', (event) =>
         if @isEnabled()
           @button.addClass hoverclass
-      @button.bind 'mouseleave', (event) =>
+      @button.on 'mouseleave', (event) =>
         @button.removeClass hoverclass
 
     _init: ->
@@ -47,7 +47,7 @@
           return
 
       if @options.command
-        @button.bind 'click', (event) =>
+        @button.on 'click', (event) =>
           @options.editable.execute @options.command
           queryState
           return false
@@ -56,11 +56,11 @@
 
       editableElement = @options.editable.element
       events = 'keyup paste change mouseup hallomodified'
-      editableElement.bind events, queryState
-      editableElement.bind 'halloenabled', =>
-        editableElement.bind events, queryState
-      editableElement.bind 'hallodisabled', =>
-        editableElement.unbind events, queryState
+      editableElement.on events, queryState
+      editableElement.on 'halloenabled', =>
+        editableElement.on events, queryState
+      editableElement.on 'hallodisabled', =>
+        editableElement.off events, queryState
 
     enable: ->
       @button.removeAttr 'disabled'

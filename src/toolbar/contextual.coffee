@@ -86,7 +86,7 @@
 
     _bindEvents: ->
       # catch select -> show (and reposition?)
-      @element.bind 'halloselected', (event, data) =>
+      @element.on 'halloselected', (event, data) =>
         position = @_getPosition data.originalEvent, data.selection
         return unless position
         @_updatePosition position, data.selection
@@ -94,9 +94,9 @@
           @toolbar.show()
 
       # catch deselect -> hide
-      @element.bind 'hallounselected', (event, data) =>
+      @element.on 'hallounselected', (event, data) =>
         @toolbar.hide()
 
-      @element.bind 'hallodeactivated', (event, data) =>
+      @element.on 'hallodeactivated', (event, data) =>
         @toolbar.hide()
 ) jQuery

@@ -77,7 +77,7 @@ $.widget "ncri.hallohtml",
     @options.editable.keepActivated true
     @options.dialog.dialog("open")
 
-    @options.dialog.bind 'dialogclose', =>
+    @options.dialog.on 'dialogclose', =>
       $('label', @button).removeClass 'ui-state-active'
       @options.editable.element.focus()
       @options.editable.keepActivated false

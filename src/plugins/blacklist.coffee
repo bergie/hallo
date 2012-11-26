@@ -9,7 +9,7 @@
     _init: ->
       unless @options.tags.indexOf('br') is -1
         # Prevent 'enter' key if <br> is blacklisted
-        @element.bind 'keydown', (event) ->
+        @element.on 'keydown', (event) ->
           event.preventDefault() if event.originalEvent.keyCode is 13
 
     cleanupContentClone: (el) ->
