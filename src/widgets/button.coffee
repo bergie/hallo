@@ -29,8 +29,9 @@
       @button.addClass @options.cssClass if @options.cssClass
       @button.addClass 'btn-large' if @options.editable.options.touchScreen
       @button.data 'hallo-command', @options.command
-      @button.data 'hallo-command-value', @options.commandValue if @options.commandValue
-
+      if @options.commandValue
+        @button.data 'hallo-command-value', @options.commandValue
+        
       hoverclass = 'ui-state-hover'
       @button.on 'mouseenter', (event) =>
         if @isEnabled()

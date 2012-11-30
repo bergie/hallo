@@ -34,7 +34,9 @@
                 compared = value.match(new RegExp(map[format],"i"))
               else
                 compared = value.match(new RegExp(format,"i"))
-              buttonHolder.hallobutton('checked', if compared then true else false)
+
+              result = if compared then true else false
+              buttonHolder.hallobutton('checked', result)
             catch e
               return
         buttonHolder.find('button .ui-button-text').text(format.toUpperCase())
