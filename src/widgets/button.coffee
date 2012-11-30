@@ -12,6 +12,7 @@
       icon: null
       editable: null
       command: null
+      commandValue: null
       queryState: true
       cssClass: null
 
@@ -28,6 +29,7 @@
       @button.addClass @options.cssClass if @options.cssClass
       @button.addClass 'btn-large' if @options.editable.options.touchScreen
       @button.data 'hallo-command', @options.command
+      @button.data 'hallo-command-value', @options.commandValue if @options.commandValue
 
       hoverclass = 'ui-state-hover'
       @button.on 'mouseenter', (event) =>
@@ -48,7 +50,10 @@
 
       if @options.command
         @button.on 'click', (event) =>
-          @options.editable.execute @options.command
+          if @options.commandValue
+            @options.editable.execute @options.command, @options.commandValue
+          else
+            @options.editable.execute @options.command
           queryState
           return false
 
