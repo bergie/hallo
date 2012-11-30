@@ -43,7 +43,7 @@
       @button = @_prepareButton() unless @button
       @element.append @button
 
-      if @options.queryState == true
+      if @options.queryState is true
         queryState = (event) =>
           return unless @options.command
           try
