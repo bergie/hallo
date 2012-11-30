@@ -41,12 +41,21 @@
     _init: ->
       @button = @_prepareButton() unless @button
       @element.append @button
-      queryState = (event) =>
-        return unless @options.command
-        try
-          @checked document.queryCommandState @options.command
-        catch e
-          return
+
+      if @options.queryState == true
+        queryState = (event) =>
+          return unless @options.command
+          try
+            if @options.commandValue
+              value = document.queryCommandValue @options.command
+              compared = value.match(new RegExp(@options.commandValue,"i"))
+              @checked(if compared then true else false)
+            else
+              @checked document.queryCommandState @options.command
+          catch e
+            return
+      else
+        queryState = @options.queryState
 
       if @options.command
         @button.on 'click', (event) =>
