@@ -336,8 +336,8 @@ http://hallojs.org
                 editable: widget,
                 originalEvent: event
               });
-              return;
             }
+            return;
           }
           if (!widget.selection || !widget._rangesEqual(sel, widget.selection)) {
             widget.selection = sel.cloneRange();

@@ -361,7 +361,7 @@ http://hallojs.org
             widget._trigger "unselected", null,
               editable: widget
               originalEvent: event
-            return
+          return
 
         if !widget.selection or not widget._rangesEqual sel, widget.selection
           widget.selection = sel.cloneRange()
