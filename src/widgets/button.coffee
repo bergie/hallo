@@ -9,6 +9,7 @@
     options:
       uuid: ''
       label: null
+      text: ''
       icon: null
       editable: null
       command: null
@@ -23,7 +24,7 @@
 
       id = "#{@options.uuid}-#{@options.label}"
       opts = @options
-      @button = @_createButton id, opts.command, opts.label, opts.icon
+      @button = @_createButton id, opts.command, opts.label, opts.icon, opts.text
       @element.append @button
       @button.addClass @options.cssClass if @options.cssClass
       @button.addClass 'btn-large' if @options.editable.options.touchScreen
@@ -81,7 +82,7 @@
       @isChecked = checked
       @refresh()
 
-    _createButton: (id, command, label, icon) ->
+    _createButton: (id, command, label, icon, text) ->
       classes = [
         'ui-button'
         'ui-widget'
@@ -93,7 +94,7 @@
       jQuery "<button id=\"#{id}\"
         class=\"#{classes.join(' ')}\" title=\"#{label}\">
           <span class=\"ui-button-text\">
-            <i class=\"#{icon}\"></i>
+            <i class=\"#{icon}\">#{text}</i>
           </span>
         </button>"
 
