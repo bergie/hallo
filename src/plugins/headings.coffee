@@ -2,66 +2,37 @@
 #     (c) 2011 Henri Bergius, IKS Consortium
 #     Hallo may be freely distributed under the MIT license
 ((jQuery) ->
-  jQuery.widget "IKS.halloheadings",
+  jQuery.widget 'IKS.halloheadings',
     options:
       editable: null
       toolbar: null
-      uuid: ""
-      headers: [1,2,3]
+      uuid: ''
+      headers: [1, 2, 3]
 
     populateToolbar: (toolbar) ->
-      widget = this
-      buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
-      id = "#{@options.uuid}-paragraph"
-      label = "P"
-      markup = "<input id=\"#{id}\" type=\"radio\"
-        name=\"#{widget.options.uuid}-headings\"/>
-        <label for=\"#{id}\" class=\"p_button\">#{label}</label>"
-      buttonset.append jQuery(markup).button()
-      button = jQuery "##{id}", buttonset
-      button.attr "hallo-command", "formatBlock"
-      button.on "change", (event) ->
-        cmd = jQuery(this).attr "hallo-command"
-        widget.options.editable.execute cmd, "P"
+      buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
 
-      buttonize = (headerSize) =>
-        label = "H" + headerSize
-        id = "#{@options.uuid}-#{headerSize}"
-        buttonMarkup = "<input id=\"#{id}\" type=\"radio\"
-          name=\"#{widget.options.uuid}-headings\"/>
-          <label for=\"#{id}\" class=\"h#{headerSize}_button\">#{label}</label>"
-        buttonset.append jQuery(buttonMarkup).button()
-        button = jQuery "##{id}", buttonset
-        button.attr "hallo-size", "H"+headerSize
-        button.on "change", (event) ->
-          size = jQuery(this).attr "hallo-size"
-          widget.options.editable.execute "formatBlock", size
+      buttonize = (formatAs) =>
+        buttonElement = jQuery '<span></span>'
+        buttonElement.hallobutton
+          uuid: @options.uuid
+          editable: @options.editable
+          label: formatAs
+          text: formatAs
+          cssClass: @options.buttonCssClass
 
-      buttonize header for header in @options.headers
+        buttonElement.on 'click', =>
+          @options.editable.execute 'formatBlock', formatAs
 
-      buttonset.buttonset()
+        @element.on 'keyup paste change mouseup', ->
+          currentFormat = document.queryCommandValue 'formatBlock'
+          buttonElement.hallobutton 'checked', currentFormat.toLowerCase() is formatAs.toLowerCase()
 
-      @element.on "keyup paste change mouseup", (event) ->
-        try
-          format = document.queryCommandValue("formatBlock").toUpperCase()
-        catch e
-          format = ''
+        buttonset.append buttonElement
 
-        if format is "P"
-          selectedButton = jQuery("##{widget.options.uuid}-paragraph")
-        else if matches = format.match(/\d/)
-          formatNumber = matches[0]
-          selectedButton = jQuery("##{widget.options.uuid}-#{formatNumber}")
+      buttonize 'P'
+      buttonize 'H' + size for size in @options.headers
 
-        labelParent = jQuery(buttonset)
-        labelParent.children("input").attr "checked", false
-        labelParent.children("label").removeClass "ui-state-clicked"
-        labelParent.children("input").button("widget").button "refresh"
-
-        if selectedButton
-          selectedButton.attr "checked", true
-          selectedButton.next("label").addClass "ui-state-clicked"
-          selectedButton.button "refresh"
-
-       toolbar.append buttonset
+      buttonset.hallobuttonset()
+      toolbar.append buttonset
 )(jQuery)
