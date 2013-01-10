@@ -28,14 +28,21 @@
       # element when floating is set to true
       if @options.parentElement is 'body' and not @options.floating
         el = jQuery(@element)
-        widthToAdd = parseFloat el.css('padding-left')
-        widthToAdd += parseFloat el.css('padding-right')
-        widthToAdd += parseFloat el.css('border-left-width')
-        widthToAdd += parseFloat el.css('border-right-width')
-        try
-          widthToAdd += (parseFloat el.css('outline-width')) * 2
-          widthToAdd += (parseFloat el.css('outline-offset')) * 2
-        jQuery(@toolbar).css "width", el.width() + widthToAdd
+        elementWidth=el.width()
+        if elementWidth > 20
+          widthToAdd = parseFloat el.css('padding-left')
+          widthToAdd += parseFloat el.css('padding-right')
+          widthToAdd += parseFloat el.css('border-left-width')
+          widthToAdd += parseFloat el.css('border-right-width')
+          try
+            widthToAdd += (parseFloat el.css('outline-width')) * 2
+            widthToAdd += (parseFloat el.css('outline-offset')) * 2
+          # clear right padding
+          jQuery(@toolbar).css "padding-right", ""
+          jQuery(@toolbar).css "width", el.width() + widthToAdd
+        else
+          jQuery(@toolbar).css "padding-right", "4px"
+          jQuery(@toolbar).css "width", ""
 
     _getPosition: (event, selection) ->
       return position =
