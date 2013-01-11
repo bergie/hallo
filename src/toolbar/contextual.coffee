@@ -81,11 +81,6 @@
           top_offset = 20
         top = position.top + top_offset
         left = position.left - @toolbar.outerWidth() / 2 + 30
-
-      # if the body has a "margin" set which pushes all content down/right, we also
-      # need to apply it here.
-      top -= jQuery('body').offset().top
-      left -= jQuery('body').offset().left
       @toolbar.css 'top', top
       @toolbar.css 'left', left
 
