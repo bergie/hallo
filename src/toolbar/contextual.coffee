@@ -72,8 +72,8 @@
         else
           top_offset = selectionRect.bottom + 10
 
-        top = $(window).scrollTop() + top_offset
-        left = $(window).scrollLeft() + selectionRect.left
+        top = jQuery(window).scrollTop() + top_offset
+        left = jQuery(window).scrollLeft() + selectionRect.left
       else
         if this.options.positionAbove
           top_offset = -10 - toolbar_height_offset
@@ -81,6 +81,11 @@
           top_offset = 20
         top = position.top + top_offset
         left = position.left - @toolbar.outerWidth() / 2 + 30
+
+      # if the body has a "margin" set which pushes all content down/right, we also
+      # need to apply it here.
+      top -= jQuery('body').offset().top
+      left -= jQuery('body').offset().left
       @toolbar.css 'top', top
       @toolbar.css 'left', left
 
