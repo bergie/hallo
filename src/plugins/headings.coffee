@@ -5,63 +5,46 @@
   jQuery.widget "IKS.halloheadings",
     options:
       editable: null
-      toolbar: null
-      uuid: ""
-      headers: [1,2,3]
+      uuid: ''
+      formatBlocks: ["p", "h1", "h2", "h3"]
+      buttonCssClass: null
 
     populateToolbar: (toolbar) ->
       widget = this
       buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
-      id = "#{@options.uuid}-paragraph"
-      label = "P"
-      markup = "<input id=\"#{id}\" type=\"radio\"
-        name=\"#{widget.options.uuid}-headings\"/>
-        <label for=\"#{id}\" class=\"p_button\">#{label}</label>"
-      buttonset.append jQuery(markup).button()
-      button = jQuery "##{id}", buttonset
-      button.attr "hallo-command", "formatBlock"
-      button.on "change", (event) ->
-        cmd = jQuery(this).attr "hallo-command"
-        widget.options.editable.execute cmd, "P"
+      ie = jQuery.browser.msie
+      command = (if ie then "FormatBlock" else "formatBlock")
 
-      buttonize = (headerSize) =>
-        label = "H" + headerSize
-        id = "#{@options.uuid}-#{headerSize}"
-        buttonMarkup = "<input id=\"#{id}\" type=\"radio\"
-          name=\"#{widget.options.uuid}-headings\"/>
-          <label for=\"#{id}\" class=\"h#{headerSize}_button\">#{label}</label>"
-        buttonset.append jQuery(buttonMarkup).button()
-        button = jQuery "##{id}", buttonset
-        button.attr "hallo-size", "H"+headerSize
-        button.on "change", (event) ->
-          size = jQuery(this).attr "hallo-size"
-          widget.options.editable.execute "formatBlock", size
+      buttonize = (format) =>
+        buttonHolder = jQuery '<span></span>'
+        buttonHolder.hallobutton
+          label: format
+          editable: @options.editable
+          command: command
+          commandValue: (if ie then "<#{format}>" else format)
+          uuid: @options.uuid
+          cssClass: @options.buttonCssClass
+          queryState: (event) ->
+            try
+              value = document.queryCommandValue command
+              if ie
+                map = { p: "normal" }
+                for val in [1,2,3,4,5,6]
+                  map["h#{val}"] = val
+                compared = value.match(new RegExp(map[format],"i"))
+              else
+                compared = value.match(new RegExp(format,"i"))
 
-      buttonize header for header in @options.headers
+              result = if compared then true else false
+              buttonHolder.hallobutton('checked', result)
+            catch e
+              return
+        buttonHolder.find('button .ui-button-text').text(format.toUpperCase())
+        buttonset.append buttonHolder
 
-      buttonset.buttonset()
-
-      @element.on "keyup paste change mouseup", (event) ->
-        try
-          format = document.queryCommandValue("formatBlock").toUpperCase()
-        catch e
-          format = ''
-
-        if format is "P"
-          selectedButton = jQuery("##{widget.options.uuid}-paragraph")
-        else if matches = format.match(/\d/)
-          formatNumber = matches[0]
-          selectedButton = jQuery("##{widget.options.uuid}-#{formatNumber}")
-
-        labelParent = jQuery(buttonset)
-        labelParent.children("input").attr "checked", false
-        labelParent.children("label").removeClass "ui-state-clicked"
-        labelParent.children("input").button("widget").button "refresh"
-
-        if selectedButton
-          selectedButton.attr "checked", true
-          selectedButton.next("label").addClass "ui-state-clicked"
-          selectedButton.button "refresh"
-
-       toolbar.append buttonset
+      for format in @options.formatBlocks
+        buttonize format
+      
+      buttonset.hallobuttonset()
+      toolbar.append buttonset
 )(jQuery)
