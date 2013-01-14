@@ -12,6 +12,7 @@
       icon: null
       editable: null
       command: null
+      commandValue: null
       queryState: true
       cssClass: null
 
@@ -28,7 +29,9 @@
       @button.addClass @options.cssClass if @options.cssClass
       @button.addClass 'btn-large' if @options.editable.options.touchScreen
       @button.data 'hallo-command', @options.command
-
+      if @options.commandValue
+        @button.data 'hallo-command-value', @options.commandValue
+        
       hoverclass = 'ui-state-hover'
       @button.on 'mouseenter', (event) =>
         if @isEnabled()
@@ -39,16 +42,28 @@
     _init: ->
       @button = @_prepareButton() unless @button
       @element.append @button
-      queryState = (event) =>
-        return unless @options.command
-        try
-          @checked document.queryCommandState @options.command
-        catch e
-          return
+
+      if @options.queryState is true
+        queryState = (event) =>
+          return unless @options.command
+          try
+            if @options.commandValue
+              value = document.queryCommandValue @options.command
+              compared = value.match(new RegExp(@options.commandValue,"i"))
+              @checked(if compared then true else false)
+            else
+              @checked document.queryCommandState @options.command
+          catch e
+            return
+      else
+        queryState = @options.queryState
 
       if @options.command
         @button.on 'click', (event) =>
-          @options.editable.execute @options.command
+          if @options.commandValue
+            @options.editable.execute @options.command, @options.commandValue
+          else
+            @options.editable.execute @options.command
           queryState
           return false
 
