@@ -94,7 +94,8 @@
             jQuery(urlInput[0].form).find('input[type=submit]').val(butTitle)
           else
             urlInput.val(jQuery(selectionParent).attr('href'))
-            jQuery(urlInput[0].form).find('input[type=submit]').val(butUpdateTitle)
+            button_selector = 'input[type=submit]'
+            jQuery(urlInput[0].form).find(button_selector).val(butUpdateTitle)
 
           widget.options.editable.keepActivated true
           dialog.dialog('open')
