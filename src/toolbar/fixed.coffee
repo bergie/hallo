@@ -59,11 +59,8 @@
     setPosition: ->
       return unless @options.parentElement is 'body'
       @toolbar.css 'position', 'absolute'
-
-      # if the body has a "margin" set which pushes all content down/right, we also
-      # need to apply it here.
-      @toolbar.css 'top', @element.offset().top - @toolbar.outerHeight() - jQuery('body').offset().top
-      @toolbar.css 'left', @element.offset().left - jQuery('body').offset().left + 10
+      @toolbar.css 'top', @element.offset().top - @toolbar.outerHeight()
+      @toolbar.css 'left', @element.offset().left + 10
 
     _updatePosition: (position) ->
       return
