@@ -15,6 +15,7 @@
         height: 95
         title: "Enter Link"
         buttonTitle: "Insert"
+        buttonUpdateTitle: "Update"
         modal: true
         resizable: false
         draggable: false
@@ -26,6 +27,7 @@
 
       dialogId = "#{@options.uuid}-dialog"
       butTitle = @options.dialogOpts.buttonTitle
+      butUpdateTitle = @options.dialogOpts.buttonUpdateTitle
       dialog = jQuery "<div id=\"#{dialogId}\">
         <form action=\"#\" method=\"post\" class=\"linkForm\">
           <input class=\"url\" type=\"text\" name=\"url\"
@@ -66,7 +68,7 @@
         dialog.dialog('close')
         return false
 
-      dialog.find("form").submit dialogSubmitCb
+      dialog.find("input[type=submit]").click dialogSubmitCb
 
       buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
       buttonize = (type) =>
@@ -89,9 +91,11 @@
           selectionParent = widget.lastSelection.startContainer.parentNode
           unless selectionParent.href
             urlInput.val(widget.options.defaultUrl)
+            jQuery(urlInput[0].form).find('input[type=submit]').val(butTitle)
           else
             urlInput.val(jQuery(selectionParent).attr('href'))
-            jQuery(urlInput[0].form).find('input[type=submit]').val('update')
+            button_selector = 'input[type=submit]'
+            jQuery(urlInput[0].form).find(button_selector).val(butUpdateTitle)
 
           widget.options.editable.keepActivated true
           dialog.dialog('open')
