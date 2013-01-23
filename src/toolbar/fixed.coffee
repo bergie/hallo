@@ -12,6 +12,9 @@
       editable: null
       toolbar: null
 
+      affix: true
+      affixTopOffset: 2
+
     _create: ->
       @toolbar = @options.toolbar
       @toolbar.show()
@@ -21,6 +24,8 @@
       @_bindEvents()
 
       jQuery(window).resize (event) =>
+        @setPosition()
+      jQuery(window).scroll (event) =>
         @setPosition()
 
       # Make sure the toolbar has not got the full width of the editable
@@ -60,7 +65,18 @@
       return unless @options.parentElement is 'body'
       @toolbar.css 'position', 'absolute'
       @toolbar.css 'top', @element.offset().top - @toolbar.outerHeight()
-      @toolbar.css 'left', @element.offset().left + 10
+
+      if @options.affix
+        scrollTop = jQuery(window).scrollTop()
+        elementTop = @element.offset().top - (@toolbar.height() + @options.affixTopOffset)
+        elementBottom = (@element.height() - @options.affixTopOffset) + (@element.offset().top - @toolbar.height())
+        
+        if scrollTop > elementTop && scrollTop < elementBottom
+          @toolbar.css('position', 'fixed')
+          @toolbar.css('top', @options.affixTopOffset)
+      else
+
+      @toolbar.css 'left', @element.offset().left - 2
 
     _updatePosition: (position) ->
       return
