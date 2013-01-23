@@ -99,6 +99,7 @@ http://hallojs.org
       buttonCssClass: null
       toolbarCssClass: null
       toolbarPositionAbove: false
+      toolbarOptions: {}
       placeholder: ''
       forceStructured: true
       checkTouch: true
@@ -293,11 +294,15 @@ http://hallojs.org
     _prepareToolbar: ->
       @toolbar = jQuery('<div class="hallotoolbar"></div>').hide()
       @toolbar.addClass @options.toolbarCssClass if @options.toolbarCssClass
-      @element[@options.toolbar]
+
+      defaultToolbarOptions =
         editable: @
         parentElement: @options.parentElement
         toolbar: @toolbar
         positionAbove: @options.toolbarPositionAbove
+
+      toolbarOptions = $.extend({}, defaultToolbarOptions, @options.toolbarOptions)
+      @element[@options.toolbar] toolbarOptions
 
       for plugin of @options.plugins
         populate = jQuery(@element).data(plugin).populateToolbar
