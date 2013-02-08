@@ -4,7 +4,7 @@
 #
 #     Contextual toolbar plugin
 ((jQuery) ->
-  jQuery.widget 'Hallo.halloToolbarContextual',
+  jQuery.widget 'IKS.halloToolbarContextual',
     toolbar: null
 
     options:

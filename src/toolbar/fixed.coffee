@@ -4,7 +4,7 @@
 #
 #     Fixed toolbar plugin
 ((jQuery) ->
-  jQuery.widget 'Hallo.halloToolbarFixed',
+  jQuery.widget 'IKS.halloToolbarFixed',
     toolbar: null
 
     options:
