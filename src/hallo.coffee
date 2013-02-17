@@ -174,7 +174,7 @@ http://hallojs.org
 
       @element.attr "contentEditable", true
 
-      unless @element.html()
+      unless @element.html().trim()
         @element.html this.options.placeholder
         @element.css
           'min-width': @element.innerWidth()
