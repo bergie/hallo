@@ -68,8 +68,11 @@
 
       if @options.affix
         scrollTop = jQuery(window).scrollTop()
-        elementTop = @element.offset().top - (@toolbar.height() + @options.affixTopOffset)
-        elementBottom = (@element.height() - @options.affixTopOffset) + (@element.offset().top - @toolbar.height())
+        offset = @element.offset()
+        height = @element.height()
+        topOffset = @options.affixTopOffset
+        elementTop = offset.top - (@toolbar.height() + @options.affixTopOffset)
+        elementBottom = (height - topOffset) + (offset.top - @toolbar.height())
         
         if scrollTop > elementTop && scrollTop < elementBottom
           @toolbar.css('position', 'fixed')

@@ -295,13 +295,13 @@ http://hallojs.org
       @toolbar = jQuery('<div class="hallotoolbar"></div>').hide()
       @toolbar.addClass @options.toolbarCssClass if @options.toolbarCssClass
 
-      defaultToolbarOptions =
+      defaults =
         editable: @
         parentElement: @options.parentElement
         toolbar: @toolbar
         positionAbove: @options.toolbarPositionAbove
 
-      toolbarOptions = $.extend({}, defaultToolbarOptions, @options.toolbarOptions)
+      toolbarOptions = $.extend({}, defaults, @options.toolbarOptions)
       @element[@options.toolbar] toolbarOptions
 
       for plugin of @options.plugins
