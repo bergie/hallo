@@ -2174,8 +2174,7 @@
             } else {
               _this.options.editable.execute(_this.options.command);
             }
-            queryState;
-
+            queryState();
             return false;
           });
         }
