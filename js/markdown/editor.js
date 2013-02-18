@@ -3,10 +3,11 @@ jQuery(document).ready(function() {
   jQuery('.editable').hallo({
     plugins: {
       'halloformat': {},
-      'halloblock': {},
+      'halloheadings': {},
       'hallolists': {},
       'halloreundo': {}
-    }
+    },
+    toolbar: 'halloToolbarFixed'
   });
 
   var markdownize = function(content) {

@@ -3,7 +3,7 @@ jQuery(document).ready(function() {
   var vie = new VIE;
   vie.use(new vie.StanbolService({
     proxyDisabled: true,
-    url: 'http://dev.iks-project.eu:8081'
+    url: 'http://dev.iks-project.eu:8080'
   }));
 
   // Instantiate Hallo Editor
@@ -17,6 +17,6 @@ jQuery(document).ready(function() {
         vie: vie
       }
     },
-    showAlways: true
+    toolbar: 'halloToolbarFixed'
   });
 });
