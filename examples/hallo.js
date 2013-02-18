@@ -2375,7 +2375,7 @@
         return position;
       },
       setPosition: function() {
-        var elementBottom, elementTop, scrollTop;
+        var elementBottom, elementTop, height, offset, scrollTop, topOffset;
         if (this.options.parentElement !== 'body') {
           return;
         }
@@ -2383,8 +2383,11 @@
         this.toolbar.css('top', this.element.offset().top - this.toolbar.outerHeight());
         if (this.options.affix) {
           scrollTop = jQuery(window).scrollTop();
-          elementTop = this.element.offset().top - (this.toolbar.height() + this.options.affixTopOffset);
-          elementBottom = (this.element.height() - this.options.affixTopOffset) + (this.element.offset().top - this.toolbar.height());
+          offset = this.element.offset();
+          height = this.element.height();
+          topOffset = this.options.affixTopOffset;
+          elementTop = offset.top - (this.toolbar.height() + this.options.affixTopOffset);
+          elementBottom = (height - topOffset) + (offset.top - this.toolbar.height());
           if (scrollTop > elementTop && scrollTop < elementBottom) {
             this.toolbar.css('position', 'fixed');
             this.toolbar.css('top', this.options.affixTopOffset);
@@ -2525,7 +2528,7 @@
   })(jQuery);
 
   /*
-  Hallo 1.0.1dev - a rich text editing jQuery UI widget
+  Hallo 1.0.1 - a rich text editing jQuery UI widget
   (c) 2011 Henri Bergius, IKS Consortium
   Hallo may be freely distributed under the MIT license
   http://hallojs.org
@@ -2766,18 +2769,18 @@
         return "" + (S4()) + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + (S4()) + (S4());
       },
       _prepareToolbar: function() {
-        var defaultToolbarOptions, plugin, populate, toolbarOptions;
+        var defaults, plugin, populate, toolbarOptions;
         this.toolbar = jQuery('<div class="hallotoolbar"></div>').hide();
         if (this.options.toolbarCssClass) {
           this.toolbar.addClass(this.options.toolbarCssClass);
         }
-        defaultToolbarOptions = {
+        defaults = {
           editable: this,
           parentElement: this.options.parentElement,
           toolbar: this.toolbar,
           positionAbove: this.options.toolbarPositionAbove
         };
-        toolbarOptions = $.extend({}, defaultToolbarOptions, this.options.toolbarOptions);
+        toolbarOptions = $.extend({}, defaults, this.options.toolbarOptions);
         this.element[this.options.toolbar](toolbarOptions);
         for (plugin in this.options.plugins) {
           populate = jQuery(this.element).data('IKS-' + plugin).populateToolbar;
