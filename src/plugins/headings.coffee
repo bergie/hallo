@@ -12,7 +12,7 @@
     populateToolbar: (toolbar) ->
       widget = this
       buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
-      ie = jQuery.browser.msie
+      ie = navigator.appName is 'Microsoft Internet Explorer'
       command = (if ie then "FormatBlock" else "formatBlock")
 
       buttonize = (format) =>

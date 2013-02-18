@@ -217,7 +217,7 @@ http://hallojs.org
       sel.setSingleRange(range)
 
     replaceSelection: (cb) ->
-      if jQuery.browser.msie
+      if navigator.appName is 'Microsoft Internet Explorer'
         t = document.selection.createRange().text
         r = document.selection.createRange()
         r.pasteHTML(cb(t))
@@ -231,7 +231,7 @@ http://hallojs.org
         sel.addRange(range)
 
     removeAllSelections: () ->
-      if jQuery.browser.msie
+      if navigator.appName is 'Microsoft Internet Explorer'
         range.empty()
       else
         window.getSelection().removeAllRanges()

@@ -46,7 +46,7 @@
           tagName = element.toUpperCase()
           if el.hasClass 'disabled'
             return
-          if jQuery.browser.msie
+          if navigator.appName is 'Microsoft Internet Explorer'
             # In IE FormatBlock wants tags inside brackets
             @options.editable.execute 'FormatBlock', "<#{tagName}>"
             return

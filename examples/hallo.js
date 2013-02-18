@@ -705,7 +705,7 @@
             if (el.hasClass('disabled')) {
               return;
             }
-            if (jQuery.browser.msie) {
+            if (navigator.appName === 'Microsoft Internet Explorer') {
               _this.options.editable.execute('FormatBlock', "<" + tagName + ">");
               return;
             }
@@ -766,7 +766,7 @@
           _this = this;
         widget = this;
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
-        ie = jQuery.browser.msie;
+        ie = navigator.appName === 'Microsoft Internet Explorer';
         command = (ie ? "FormatBlock" : "formatBlock");
         buttonize = function(format) {
           var buttonHolder;
@@ -2528,7 +2528,7 @@
   })(jQuery);
 
   /*
-  Hallo 1.0.1 - a rich text editing jQuery UI widget
+  Hallo 1.0.2 - a rich text editing jQuery UI widget
   (c) 2011 Henri Bergius, IKS Consortium
   Hallo may be freely distributed under the MIT license
   http://hallojs.org
@@ -2687,7 +2687,7 @@
       },
       replaceSelection: function(cb) {
         var newTextNode, r, range, sel, t;
-        if (jQuery.browser.msie) {
+        if (navigator.appName === 'Microsoft Internet Explorer') {
           t = document.selection.createRange().text;
           r = document.selection.createRange();
           return r.pasteHTML(cb(t));
@@ -2702,7 +2702,7 @@
         }
       },
       removeAllSelections: function() {
-        if (jQuery.browser.msie) {
+        if (navigator.appName === 'Microsoft Internet Explorer') {
           return range.empty();
         } else {
           return window.getSelection().removeAllRanges();
