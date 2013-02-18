@@ -12,7 +12,7 @@
 #     * Fabian Vogler
 #     * Bartosz Podlewski
 ((jQuery) ->
-  jQuery.widget "Liip.halloimage",
+  jQuery.widget "IKS.halloimage",
     options:
       editable: null
       toolbar: null
