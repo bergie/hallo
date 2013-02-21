@@ -56,8 +56,8 @@
             window.getSelection().addRange(widget.lastSelection)
           document.execCommand "unlink", null, ""
         else
-          # link does not have ://, add http:// as default protocol
-          if !(/:\/\//.test link) && !(/^mailto:/.test link)
+          # link does not have :// or javascript:, add http:// as default protocol
+          if !(/:\/\//.test link) && !(/^(mailto|javascript):/.test link)
             link = 'http://' + link
           if widget.lastSelection.startContainer.parentNode.href is undefined
             document.execCommand "createLink", null, link
