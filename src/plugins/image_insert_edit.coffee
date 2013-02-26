@@ -27,7 +27,7 @@ $.widget "ncri.hallo-image-insert-edit",
       height: 'Height'
       alt: 'Alt Text'
       padding: 'Padding'
-      float: 'Float'
+      'float': 'Float'
       float_left: 'left'
       float_right: 'right'
       float_none: 'No'
@@ -41,7 +41,7 @@ $.widget "ncri.hallo-image-insert-edit",
       height: 'Höhe'
       alt: 'Alt Text'
       padding: 'Padding'
-      float: 'Float'
+      'float': 'Float'
       float_left: 'Links'
       float_right: 'Rechts'
       float_none: 'Nein'
@@ -242,7 +242,7 @@ $.widget "ncri.hallo-image-insert-edit",
         @_property_cb_html( 'unfloat',
           @$image.css('float') == 'none',
           { label: @texts.float_none, row: false } ),
-      @texts.float)
+      @texts[float])
       $img_properties.html html
       $img_properties.show()
     else
