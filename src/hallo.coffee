@@ -238,13 +238,11 @@ http://hallojs.org
 
     # Get contents of an editable as HTML string
     getContents: ->
-      # clone
-      contentClone = @element.clone()
       for plugin of @options.plugins
         cleanup = jQuery(@element).data('IKS-'+plugin).cleanupContentClone
         continue unless jQuery.isFunction cleanup
-        jQuery(@element)[plugin] 'cleanupContentClone', contentClone
-      contentClone.html()
+        jQuery(@element)[plugin] 'cleanupContentClone', @element
+      @element.html()
 
     # Set the contents of an editable
     setContents: (contents) ->
