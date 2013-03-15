@@ -7,8 +7,10 @@
     initialized: []
 
     _create: ->
-      console.log "create hallocleanhtml plugin"
-      # TODO: check if jQuery.htmlClean is accessible
+      console.log "create hallocleanhtml plugin " + jQuery.htmlClean
+      unless jQuery.htmlClean?
+        throw new Error 'The hallocleanhtml plugin requires jQuery.htmlClean'
+        return
       
     instantiate: ->
       console.log "instantiate (hallocleanhtml plugin)"
