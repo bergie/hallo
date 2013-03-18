@@ -4,62 +4,59 @@
 
 # This plugin will tidy up pasted content with help of 
 # the jquery-clean plugin (https://code.google.com/p/jquery-clean/).
-# The plugin has to be accessible or an error will be thrown. 
+# Also the selection save and restore module from rangy 
+# (https://code.google.com/p/rangy/wiki/SelectionSaveRestoreModule)
+# is required in order to resolve cross browser bugs for pasting.
+# The plugins have to be accessible or an error will be thrown. 
 
 ((jQuery) ->
   jQuery.widget 'IKS.hallocleanhtml',
 
     _create: ->
       if jQuery.htmlClean is undefined
-        throw new Error 'The hallocleanhtml plugin requires jQuery.htmlClean'
+        throw new Error 'The hallocleanhtml plugin requires jQuery.htmlClean (see https://code.google.com/p/jquery-clean/)'
         return
 
       editor = this.element
       
       # bind paste handler on first call
       editor.bind 'paste', this, (event) -> 
+       
+        # TODO: find out why this check always fails when placed directly after jQuery.htmlClean check
+        if rangy.saveSelection is undefined
+          throw new Error 'The hallocleanhtml plugin requires the selection save and restore module from rangy (see https://code.google.com/p/rangy/wiki/SelectionSaveRestoreModule).'
+          return 
+        
         widget = event.data
+        lastRange = rangy.saveSelection()
         
-        rangy.getSelection().deleteFromDocument()
-        lastRange = widget.options.editable.getSelection()
-        
-        # make sure content will be pasted in an empty element
+        # make sure content will be pasted _empty_ editor and save old contents
         # (because we cannot access clipboard data in all browsers)
-        hiddenPaste = jQuery "<div id='hallocleanhtml-paste' contenteditable='true' style='position:fixed;top:-400px;left:0;'></div>"
-        jQuery('body').append hiddenPaste
-        hiddenPaste.focus()
         lastContent = editor.html()
+        editor.html ''
         
-        setTimeout => 
-          # remove pasting element
-          hiddenPaste.remove()
+        setTimeout -> 
           
-          # return focus and caret position to editable
-          widget.element.focus()
+          pasted = editor.html()
+          cleanPasted = jQuery.htmlClean pasted, @options
           
-          if lastContent != editor.html()
-            # something went wrong while setting focus to the hidden field
-            # the content has been pasted inside the editor (most likely because of weird IE behaviour)
-            console.error "content has been pasted in wrong place. Resetting. lastContent: #{lastContent}  currentContent: #{editor.html()}"
-            editor.html lastContent
-            lastRange.refresh()
-          else
-            # get and tidy up whole html
-            pasted = hiddenPaste.html()
-            
-            cleanPasted = jQuery.htmlClean pasted, @options
-            #console.log "pasted content: " + pasted
-            #console.log "tidy pasted content: " + cleanPasted
-
-            # paste tidy pasted content back
-            # TODO: set cursor _behind_ pasted content
-            if cleanPasted != ''
-              if lastRange.commonAncestorContainer == document
-                editor.html cleanPasted
-              else
-                lastRange.insertNode lastRange.createContextualFragment(cleanPasted)
-            
-            widget.options.editable.restoreSelection lastRange
+          #console.log "content before: " + lastContent
+          #console.log "pasted content: " + pasted
+          #console.log "tidy pasted content: " + cleanPasted
+         
+          # back in timne to the state before pasting
+          editor.html lastContent
+          rangy.restoreSelection lastRange
+          
+          # paste tidy pasted content back
+          # TODO: set cursor _behind_ pasted content
+          if cleanPasted != ''
+            try
+              document.execCommand 'insertHTML', false, cleanPasted
+            catch error
+              # most likely ie
+              range = widget.options.editable.getSelection()
+              range.insertNode range.createContextualFragment(cleanPasted)
         , 4
 
 ) jQuery

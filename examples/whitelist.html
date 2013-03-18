@@ -12,6 +12,7 @@
     <script src="../deps/jquery-ui-1.10.0.custom.js"></script>
     <script src="../deps/jquery.htmlClean.js"></script>
     <script src="../deps/rangy-core-1.2.3.js"></script>
+    <script src="../deps/rangy-selectionsaverestore.js"></script>
     <script src="hallo.js"></script>
     <title>Hallo example</title>
   </head>
@@ -34,8 +35,9 @@
             'hallolink': {},
             'halloreundo': {},
             'hallocleanhtml': {
-            	format: false,
-            	allowedTags: ['p', 'em', 'strong', 'br', 'div', 'ol', 'ul', 'li']
+              format: false,
+              allowedTags: ['p', 'em', 'strong', 'br', 'div', 'ol', 'ul', 'li', 'a'],
+              allowedAttributes: ['style']
             }
           },
           editable: true
