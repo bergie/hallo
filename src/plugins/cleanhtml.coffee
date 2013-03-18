@@ -31,33 +31,35 @@
         lastContent = editor.html()
         
         setTimeout => 
-
-          if lastContent != editor.html()
-            # something went wrong while setting focus to the hidden field
-            # the content has been pasted inside the editor (most likely because of weird IE behaviour)
-            console.error 'content has been pasted in wrong place'
-        
-          # get and tidy up whole html
-          pasted = hiddenPaste.html()
-          cleanPasted = jQuery.htmlClean pasted, @options
-          #console.log "pasted content: " + pasted
-          #console.log "tidy pasted content: " + cleanPasted
-          
           # remove pasting element
           hiddenPaste.remove()
           
           # return focus and caret position to editable
           widget.element.focus()
-
-          # paste tidy pasted content back
-          # TODO: set cursor _behind_ pasted content
-          if cleanPasted != ''
-            if lastRange.commonAncestorContainer == document
-              editor.html cleanPasted
-            else
-              lastRange.insertNode lastRange.createContextualFragment(cleanPasted)
           
-          widget.options.editable.restoreSelection lastRange
+          if lastContent != editor.html()
+            # something went wrong while setting focus to the hidden field
+            # the content has been pasted inside the editor (most likely because of weird IE behaviour)
+            console.error "content has been pasted in wrong place. Resetting. lastContent: #{lastContent}  currentContent: #{editor.html()}"
+            editor.html lastContent
+            lastRange.refresh()
+          else
+            # get and tidy up whole html
+            pasted = hiddenPaste.html()
+            
+            cleanPasted = jQuery.htmlClean pasted, @options
+            #console.log "pasted content: " + pasted
+            #console.log "tidy pasted content: " + cleanPasted
+
+            # paste tidy pasted content back
+            # TODO: set cursor _behind_ pasted content
+            if cleanPasted != ''
+              if lastRange.commonAncestorContainer == document
+                editor.html cleanPasted
+              else
+                lastRange.insertNode lastRange.createContextualFragment(cleanPasted)
+            
+            widget.options.editable.restoreSelection lastRange
         , 4
 
 ) jQuery
