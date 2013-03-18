@@ -22,7 +22,6 @@
     <div class="editable">
       <p>Hello <a href="http://test.de/">World</a> Test 123</p>
     </div>
-    <pre class="code"></pre>
 
     <script>
       jQuery(function() {
@@ -44,7 +43,6 @@
         });
         jQuery('.editable').bind('hallomodified', function(event, data) {
             jQuery('#modified').html("Editables modified");
-    		$('.code').text(data.content);
         });
         jQuery('.editable').bind('halloselected', function(event, data) {
             jQuery('#modified').html("Selection made");

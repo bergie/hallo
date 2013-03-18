@@ -8,6 +8,20 @@
 # (https://code.google.com/p/rangy/wiki/SelectionSaveRestoreModule)
 # is required in order to resolve cross browser bugs for pasting.
 # The plugins have to be accessible or an error will be thrown. 
+# 
+# Usage (example):
+#
+#jQuery('.editable').hallo({
+#         plugins: {
+#            'hallocleanhtml': {
+#              format: false,
+#              allowedTags: ['p', 'em', 'strong', 'br', 'div', 'ol', 'ul', 'li', 'a'],
+#              allowedAttributes: ['style']
+#            }
+#          },
+#        });
+#
+# The plugin options correspond to the available jquery-clean plugin options.
 
 ((jQuery) ->
   jQuery.widget 'IKS.hallocleanhtml',
