@@ -8,61 +8,56 @@
 
 ((jQuery) ->
   jQuery.widget 'IKS.hallocleanhtml',
-    
-    initialized: []
 
     _create: ->
       if jQuery.htmlClean is undefined
         throw new Error 'The hallocleanhtml plugin requires jQuery.htmlClean'
         return
 
-    cleanupContentClone: (el) ->
-    
-      if jQuery.inArray el, @initialized
-        @initialized.push(el)
+      editor = this.element
+      
+      # bind paste handler on first call
+      editor.bind 'paste', this, (event) -> 
+        widget = event.data
         
-        # bind paste handler on first call
-        el.bind 'paste', this, (event) -> 
-          widget = event.data
-          
-          rangy.getSelection().deleteFromDocument()
-          lastRange = widget.options.editable.getSelection()
-          
-          # make sure content will be pasted in an empty element
-          # (because we cannot access clipboard data in all browsers)
-          hiddenPaste = jQuery "<div id='hallocleanhtml-paste' contenteditable='true' style='position:fixed;top:-400px;left:0;'></div>"
-          jQuery('body').append hiddenPaste
-          hiddenPaste.focus()
-          lastContent = el.html()
-          
-          setTimeout => 
+        rangy.getSelection().deleteFromDocument()
+        lastRange = widget.options.editable.getSelection()
+        
+        # make sure content will be pasted in an empty element
+        # (because we cannot access clipboard data in all browsers)
+        hiddenPaste = jQuery "<div id='hallocleanhtml-paste' contenteditable='true' style='position:fixed;top:-400px;left:0;'></div>"
+        jQuery('body').append hiddenPaste
+        hiddenPaste.focus()
+        lastContent = editor.html()
+        
+        setTimeout => 
 
-            if lastContent != el.html()
-              # something went wrong while setting focus to the hidden field
-              # the content has been pasted inside the editor (most likely because of weird IE behaviour)
-              console.error 'content has been pasted in wrong place'
+          if lastContent != editor.html()
+            # something went wrong while setting focus to the hidden field
+            # the content has been pasted inside the editor (most likely because of weird IE behaviour)
+            console.error 'content has been pasted in wrong place'
+        
+          # get and tidy up whole html
+          pasted = hiddenPaste.html()
+          cleanPasted = jQuery.htmlClean pasted, @options
+          #console.log "pasted content: " + pasted
+          #console.log "tidy pasted content: " + cleanPasted
           
-            # get and tidy up whole html
-            pasted = hiddenPaste.html()
-            cleanPasted = jQuery.htmlClean pasted, @options
-            #console.log "pasted content: " + pasted
-            #console.log "tidy pasted content: " + cleanPasted
-            
-            # remove pasting element
-            hiddenPaste.remove()
-            
-            # return focus and caret position to editable
-            widget.element.focus()
+          # remove pasting element
+          hiddenPaste.remove()
+          
+          # return focus and caret position to editable
+          widget.element.focus()
 
-            # paste tidy pasted content back
-            # TODO: set cursor _behind_ pasted content
-            if cleanPasted != ''
-              if lastRange.commonAncestorContainer == document
-                el.html cleanPasted
-              else
-                lastRange.insertNode lastRange.createContextualFragment(cleanPasted)
-            
-            widget.options.editable.restoreSelection lastRange
-          , 4
+          # paste tidy pasted content back
+          # TODO: set cursor _behind_ pasted content
+          if cleanPasted != ''
+            if lastRange.commonAncestorContainer == document
+              editor.html cleanPasted
+            else
+              lastRange.insertNode lastRange.createContextualFragment(cleanPasted)
+          
+          widget.options.editable.restoreSelection lastRange
+        , 4
 
 ) jQuery
