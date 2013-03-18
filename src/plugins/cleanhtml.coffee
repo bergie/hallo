@@ -1,6 +1,11 @@
 #     Hallo - a rich text editing jQuery UI widget
 #     (c) 2012 Henri Bergius, IKS Consortium
 #     Hallo may be freely distributed under the MIT license
+
+# This plugin will tidy up pasted content with help of 
+# the jquery-clean plugin (https://code.google.com/p/jquery-clean/).
+# The plugin has to be accessible or an error will be thrown. 
+
 ((jQuery) ->
   jQuery.widget 'IKS.hallocleanhtml',
     
@@ -28,27 +33,36 @@
           hiddenPaste = jQuery "<div id='hallocleanhtml-paste' contenteditable='true' style='position:fixed;top:-400px;left:0;'></div>"
           jQuery('body').append hiddenPaste
           hiddenPaste.focus()
+          lastContent = el.html()
           
-          setTimeout (widget, lastRange) -> 
+          setTimeout => 
+
+            if lastContent != el.html()
+              # something went wrong while setting focus to the hidden field
+              # the content has been pasted inside the editor (most likely because of weird IE behaviour)
+              console.error 'content has been pasted in wrong place'
           
             # get and tidy up whole html
-            hiddenPaste = jQuery("#hallocleanhtml-paste")
             pasted = hiddenPaste.html()
             cleanPasted = jQuery.htmlClean pasted, @options
-            console.log "tidy pasted content: " + cleanPasted
-            
-            # paste tidy pasted content back
-            setTimeout (cleanPasted) -> 
-              document.execCommand("insertHTML", false, cleanPasted);
-            , 4, cleanPasted
+            #console.log "pasted content: " + pasted
+            #console.log "tidy pasted content: " + cleanPasted
             
             # remove pasting element
             hiddenPaste.remove()
             
             # return focus and caret position to editable
             widget.element.focus()
-            widget.options.editable.restoreSelection(lastRange)
+
+            # paste tidy pasted content back
+            # TODO: set cursor _behind_ pasted content
+            if cleanPasted != ''
+              if lastRange.commonAncestorContainer == document
+                el.html cleanPasted
+              else
+                lastRange.insertNode lastRange.createContextualFragment(cleanPasted)
             
-          , 4, widget, lastRange
+            widget.options.editable.restoreSelection lastRange
+          , 4
 
 ) jQuery
