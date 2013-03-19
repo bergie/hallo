@@ -46,6 +46,8 @@
         event.preventDefault()
 
         link = urlInput.val()
+        dialog.dialog('close')
+        
         widget.options.editable.restoreSelection(widget.lastSelection)
         if isEmptyLink link
           # link is empty, remove it. Make sure the link is selected
@@ -65,7 +67,6 @@
             widget.lastSelection.startContainer.parentNode.href = link
         widget.options.editable.element.trigger('change')
         widget.options.editable.removeAllSelections()
-        dialog.dialog('close')
         return false
 
       dialog.find("input[type=submit]").click dialogSubmitCb
