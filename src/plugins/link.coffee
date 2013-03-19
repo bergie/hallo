@@ -51,22 +51,22 @@
         widget.options.editable.restoreSelection(widget.lastSelection)
         if isEmptyLink link
           # link is empty, remove it. Make sure the link is selected
-          selectionStart = widget.lastSelection.startContainer
-          if widget.lastSelection.collapsed
-            widget.lastSelection.setStartBefore selectionStart
-            widget.lastSelection.setEndAfter selectionStart
-            window.getSelection().addRange(widget.lastSelection)
           document.execCommand "unlink", null, ""
         else
           # link does not have ://, add http:// as default protocol
           if !(/:\/\//.test link) && !(/^mailto:/.test link)
             link = 'http://' + link
           if widget.lastSelection.startContainer.parentNode.href is undefined
-            document.execCommand "createLink", null, link
+            # we need a new link
+            # following check will work around ie and ff bugs when using
+            # "createLink" on an empty selection
+            if widget.lastSelection.collapsed
+              widget.lastSelection.insertNode jQuery("<a href='#{link}'>#{link}</a>")[0]
+            else
+              document.execCommand "createLink", null, link
           else
             widget.lastSelection.startContainer.parentNode.href = link
         widget.options.editable.element.trigger('change')
-        widget.options.editable.removeAllSelections()
         return false
 
       dialog.find("input[type=submit]").click dialogSubmitCb
