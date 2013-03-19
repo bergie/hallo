@@ -22,6 +22,8 @@
 #        });
 #
 # The plugin options correspond to the available jquery-clean plugin options.
+# 
+# Tested in IE 10 + 9, Chrome 25, FF 19
 
 ((jQuery) ->
   jQuery.widget 'IKS.hallocleanhtml',
@@ -42,6 +44,7 @@
           return 
         
         widget = event.data
+        widget.options.editable.getSelection().deleteContents()  # bugfix for overwriting selected text in ie
         lastRange = rangy.saveSelection()
         
         # make sure content will be pasted _empty_ editor and save old contents
