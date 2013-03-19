@@ -102,6 +102,7 @@
           dialog.dialog('open')
 
           dialog.on 'dialogclose', ->
+            widget.options.editable.restoreSelection widget.lastSelection
             jQuery('label', buttonHolder).removeClass 'ui-state-active'
             do widget.options.editable.element.focus
             widget.options.editable.keepActivated false
