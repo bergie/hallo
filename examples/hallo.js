@@ -347,7 +347,7 @@
         height: 'Height',
         alt: 'Alt Text',
         padding: 'Padding',
-        float: 'Float',
+        'float': 'Float',
         float_left: 'left',
         float_right: 'right',
         float_none: 'No'
@@ -362,7 +362,7 @@
         height: 'Höhe',
         alt: 'Alt Text',
         padding: 'Padding',
-        float: 'Float',
+        'float': 'Float',
         float_left: 'Links',
         float_right: 'Rechts',
         float_none: 'Nein'
@@ -550,7 +550,7 @@
         }) + this._property_cb_html('unfloat', this.$image.css('float') === 'none', {
           label: this.texts.float_none,
           row: false
-        }), this.texts.float);
+        }), this.texts[float]);
         $img_properties.html(html);
         $img_properties.show();
       } else {

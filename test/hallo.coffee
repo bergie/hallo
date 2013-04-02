@@ -17,13 +17,13 @@ test 'Hallo instantiation and destruction', ->
   # Activate to get toolbar
   do fixture.focus
   ok fixture.hasClass 'inEditMode'
-  ok fixture.data('halloToolbarContextual')
+  ok fixture.data('IKS-halloToolbarContextual')
   equal jQuery('.hallotoolbar').length, 1
   # Contextual toolbar shouldn't be visible without a selection
   equal jQuery('.hallotoolbar:visible').length, 0
 
   # Check also the instance data
-  instance = fixture.data 'hallo'
+  instance = fixture.data 'IKS-hallo'
   ok instance
 
   fixture.bind 'hallodisabled', ->
@@ -33,8 +33,8 @@ test 'Hallo instantiation and destruction', ->
   # Destroy
   do stop
   fixture.hallo 'destroy'
-  equal fixture.data('hallo'), undefined
-  equal fixture.data('halloToolbarContextual'), undefined
+  equal fixture.data('IKS-hallo'), undefined
+  equal fixture.data('IKS-halloToolbarContextual'), undefined
   equal jQuery('.hallotoolbar').length, 0
   equal fixture.hasClass('inEditMode'), false
 
@@ -43,16 +43,16 @@ test 'Hallo activation events', ->
 
   # Instantiate
   do fixture.hallo
-  instance = fixture.data 'hallo'
+  instance = fixture.data 'IKS-hallo'
 
-  fixture.bind 'halloactivated', (event, data) ->
+  fixture.on 'halloactivated', (event, data) ->
     equal data, instance
     equal jQuery('.hallotoolbar').length, 1
     ok fixture.hasClass 'inEditMode'
     do start
     do fixture.blur
 
-  fixture.bind 'hallodeactivated', (event, data) ->
+  fixture.on 'hallodeactivated', (event, data) ->
     equal data, instance
     equal fixture.hasClass('inEditMode'), false
     do start
@@ -65,13 +65,13 @@ test 'Hallo modification events', ->
 
   # Instantiate
   do fixture.hallo
-  instance = fixture.data 'hallo'
+  instance = fixture.data 'IKS-hallo'
   do fixture.focus
 
   equal fixture.hallo('isModified'), false
   equal fixture.hasClass('isModified'), false
 
-  fixture.bind 'hallomodified', (event, data) ->
+  fixture.on 'hallomodified', (event, data) ->
     equal data.editable, instance
     equal data.content, 'h'
     ok fixture.hasClass 'isModified'
@@ -100,21 +100,21 @@ test 'Hallo fixed toolbar', ->
   # Instantiate
   fixture.hallo
     toolbar: 'halloToolbarFixed'
-  instance = fixture.data 'hallo'
+  instance = fixture.data 'IKS-hallo'
 
   # We shouldn't have a toolbar before first focus
-  equal fixture.data('halloToolbarFixed'), undefined
+  equal fixture.data('IKS-halloToolbarFixed'), undefined
 
   do fixture.focus
-  ok fixture.data('halloToolbarFixed')
-  equal fixture.data('halloToolbarContextual'), undefined
+  ok fixture.data('IKS-halloToolbarFixed')
+  equal fixture.data('IKS-halloToolbarContextual'), undefined
   equal jQuery('.hallotoolbar:visible').length, 1
   equal jQuery('.hallotoolbar:hidden').length, 0
 
   do fixture.blur
   equal jQuery('.hallotoolbar:visible').length, 0
   equal jQuery('.hallotoolbar:hidden').length, 1
-  ok fixture.data('halloToolbarFixed')
+  ok fixture.data('IKS-halloToolbarFixed')
 
   do fixture.focus
   equal jQuery('.hallotoolbar:visible').length, 1
