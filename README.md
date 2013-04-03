@@ -44,7 +44,7 @@ You can also deactivate the editor:
 jQuery('p').hallo({editable: false});
 ```
 
-Hallo itself only makes the selected DOM elements editable and doesn't provide any formatting tools. Formatting is accomplished by loading plugins when initializing Hallo:
+Hallo itself only makes the selected DOM elements editable and doesn't provide any formatting tools. Formatting is accomplished by loading plugins when initializing Hallo. Even simple things like *bold* and *italic* are plugins:
 
 ```javascript
 jQuery('.editable').hallo({
