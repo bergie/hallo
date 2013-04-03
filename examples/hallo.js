@@ -2639,7 +2639,7 @@
           return element.removeAttr('href');
         });
         this.element.attr("contentEditable", true);
-        if (!this.element.html().trim()) {
+        if (!jQuery.trim(this.element.html())) {
           this.element.html(this.options.placeholder);
           this.element.css({
             'min-width': this.element.innerWidth(),
