@@ -301,7 +301,7 @@ http://hallojs.org
         toolbar: @toolbar
         positionAbove: @options.toolbarPositionAbove
 
-      toolbarOptions = $.extend({}, defaults, @options.toolbarOptions)
+      toolbarOptions = jQuery.extend({}, defaults, @options.toolbarOptions)
       @element[@options.toolbar] toolbarOptions
 
       for plugin of @options.plugins

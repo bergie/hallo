@@ -1,100 +1,102 @@
-$.widget "ncri.hallohtml",
-  options:
-    editable: null
-    toolbar: null
-    uuid: ""
-    lang: 'en'
-    dialogOpts:
-      autoOpen: false
-      width: 600
-      height: 'auto'
-      modal: false
-      resizable: true
-      draggable: true
-      dialogClass: 'htmledit-dialog'
-    dialog: null
-    buttonCssClass: null
+((jQuery) ->
+  jQuery.widget "IKS.hallohtml",
+    options:
+      editable: null
+      toolbar: null
+      uuid: ""
+      lang: 'en'
+      dialogOpts:
+        autoOpen: false
+        width: 600
+        height: 'auto'
+        modal: false
+        resizable: true
+        draggable: true
+        dialogClass: 'htmledit-dialog'
+      dialog: null
+      buttonCssClass: null
 
-  translations:
-    en:
-      title: 'Edit HTML'
-      update: 'Update'
-    de:
-      title: 'HTML bearbeiten'
-      update: 'Aktualisieren'
+    translations:
+      en:
+        title: 'Edit HTML'
+        update: 'Update'
+      de:
+        title: 'HTML bearbeiten'
+        update: 'Aktualisieren'
 
-  texts: null
+    texts: null
 
 
-  populateToolbar: ($toolbar) ->
-    widget = this
+    populateToolbar: ($toolbar) ->
+      widget = this
 
-    @texts = @translations[@options.lang]
+      @texts = @translations[@options.lang]
 
-    @options.toolbar = $toolbar
-    @options.dialog = $("<div>").attr('id', "#{@options.uuid}-htmledit-dialog")
+      @options.toolbar = $toolbar
+      @options.dialog = jQuery("<div>").attr('id', "#{@options.uuid}-htmledit-dialog")
 
-    $buttonset = $("<span>").addClass widget.widgetName
+      $buttonset = jQuery("<span>").addClass widget.widgetName
 
-    id = "#{@options.uuid}-htmledit"
-    $buttonHolder = $ '<span>'
-    $buttonHolder.hallobutton
-      label: @texts.title
-      icon: 'icon-list-alt'
-      editable: @options.editable
-      command: null
-      queryState: false
-      uuid: @options.uuid
-      cssClass: @options.buttonCssClass
-    $buttonset.append $buttonHolder
+      id = "#{@options.uuid}-htmledit"
+      $buttonHolder = jQuery '<span>'
+      $buttonHolder.hallobutton
+        label: @texts.title
+        icon: 'icon-list-alt'
+        editable: @options.editable
+        command: null
+        queryState: false
+        uuid: @options.uuid
+        cssClass: @options.buttonCssClass
+      $buttonset.append $buttonHolder
 
-    @button = $buttonHolder
-    @button.click ->
-      if widget.options.dialog.dialog "isOpen"
+      @button = $buttonHolder
+      @button.click ->
+        if widget.options.dialog.dialog "isOpen"
+          widget._closeDialog()
+        else
+          widget._openDialog()
+        false
+
+      @options.editable.element.on "hallodeactivated", ->
         widget._closeDialog()
-      else
-        widget._openDialog()
-      false
 
-    @options.editable.element.on "hallodeactivated", ->
-      widget._closeDialog()
+      $toolbar.append $buttonset
 
-    $toolbar.append $buttonset
-
-    @options.dialog.dialog(@options.dialogOpts)
-    @options.dialog.dialog("option", "title", @texts.title)
+      @options.dialog.dialog(@options.dialogOpts)
+      @options.dialog.dialog("option", "title", @texts.title)
 
 
-  _openDialog: ->
+    _openDialog: ->
 
-    widget = this
+      widget = this
 
-    $editableEl = $ @options.editable.element
-    xposition = $editableEl.offset().left + $editableEl.outerWidth() + 10
-    yposition = @options.toolbar.offset().top - $(document).scrollTop()
-    @options.dialog.dialog("option", "position", [xposition, yposition])
+      $editableEl = jQuery @options.editable.element
+      xposition = $editableEl.offset().left + $editableEl.outerWidth() + 10
+      yposition = @options.toolbar.offset().top - jQuery(document).scrollTop()
+      @options.dialog.dialog("option", "position", [xposition, yposition])
 
-    @options.editable.keepActivated true
-    @options.dialog.dialog("open")
+      @options.editable.keepActivated true
+      @options.dialog.dialog("open")
 
-    @options.dialog.on 'dialogclose', =>
-      $('label', @button).removeClass 'ui-state-active'
-      @options.editable.element.focus()
-      @options.editable.keepActivated false
+      @options.dialog.on 'dialogclose', =>
+        jQuery('label', @button).removeClass 'ui-state-active'
+        @options.editable.element.focus()
+        @options.editable.keepActivated false
 
-    @options.dialog.html $("<textarea>").addClass('html_source')
-    html = @options.editable.element.html()
+      @options.dialog.html jQuery("<textarea>").addClass('html_source')
+      html = @options.editable.element.html()
 
-    #indented_html = @_indent_html html
+      #indented_html = @_indent_html html
 
-    @options.dialog.children('.html_source').val html
-    @options.dialog.prepend $("<button>#{@texts.update}</button>")
+      @options.dialog.children('.html_source').val html
+      @options.dialog.prepend jQuery("<button>#{@texts.update}</button>")
 
-    @options.dialog.on 'click', 'button', ->
-      html = widget.options.dialog.children('.html_source').val()
-      widget.options.editable.element.html html
-      widget.options.editable.element.trigger('change')
-      false
+      @options.dialog.on 'click', 'button', ->
+        html = widget.options.dialog.children('.html_source').val()
+        widget.options.editable.element.html html
+        widget.options.editable.element.trigger('change')
+        false
 
-  _closeDialog: ->
-    @options.dialog.dialog("close")
+    _closeDialog: ->
+      @options.dialog.dialog("close")
+) jQuery
