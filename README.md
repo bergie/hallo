@@ -11,11 +11,12 @@ Read the [introductory blog post](http://bergie.iki.fi/blog/hallo-editor/) for m
 
 ## Using the editor
 
-You need jQuery and jQuery UI loaded. An easy way to do this is to use Google's JS service:
+You need jQuery, jQuery UI (1.10+), and [Rangy](https://code.google.com/p/rangy/) loaded. An easy way to do this is to use Google's JS service:
 
 ```html
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js"></script>
+<script src="http://rangy.googlecode.com/svn/trunk/currentrelease/rangy-core.js"></script>
 ```
 
 The editor toolbar is using jQuery UI theming, so you'll probably also want to [grab a theme](http://jqueryui.com/themeroller/) that fits your needs. Toolbar pluggins use icons from [Font Awesome](http://fortawesome.github.com/Font-Awesome/). Check these [integration instructions](http://fortawesome.github.com/Font-Awesome/#integration) for the right way to include Font Awesome depending on if/how you use Twitter Bootstrap. To style the toolbar as it appears in the demo, you'll also want to add some CSS (like background and border) to the class `hallotoolbar`.
