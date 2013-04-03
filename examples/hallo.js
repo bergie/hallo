@@ -224,31 +224,28 @@
           return false;
         };
         dialogSubmitCb = function(event) {
-          var link, selectionStart;
+          var link;
           event.preventDefault();
           link = urlInput.val();
+          dialog.dialog('close');
           widget.options.editable.restoreSelection(widget.lastSelection);
           if (isEmptyLink(link)) {
-            selectionStart = widget.lastSelection.startContainer;
-            if (widget.lastSelection.collapsed) {
-              widget.lastSelection.setStartBefore(selectionStart);
-              widget.lastSelection.setEndAfter(selectionStart);
-              window.getSelection().addRange(widget.lastSelection);
-            }
             document.execCommand("unlink", null, "");
           } else {
             if (!(/:\/\//.test(link)) && !(/^mailto:/.test(link))) {
               link = 'http://' + link;
             }
             if (widget.lastSelection.startContainer.parentNode.href === void 0) {
-              document.execCommand("createLink", null, link);
+              if (widget.lastSelection.collapsed) {
+                widget.lastSelection.insertNode(jQuery("<a href='" + link + "'>" + link + "</a>")[0]);
+              } else {
+                document.execCommand("createLink", null, link);
+              }
             } else {
               widget.lastSelection.startContainer.parentNode.href = link;
             }
           }
           widget.options.editable.element.trigger('change');
-          widget.options.editable.removeAllSelections();
-          dialog.dialog('close');
           return false;
         };
         dialog.find("input[type=submit]").click(dialogSubmitCb);
@@ -284,6 +281,7 @@
             widget.options.editable.keepActivated(true);
             dialog.dialog('open');
             dialog.on('dialogclose', function() {
+              widget.options.editable.restoreSelection(widget.lastSelection);
               jQuery('label', buttonHolder).removeClass('ui-state-active');
               widget.options.editable.element.focus();
               return widget.options.editable.keepActivated(false);
