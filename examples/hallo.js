@@ -1070,6 +1070,46 @@
   })(jQuery);
 
   (function(jQuery) {
+    return jQuery.widget('IKS.hallocleanhtml', {
+      _create: function() {
+        var editor;
+        if (jQuery.htmlClean === void 0) {
+          throw new Error('The hallocleanhtml plugin requires jQuery.htmlClean (see https://code.google.com/p/jquery-clean/)');
+          return;
+        }
+        editor = this.element;
+        return editor.bind('paste', this, function(event) {
+          var lastContent, lastRange, widget;
+          if (rangy.saveSelection === void 0) {
+            throw new Error('The hallocleanhtml plugin requires the selection save and restore module from rangy (see https://code.google.com/p/rangy/wiki/SelectionSaveRestoreModule).');
+            return;
+          }
+          widget = event.data;
+          widget.options.editable.getSelection().deleteContents();
+          lastRange = rangy.saveSelection();
+          lastContent = editor.html();
+          editor.html('');
+          return setTimeout(function() {
+            var cleanPasted, pasted, range;
+            pasted = editor.html();
+            cleanPasted = jQuery.htmlClean(pasted, this.options);
+            editor.html(lastContent);
+            rangy.restoreSelection(lastRange);
+            if (cleanPasted !== '') {
+              try {
+                return document.execCommand('insertHTML', false, cleanPasted);
+              } catch (error) {
+                range = widget.options.editable.getSelection();
+                return range.insertNode(range.createContextualFragment(cleanPasted));
+              }
+            }
+          }, 4);
+        });
+      }
+    });
+  })(jQuery);
+
+  (function(jQuery) {
     return jQuery.widget("Liip.hallooverlay", {
       options: {
         editable: null,
@@ -2711,16 +2751,15 @@
         }
       },
       getContents: function() {
-        var cleanup, contentClone, plugin;
-        contentClone = this.element.clone();
+        var cleanup, plugin;
         for (plugin in this.options.plugins) {
           cleanup = jQuery(this.element).data('IKS-' + plugin).cleanupContentClone;
           if (!jQuery.isFunction(cleanup)) {
             continue;
           }
-          jQuery(this.element)[plugin]('cleanupContentClone', contentClone);
+          jQuery(this.element)[plugin]('cleanupContentClone', this.element);
         }
-        return contentClone.html();
+        return this.element.html();
       },
       setContents: function(contents) {
         return this.element.html(contents);
