@@ -32,11 +32,12 @@
       },
       texts: null,
       populateToolbar: function($toolbar) {
-        var $buttonHolder, $buttonset, id, widget;
+        var $buttonHolder, $buttonset, id, selector, widget;
         widget = this;
         this.texts = this.translations[this.options.lang];
         this.options.toolbar = $toolbar;
-        this.options.dialog = jQuery("<div>").attr('id', "" + this.options.uuid + "-htmledit-dialog");
+        selector = "" + this.options.uuid + "-htmledit-dialog";
+        this.options.dialog = jQuery("<div>").attr('id', selector);
         $buttonset = jQuery("<span>").addClass(widget.widgetName);
         id = "" + this.options.uuid + "-htmledit";
         $buttonHolder = jQuery('<span>');
@@ -226,7 +227,7 @@
           return false;
         };
         dialogSubmitCb = function(event) {
-          var link;
+          var link, linkNode;
           event.preventDefault();
           link = urlInput.val();
           dialog.dialog('close');
@@ -239,7 +240,8 @@
             }
             if (widget.lastSelection.startContainer.parentNode.href === void 0) {
               if (widget.lastSelection.collapsed) {
-                widget.lastSelection.insertNode(jQuery("<a href='" + link + "'>" + link + "</a>")[0]);
+                linkNode = jQuery("<a href='" + link + "'>" + link + "</a>")[0];
+                widget.lastSelection.insertNode(linkNode);
               } else {
                 document.execCommand("createLink", null, link);
               }
@@ -1070,18 +1072,21 @@
   })(jQuery);
 
   (function(jQuery) {
+    var rangyMessage;
+    rangyMessage = 'The hallocleanhtml plugin requires the selection save and\
+    restore module from Rangy';
     return jQuery.widget('IKS.hallocleanhtml', {
       _create: function() {
         var editor;
         if (jQuery.htmlClean === void 0) {
-          throw new Error('The hallocleanhtml plugin requires jQuery.htmlClean (see https://code.google.com/p/jquery-clean/)');
+          throw new Error('The hallocleanhtml plugin requires jQuery.htmlClean');
           return;
         }
         editor = this.element;
         return editor.bind('paste', this, function(event) {
           var lastContent, lastRange, widget;
           if (rangy.saveSelection === void 0) {
-            throw new Error('The hallocleanhtml plugin requires the selection save and restore module from rangy (see https://code.google.com/p/rangy/wiki/SelectionSaveRestoreModule).');
+            throw new Error(rangyMessage);
             return;
           }
           widget = event.data;

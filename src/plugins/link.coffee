@@ -61,7 +61,8 @@
             # following check will work around ie and ff bugs when using
             # "createLink" on an empty selection
             if widget.lastSelection.collapsed
-              widget.lastSelection.insertNode jQuery("<a href='#{link}'>#{link}</a>")[0]
+              linkNode = jQuery("<a href='#{link}'>#{link}</a>")[0]
+              widget.lastSelection.insertNode linkNode
             else
               document.execCommand "createLink", null, link
           else

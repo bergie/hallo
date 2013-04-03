@@ -248,13 +248,16 @@
         $img_properties.show()
       else
         unless @options.insert_file_dialog_ui_url
-          $img_properties.html( @_property_input_html( 'source',
-                                                       '',
-                                                      { label: @texts.source } ))
+          $img_properties.html @_property_input_html 'source',
+                                                     '',
+                                                     {
+                                                       label: @texts.source
+                                                     }
           $img_properties.show()
 
       if @$image
-        jQuery('#insert_image_btn').remove() unless @options.insert_file_dialog_ui_url
+        unless @options.insert_file_dialog_ui_url
+          jQuery('#insert_image_btn').remove()
 
         if jQuery('#hallo_img_file_select_title').length > 0
           jQuery('#hallo_img_file_select_title').text @texts.chage_image
@@ -279,20 +282,26 @@
         jQuery('#hallo_img_properties #hallo_img_float_left').click ->
           return false unless this.checked
           widget.$image.css 'float', 'left'
-          jQuery('#hallo_img_properties #hallo_img_float_right').removeAttr('checked')
-          jQuery('#hallo_img_properties #hallo_img_unfloat').removeAttr('checked')
+          jQuery('#hallo_img_properties #hallo_img_float_right').
+            removeAttr('checked')
+          jQuery('#hallo_img_properties #hallo_img_unfloat').
+            removeAttr('checked')
 
         jQuery('#hallo_img_properties #hallo_img_float_right').click ->
           return false unless this.checked
           widget.$image.css 'float', 'right'
-          jQuery('#hallo_img_properties #hallo_img_unfloat').removeAttr('checked')
-          jQuery('#hallo_img_properties #hallo_img_float_left').removeAttr('checked')
+          jQuery('#hallo_img_properties #hallo_img_unfloat').
+            removeAttr('checked')
+          jQuery('#hallo_img_properties #hallo_img_float_left').
+            removeAttr('checked')
 
         jQuery('#hallo_img_properties #hallo_img_unfloat').click ->
           return false unless this.checked
           widget.$image.css 'float', 'none'
-          jQuery('#hallo_img_properties #hallo_img_float_right').removeAttr('checked')
-          jQuery('#hallo_img_properties #hallo_img_float_left').removeAttr('checked')
+          jQuery('#hallo_img_properties #hallo_img_float_right').
+            removeAttr('checked')
+          jQuery('#hallo_img_properties #hallo_img_float_left').
+            removeAttr('checked')
 
       else
         unless @options.insert_file_dialog_ui_url

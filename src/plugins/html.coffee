@@ -33,7 +33,8 @@
       @texts = @translations[@options.lang]
 
       @options.toolbar = $toolbar
-      @options.dialog = jQuery("<div>").attr('id', "#{@options.uuid}-htmledit-dialog")
+      selector = "#{@options.uuid}-htmledit-dialog"
+      @options.dialog = jQuery("<div>").attr 'id', selector
 
       $buttonset = jQuery("<span>").addClass widget.widgetName
 
