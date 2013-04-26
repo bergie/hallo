@@ -1,6 +1,10 @@
 Hallo Editor ChangeLog
 ======================
 
+## 1.0.3 (git master)
+
+* Ported the build environment to [Grunt](http://gruntjs.com)
+
 ## 1.0.2 (February 18th 2013)
 
 Improved compatibility with [jQuery 1.9](http://jquery.com/upgrade-guide/1.9/) by removing the deprecated `jQuery.browser` calls.

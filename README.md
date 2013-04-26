@@ -89,13 +89,9 @@ Hallo is written in [CoffeeScript](http://jashkenas.github.com/coffee-script/), 
 
     $ npm install
 
-To generate the JavaScript code to `examples/hallo.js` from Hallo sources, run CoffeeScript's [cake command](http://coffeescript.org/#cake):
+To generate the JavaScript code to `examples/hallo.js` from Hallo sources, run [Grunt](http://gruntjs.com):
 
-    $ cake build
-
-If you want to also generate a minified version, run:
-
-    $ cake min
+    $ grunt build
 
 Hallo development is coordinated using Git. Just fork the [Hallo repository on GitHub](https://github.com/bergie/hallo) and [send pull requests](http://help.github.com/pull-requests/).
 
@@ -107,6 +103,10 @@ We use the Travis continuous integration service for testing Hallo. Currently we
 * Some [QUnit](http://qunitjs.com/) tests
 
 You can run the unit tests locally by opening `test/index.html` in your browser, or with [PhantomJS](http://phantomjs.org/) by running:
+
+    $ grunt test
+
+or:
 
     $ npm test
 
