@@ -242,28 +242,4 @@
         uploadUrl: @options.uploadUrl
         imageWidget: @
         entity: @options.entity
-
-    ###
-    insertImage = () ->
-    # This may need to insert an image that does not have the same URL as
-    # the preview image, since it may be a different size
-      # Check if we have a selection and fall back to @lastSelection otherwise
-      try
-        if not widget.options.editable.getSelection()
-        throw new Error "SelectionNotSet"
-      catch error
-        widget.options.editable.restoreSelection(widget.lastSelection)
-
-      document.execCommand "insertImage", null, jQuery(this).attr('src')
-      img = document.getSelection().anchorNode.firstChild
-      jQuery(img).attr "alt", jQuery(".caption").value
-
-      triggerModified = () ->
-        widget.element.trigger "hallomodified"
-      window.setTimeout triggerModified, 100
-      widget._closeDialog()
-
-      addImage = "##{widget.options.uuid}-#{widget.widgetName-addimage"
-      @options.dialog.find(".halloimage-activeImage, addImage).click insertImage
-    ###
  )(jQuery)
