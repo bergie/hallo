@@ -47,7 +47,7 @@
       editor = this.element
       
       # bind paste handler on first call
-      editor.bind 'paste', this, (event) ->
+      editor.bind 'paste', this, (event) =>
        
         # TODO: find out why this check always fails when placed directly
         # after jQuery.htmlClean check
@@ -65,7 +65,7 @@
         lastContent = editor.html()
         editor.html ''
         
-        setTimeout ->
+        setTimeout =>
           
           pasted = editor.html()
           cleanPasted = jQuery.htmlClean pasted, @options
