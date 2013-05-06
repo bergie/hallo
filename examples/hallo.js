@@ -86,7 +86,7 @@
         this.bound = false;
         jQuery(this.element).removeClass('isModified');
         jQuery(this.element).removeClass('inEditMode');
-        this.element.parents('a').andSelf().each(function(idx, elem) {
+        this.element.parents('a').addBack().each(function(idx, elem) {
           var element;
 
           element = jQuery(elem);
@@ -103,7 +103,7 @@
       enable: function() {
         var _this = this;
 
-        this.element.parents('a[href]').andSelf().each(function(idx, elem) {
+        this.element.parents('a[href]').addBack().each(function(idx, elem) {
           var element;
 
           element = jQuery(elem);
@@ -114,7 +114,7 @@
           return element.removeAttr('href');
         });
         this.element.attr("contentEditable", true);
-        if (!jQuery.trim(this.element.html())) {
+        if (!jQuery.parseHTML(this.element.html())) {
           this.element.html(this.options.placeholder);
           this.element.css({
             'min-width': this.element.innerWidth(),
