@@ -236,10 +236,17 @@ http://hallojs.org
       else
         window.getSelection().removeAllRanges()
 
+    getPluginInstance: (plugin) ->
+      # jQuery UI 1.10 or newer
+      instance = jQuery(@element).data "IKS-#{plugin}"
+      return instance if instance
+      # Older jQuery UI
+      return jQuery(@element).data plugin
+
     # Get contents of an editable as HTML string
     getContents: ->
       for plugin of @options.plugins
-        cleanup = jQuery(@element).data('IKS-'+plugin).cleanupContentClone
+        cleanup = @getPluginInstance(plugin).cleanupContentClone
         continue unless jQuery.isFunction cleanup
         jQuery(@element)[plugin] 'cleanupContentClone', @element
       @element.html()
@@ -303,7 +310,7 @@ http://hallojs.org
       @element[@options.toolbar] toolbarOptions
 
       for plugin of @options.plugins
-        populate = jQuery(@element).data('IKS-'+plugin).populateToolbar
+        populate = @getPluginInstance(plugin).populateToolbar
         continue unless jQuery.isFunction populate
         @element[plugin] 'populateToolbar', @toolbar
 

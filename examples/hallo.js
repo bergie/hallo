@@ -185,11 +185,20 @@
           return window.getSelection().removeAllRanges();
         }
       },
+      getPluginInstance: function(plugin) {
+        var instance;
+
+        instance = jQuery(this.element).data("IKS-" + plugin);
+        if (instance) {
+          return instance;
+        }
+        return jQuery(this.element).data(plugin);
+      },
       getContents: function() {
         var cleanup, plugin;
 
         for (plugin in this.options.plugins) {
-          cleanup = jQuery(this.element).data('IKS-' + plugin).cleanupContentClone;
+          cleanup = this.getPluginInstance(plugin).cleanupContentClone;
           if (!jQuery.isFunction(cleanup)) {
             continue;
           }
@@ -263,7 +272,7 @@
         toolbarOptions = jQuery.extend({}, defaults, this.options.toolbarOptions);
         this.element[this.options.toolbar](toolbarOptions);
         for (plugin in this.options.plugins) {
-          populate = jQuery(this.element).data('IKS-' + plugin).populateToolbar;
+          populate = this.getPluginInstance(plugin).populateToolbar;
           if (!jQuery.isFunction(populate)) {
             continue;
           }
