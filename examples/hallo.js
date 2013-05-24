@@ -1670,7 +1670,7 @@
         dialogOpts: {
           autoOpen: false,
           width: 540,
-          height: 95,
+          height: 200,
           title: "Enter Link",
           buttonTitle: "Insert",
           buttonUpdateTitle: "Update",
@@ -1690,9 +1690,7 @@
         butTitle = this.options.dialogOpts.buttonTitle;
         butUpdateTitle = this.options.dialogOpts.buttonUpdateTitle;
         dialog = jQuery("<div id=\"" + dialogId + "\">        <form action=\"#\" method=\"post\" class=\"linkForm\">          <input class=\"url\" type=\"text\" name=\"url\"            value=\"" + this.options.defaultUrl + "\" />          <input type=\"submit\" id=\"addlinkButton\" value=\"" + butTitle + "\"/>        </form></div>");
-        urlInput = jQuery('input[name=url]', dialog).focus(function(e) {
-          return this.select();
-        });
+        urlInput = jQuery('input[name=url]', dialog);
         isEmptyLink = function(link) {
           if ((new RegExp(/^\s*$/)).test(link)) {
             return true;

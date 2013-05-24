@@ -12,7 +12,7 @@
       dialogOpts:
         autoOpen: false
         width: 540
-        height: 95
+        height: 200
         title: "Enter Link"
         buttonTitle: "Insert"
         buttonUpdateTitle: "Update"
@@ -34,8 +34,7 @@
             value=\"#{@options.defaultUrl}\" />
           <input type=\"submit\" id=\"addlinkButton\" value=\"#{butTitle}\"/>
         </form></div>"
-      urlInput = jQuery('input[name=url]', dialog).focus (e)->
-        this.select()
+      urlInput = jQuery('input[name=url]', dialog)
 
       isEmptyLink = (link) ->
         return true if (new RegExp(/^\s*$/)).test link
@@ -47,7 +46,7 @@
 
         link = urlInput.val()
         dialog.dialog('close')
-        
+
         widget.options.editable.restoreSelection(widget.lastSelection)
         if isEmptyLink link
           # link is empty, remove it. Make sure the link is selected
