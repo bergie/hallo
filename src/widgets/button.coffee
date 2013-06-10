@@ -64,7 +64,8 @@
             @options.editable.execute @options.command, @options.commandValue
           else
             @options.editable.execute @options.command
-          queryState()
+          if typeof queryState is 'function'
+            queryState()
           return false
 
       return unless @options.queryState
