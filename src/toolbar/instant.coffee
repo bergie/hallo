@@ -2,9 +2,9 @@
 #     (c) 2011 Henri Bergius, IKS Consortium
 #     Hallo may be freely distributed under the MIT license
 #
-#     Contextual toolbar plugin
+#     Instant toolbar plugin
 ((jQuery) ->
-  jQuery.widget 'IKS.halloToolbarContextual',
+  jQuery.widget 'IKS.halloToolbarInstant',
     toolbar: null
 
     options:
@@ -85,7 +85,7 @@
       @toolbar.css 'left', left
 
     _bindEvents: ->
-      # show the toolbar when clicking the element
+      # Show the toolbar when clicking the element
       @element.on 'click', (event, data) =>
         position = {}
         scrollTop = $('window').scrollTop()
@@ -94,7 +94,7 @@
         @_updatePosition(position, null)
         if @toolbar.html() != ''
           @toolbar.show()
-          
+
       # catch select -> show (and reposition?)
       @element.on 'halloselected', (event, data) =>
         position = @_getPosition data.originalEvent, data.selection
