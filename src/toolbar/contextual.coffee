@@ -88,7 +88,8 @@
       # show the toolbar when clicking the element
       @element.on 'click', (event, data) =>
         position = {}
-        position.top = event.clientY
+        scrollTop = $('window').scrollTop()
+        position.top = event.clientY + scrollTop
         position.left = event.clientX
         @_updatePosition(position, null)
         if @toolbar.html() != ''
