@@ -29,7 +29,6 @@
       _create: function() {
         var options, plugin, _ref,
           _this = this;
-
         this.id = this._generateUUID();
         if (this.options.checkTouch && this.options.touchScreen === null) {
           this.checkTouch();
@@ -61,7 +60,6 @@
       },
       destroy: function() {
         var options, plugin, _ref;
-
         this.disable();
         if (this.toolbar) {
           this.toolbar.remove();
@@ -76,7 +74,6 @@
       },
       disable: function() {
         var _this = this;
-
         this.element.attr("contentEditable", false);
         this.element.off("focus", this._activated);
         this.element.off("blur", this._deactivated);
@@ -88,7 +85,6 @@
         jQuery(this.element).removeClass('inEditMode');
         this.element.parents('a').addBack().each(function(idx, elem) {
           var element;
-
           element = jQuery(elem);
           if (!element.is('a')) {
             return;
@@ -102,10 +98,8 @@
       },
       enable: function() {
         var _this = this;
-
         this.element.parents('a[href]').addBack().each(function(idx, elem) {
           var element;
-
           element = jQuery(elem);
           if (!element.is('a[href]')) {
             return;
@@ -139,13 +133,11 @@
       },
       containsSelection: function() {
         var range;
-
         range = this.getSelection();
         return this.element.has(range.startContainer).length > 0;
       },
       getSelection: function() {
         var range, sel;
-
         sel = rangy.getSelection();
         range = null;
         if (sel.rangeCount > 0) {
@@ -157,13 +149,11 @@
       },
       restoreSelection: function(range) {
         var sel;
-
         sel = rangy.getSelection();
         return sel.setSingleRange(range);
       },
       replaceSelection: function(cb) {
         var newTextNode, r, range, sel, t;
-
         if (navigator.appName === 'Microsoft Internet Explorer') {
           t = document.selection.createRange().text;
           r = document.selection.createRange();
@@ -187,7 +177,6 @@
       },
       getPluginInstance: function(plugin) {
         var instance;
-
         instance = jQuery(this.element).data("IKS-" + plugin);
         if (instance) {
           return instance;
@@ -196,7 +185,6 @@
       },
       getContents: function() {
         var cleanup, plugin;
-
         for (plugin in this.options.plugins) {
           cleanup = this.getPluginInstance(plugin).cleanupContentClone;
           if (!jQuery.isFunction(cleanup)) {
@@ -236,7 +224,6 @@
       },
       protectFocusFrom: function(el) {
         var _this = this;
-
         return el.on("mousedown", function(event) {
           event.preventDefault();
           _this._protectToolbarFocus = true;
@@ -250,7 +237,6 @@
       },
       _generateUUID: function() {
         var S4;
-
         S4 = function() {
           return ((1 + Math.random()) * 0x10000 | 0).toString(16).substring(1);
         };
@@ -258,7 +244,6 @@
       },
       _prepareToolbar: function() {
         var defaults, plugin, populate, toolbarOptions;
-
         this.toolbar = jQuery('<div class="hallotoolbar"></div>').hide();
         if (this.options.toolbarCssClass) {
           this.toolbar.addClass(this.options.toolbarCssClass);
@@ -283,7 +268,6 @@
       },
       changeToolbar: function(element, toolbar, hide) {
         var originalToolbar;
-
         if (hide == null) {
           hide = false;
         }
@@ -304,7 +288,6 @@
       },
       _checkModified: function(event) {
         var widget;
-
         widget = event.data;
         if (widget.isModified()) {
           return widget.setModified();
@@ -312,7 +295,6 @@
       },
       _keys: function(event) {
         var old, widget;
-
         widget = event.data;
         if (event.keyCode === 27) {
           old = widget.getContents();
@@ -342,14 +324,12 @@
       },
       _checkSelection: function(event) {
         var widget;
-
         if (event.keyCode === 27) {
           return;
         }
         widget = event.data;
         return setTimeout(function() {
           var sel;
-
           sel = widget.getSelection();
           if (widget._isEmptySelection(sel) || widget._isEmptyRange(sel)) {
             if (widget.selection) {
@@ -421,7 +401,6 @@
       },
       _forceStructured: function(event) {
         var e;
-
         try {
           return document.execCommand('styleWithCSS', 0, false);
         } catch (_error) {
@@ -449,7 +428,6 @@
 (function() {
   (function(jQuery) {
     var z;
-
     z = null;
     if (this.VIE !== void 0) {
       z = new VIE;
@@ -471,7 +449,6 @@
       },
       _create: function() {
         var editableElement, turnOffAnnotate, widget;
-
         widget = this;
         if (this.options.vie === void 0) {
           throw new Error('The halloannotate plugin requires VIE');
@@ -485,7 +462,6 @@
         this.instantiate();
         turnOffAnnotate = function() {
           var editable;
-
           editable = this;
           return jQuery(editable).halloannotate('turnOff');
         };
@@ -495,7 +471,6 @@
       populateToolbar: function(toolbar) {
         var buttonHolder,
           _this = this;
-
         buttonHolder = jQuery("<span class=\"" + this.widgetName + "\"></span>");
         this.button = buttonHolder.hallobutton({
           label: 'Annotate',
@@ -527,7 +502,6 @@
       },
       instantiate: function() {
         var widget;
-
         widget = this;
         return this.options.editable.element.annotate({
           vie: this.options.vie,
@@ -551,7 +525,6 @@
       turnOn: function() {
         var e, widget,
           _this = this;
-
         this.turnPending();
         widget = this;
         try {
@@ -600,7 +573,6 @@
       },
       cleanupContentClone: function(el) {
         var tag, _i, _len, _ref, _results;
-
         _ref = this.options.tags;
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -626,7 +598,6 @@
       },
       populateToolbar: function(toolbar) {
         var buttonset, contentId, target;
-
         buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
         contentId = "" + this.options.uuid + "-" + this.widgetName + "-data";
         target = this._prepareDropdown(contentId);
@@ -638,12 +609,10 @@
       _prepareDropdown: function(contentId) {
         var addElement, containingElement, contentArea, element, _i, _len, _ref,
           _this = this;
-
         contentArea = jQuery("<div id=\"" + contentId + "\"></div>");
         containingElement = this.options.editable.element.get(0).tagName.toLowerCase();
         addElement = function(element) {
           var el, events, queryState;
-
           el = jQuery("<button class='blockselector'>          <" + element + " class=\"menu-item\">" + element + "</" + element + ">        </button>");
           if (containingElement === element) {
             el.addClass('selected');
@@ -653,7 +622,6 @@
           }
           el.on('click', function() {
             var tagName;
-
             tagName = element.toUpperCase();
             if (el.hasClass('disabled')) {
               return;
@@ -666,7 +634,6 @@
           });
           queryState = function(event) {
             var block;
-
             block = document.queryCommandValue('formatBlock');
             if (block.toLowerCase() === element) {
               el.addClass('selected');
@@ -693,7 +660,6 @@
       },
       _prepareButton: function(target) {
         var buttonElement;
-
         buttonElement = jQuery('<span></span>');
         buttonElement.hallodropdownbutton({
           uuid: this.options.uuid,
@@ -713,14 +679,12 @@
 (function() {
   (function(jQuery) {
     var rangyMessage;
-
     rangyMessage = 'The hallocleanhtml plugin requires the selection save and\
     restore module from Rangy';
     return jQuery.widget('IKS.hallocleanhtml', {
       _create: function() {
         var editor,
           _this = this;
-
         if (jQuery.htmlClean === void 0) {
           throw new Error('The hallocleanhtml plugin requires jQuery.htmlClean');
           return;
@@ -728,7 +692,6 @@
         editor = this.element;
         return editor.bind('paste', this, function(event) {
           var lastContent, lastRange, widget;
-
           if (rangy.saveSelection === void 0) {
             throw new Error(rangyMessage);
             return;
@@ -740,7 +703,6 @@
           editor.html('');
           return setTimeout(function() {
             var cleanPasted, error, pasted, range;
-
             pasted = editor.html();
             cleanPasted = jQuery.htmlClean(pasted, _this.options);
             editor.html(lastContent);
@@ -779,12 +741,10 @@
       populateToolbar: function(toolbar) {
         var buttonize, buttonset, enabled, format, widget, _ref,
           _this = this;
-
         widget = this;
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         buttonize = function(format) {
           var buttonHolder;
-
           buttonHolder = jQuery('<span></span>');
           buttonHolder.hallobutton({
             label: format,
@@ -823,14 +783,12 @@
       populateToolbar: function(toolbar) {
         var buttonize, buttonset, command, format, ie, widget, _i, _len, _ref,
           _this = this;
-
         widget = this;
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         ie = navigator.appName === 'Microsoft Internet Explorer';
         command = (ie ? "FormatBlock" : "formatBlock");
         buttonize = function(format) {
           var buttonHolder;
-
           buttonHolder = jQuery('<span></span>');
           buttonHolder.hallobutton({
             label: format,
@@ -841,7 +799,6 @@
             cssClass: _this.options.buttonCssClass,
             queryState: function(event) {
               var compared, e, map, result, val, value, _i, _len, _ref;
-
               try {
                 value = document.queryCommandValue(command);
                 if (ie) {
@@ -913,7 +870,6 @@
       texts: null,
       populateToolbar: function($toolbar) {
         var $buttonHolder, $buttonset, id, selector, widget;
-
         widget = this;
         this.texts = this.translations[this.options.lang];
         this.options.toolbar = $toolbar;
@@ -951,7 +907,6 @@
       _openDialog: function() {
         var $editableEl, html, widget, xposition, yposition,
           _this = this;
-
         widget = this;
         $editableEl = jQuery(this.options.editable.element);
         xposition = $editableEl.offset().left + $editableEl.outerWidth() + 10;
@@ -1017,7 +972,6 @@
       },
       populateToolbar: function(toolbar) {
         var buttonHolder, buttonset, dialogId, id, tabContent, tabs, widget;
-
         this.options.toolbar = toolbar;
         widget = this;
         dialogId = "" + this.options.uuid + "-image-dialog";
@@ -1079,11 +1033,9 @@
       },
       _handleTabs: function() {
         var widget;
-
         widget = this;
         jQuery('.nav li', this.options.dialog).on('click', function() {
           var id, left;
-
           jQuery("." + widget.widgetName + "-tab").hide();
           id = jQuery(this).attr('id');
           jQuery("#" + id + "-content").show();
@@ -1097,16 +1049,13 @@
       _openDialog: function() {
         var cleanUp, editableEl, getActive, suggestionSelector, toolbarEl, widget, xposition, yposition,
           _this = this;
-
         widget = this;
         cleanUp = function() {
           return window.setTimeout(function() {
             var thumbnails;
-
             thumbnails = jQuery(".imageThumbnail");
             return jQuery(thumbnails).each(function() {
               var size;
-
               size = jQuery("#" + this.id).width();
               if (size <= 20) {
                 return jQuery("#" + this.id).parent("li").remove();
@@ -1142,7 +1091,6 @@
       },
       _addGuiTabSuggestions: function(tabs, element) {
         var tab;
-
         tabs.append(jQuery("<li id=\"" + this.options.uuid + "-tab-suggestions\"        class=\"" + this.widgetName + "-tabselector " + this.widgetName + "-tab-suggestions\">          <span>Suggestions</span>        </li>"));
         tab = jQuery("<div id=\"" + this.options.uuid + "-tab-suggestions-content\"        class=\"" + this.widgetName + "-tab tab-suggestions\"></div>");
         element.append(tab);
@@ -1154,7 +1102,6 @@
       },
       _addGuiTabSearch: function(tabs, element) {
         var dialogId, tab, widget;
-
         widget = this;
         dialogId = "" + this.options.uuid + "-image-dialog";
         tabs.append(jQuery("<li id=\"" + this.options.uuid + "-tab-search\"        class=\"" + this.widgetName + "-tabselector " + this.widgetName + "-tab-search\">          <span>Search</span>        </li>"));
@@ -1171,7 +1118,6 @@
       },
       _addGuiTabUpload: function(tabs, element) {
         var tab;
-
         tabs.append(jQuery("<li id=\"" + this.options.uuid + "-tab-upload\"        class=\"" + this.widgetName + "-tabselector " + this.widgetName + "-tab-upload\">          <span>Upload</span>        </li>"));
         tab = jQuery("<div id=\"" + this.options.uuid + "-tab-upload-content\"        class=\"" + this.widgetName + "-tab tab-upload\"></div>");
         element.append(tab);
@@ -1246,7 +1192,6 @@
       $image: null,
       populateToolbar: function($toolbar) {
         var $buttonHolder, $buttonset, dialog_html, widget;
-
         widget = this;
         this.texts = this.translations[this.options.lang];
         this.options.toolbar = $toolbar;
@@ -1291,7 +1236,6 @@
         });
         this.options.editable.element.on('halloselected', function(event, data) {
           var toolbar_option;
-
           toolbar_option = widget.options.editable.options.toolbar;
           if (toolbar_option === "halloToolbarContextual" && jQuery(data.originalEvent.target).is('img')) {
             $toolbar.hide();
@@ -1304,7 +1248,6 @@
       _openDialog: function($image) {
         var $editableEl, widget, xposition, yposition,
           _this = this;
-
         this.$image = $image;
         widget = this;
         $editableEl = jQuery(this.options.editable.element);
@@ -1342,7 +1285,6 @@
         this._load_dialog_image_properties_ui();
         this.options.dialog.on('dialogclose', function() {
           var scrollbar_pos;
-
           jQuery('label', _this.button).removeClass('ui-state-active');
           scrollbar_pos = jQuery(document).scrollTop();
           _this.options.editable.element.focus();
@@ -1356,7 +1298,6 @@
           });
           this.options.dialog.on('click', '.file_preview img', function() {
             var new_source;
-
             if (widget.$image) {
               new_source = jQuery(this).attr('src').replace(/-thumb/, '');
               widget.$image.attr('src', new_source);
@@ -1381,13 +1322,11 @@
       },
       _load_dialog_image_selection_ui: function() {
         var widget;
-
         widget = this;
         return jQuery.ajax({
           url: this.options.insert_file_dialog_ui_url,
           success: function(data, textStatus, jqXHR) {
             var $properties, file_select_title, t;
-
             file_select_title = '';
             $properties = widget.options.dialog.children('#hallo_img_properties');
             if ($properties.is(':visible')) {
@@ -1404,7 +1343,6 @@
       },
       _load_dialog_image_properties_ui: function() {
         var $img_properties, button, height, html, widget, width;
-
         widget = this;
         $img_properties = this.options.dialog.children('#hallo_img_properties');
         if (this.$image) {
@@ -1496,7 +1434,6 @@
             $img_properties.after(button);
             return jQuery('#insert_image_btn').click(function() {
               var $img_source;
-
               $img_source = jQuery('#hallo_img_properties #hallo_img_source');
               return widget._insert_image($img_source.val());
             });
@@ -1515,7 +1452,6 @@
       },
       _property_html: function(property_html, options) {
         var entry;
-
         if (options == null) {
           options = {};
         }
@@ -1532,7 +1468,6 @@
       },
       _property_input_html: function(id, value, options) {
         var text_field;
-
         if (options == null) {
           options = {};
         }
@@ -1541,7 +1476,6 @@
       },
       _property_cb_html: function(id, checked, options) {
         var cb, checked_attr;
-
         if (options == null) {
           options = {};
         }
@@ -1563,7 +1497,6 @@
       },
       _create: function() {
         var _this = this;
-
         return this.element.on('halloenabled', function() {
           return _this.buildIndicator();
         });
@@ -1571,7 +1504,6 @@
       populateToolbar: function() {},
       buildIndicator: function() {
         var editButton;
-
         editButton = jQuery('<div><i class="icon-edit"></i> Edit</div>');
         editButton.addClass(this.options.className);
         editButton.hide();
@@ -1581,7 +1513,6 @@
       },
       bindIndicator: function(indicator) {
         var _this = this;
-
         indicator.on('click', function() {
           return _this.options.editable.element.focus();
         });
@@ -1608,7 +1539,6 @@
       },
       setIndicatorPosition: function(indicator) {
         var offset;
-
         indicator.css('position', 'absolute');
         offset = this.element.position();
         indicator.css('top', offset.top + 2);
@@ -1631,11 +1561,9 @@
       populateToolbar: function(toolbar) {
         var buttonize, buttonset,
           _this = this;
-
         buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
         buttonize = function(alignment) {
           var buttonElement;
-
           buttonElement = jQuery('<span></span>');
           buttonElement.hallobutton({
             uuid: _this.options.uuid,
@@ -1684,7 +1612,6 @@
       populateToolbar: function(toolbar) {
         var butTitle, butUpdateTitle, buttonize, buttonset, dialog, dialogId, dialogSubmitCb, isEmptyLink, urlInput, widget,
           _this = this;
-
         widget = this;
         dialogId = "" + this.options.uuid + "-dialog";
         butTitle = this.options.dialogOpts.buttonTitle;
@@ -1702,7 +1629,6 @@
         };
         dialogSubmitCb = function(event) {
           var link, linkNode;
-
           event.preventDefault();
           link = urlInput.val();
           dialog.dialog('close');
@@ -1731,7 +1657,6 @@
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
         buttonize = function(type) {
           var button, buttonHolder, id;
-
           id = "" + _this.options.uuid + "-" + type;
           buttonHolder = jQuery('<span></span>');
           buttonHolder.hallobutton({
@@ -1747,7 +1672,6 @@
           button = buttonHolder;
           button.on("click", function(event) {
             var button_selector, selectionParent;
-
             widget.lastSelection = widget.options.editable.getSelection();
             urlInput = jQuery('input[name=url]', dialog);
             selectionParent = widget.lastSelection.startContainer.parentNode;
@@ -1771,7 +1695,6 @@
           });
           return _this.element.on("keyup paste change mouseup", function(event) {
             var nodeName, start;
-
             start = jQuery(widget.options.editable.getSelection().startContainer);
             if (start.prop('nodeName')) {
               nodeName = start.prop('nodeName');
@@ -1815,11 +1738,9 @@
       populateToolbar: function(toolbar) {
         var buttonize, buttonset,
           _this = this;
-
         buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
         buttonize = function(type, label) {
           var buttonElement;
-
           buttonElement = jQuery('<span></span>');
           buttonElement.hallobutton({
             uuid: _this.options.uuid,
@@ -1858,7 +1779,6 @@
       },
       _create: function() {
         var widget;
-
         widget = this;
         if (!this.options.bound) {
           this.options.bound = true;
@@ -1911,7 +1831,6 @@
       },
       resizeOverlay: function() {
         var offset;
-
         offset = this.options.currentEditable.offset();
         return this.options.background.css({
           top: offset.top - this.options.padding,
@@ -1928,7 +1847,6 @@
       },
       _findBackgroundColor: function(jQueryfield) {
         var color;
-
         color = jQueryfield.css("background-color");
         if (color !== 'rgba(0, 0, 0, 0)' && color !== 'transparent') {
           return color;
@@ -1956,11 +1874,9 @@
       populateToolbar: function(toolbar) {
         var buttonize, buttonset,
           _this = this;
-
         buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
         buttonize = function(cmd, label) {
           var buttonElement;
-
           buttonElement = jQuery('<span></span>');
           buttonElement.hallobutton({
             uuid: _this.options.uuid,
@@ -1993,7 +1909,6 @@
       },
       populateToolbar: function(toolbar) {
         var buttonRow, buttonset, buttonsets, queuedButtonsets, row, rowcounter, _i, _j, _len, _len1, _ref;
-
         buttonsets = jQuery('.ui-buttonset', toolbar);
         queuedButtonsets = jQuery();
         rowcounter = 0;
@@ -2036,7 +1951,6 @@
       },
       _create: function() {
         var _this = this;
-
         this.toolbar = this.options.toolbar;
         jQuery(this.options.parentElement).append(this.toolbar);
         this._bindEvents();
@@ -2046,7 +1960,6 @@
       },
       _getPosition: function(event, selection) {
         var eventType, position;
-
         if (!event) {
           return;
         }
@@ -2067,7 +1980,6 @@
       },
       _getCaretPosition: function(range) {
         var newRange, position, tmpSpan;
-
         tmpSpan = jQuery("<span/>");
         newRange = rangy.createRange();
         newRange.setStart(range.endContainer, range.endOffset);
@@ -2090,7 +2002,6 @@
       },
       _updatePosition: function(position, selection) {
         var left, selectionRect, toolbar_height_offset, top, top_offset;
-
         if (selection == null) {
           selection = null;
         }
@@ -2124,10 +2035,19 @@
       },
       _bindEvents: function() {
         var _this = this;
-
+        this.element.on('click', function(event, data) {
+          var position, scrollTop;
+          position = {};
+          scrollTop = $('window').scrollTop();
+          position.top = event.clientY + scrollTop;
+          position.left = event.clientX;
+          _this._updatePosition(position, null);
+          if (_this.toolbar.html() !== '') {
+            return _this.toolbar.show();
+          }
+        });
         this.element.on('halloselected', function(event, data) {
           var position;
-
           position = _this._getPosition(data.originalEvent, data.selection);
           if (!position) {
             return;
@@ -2163,7 +2083,6 @@
       _create: function() {
         var el, widthToAdd,
           _this = this;
-
         this.toolbar = this.options.toolbar;
         this.toolbar.show();
         jQuery(this.options.parentElement).append(this.toolbar);
@@ -2187,7 +2106,6 @@
       },
       _getPosition: function(event, selection) {
         var offset, position, width;
-
         if (!event) {
           return;
         }
@@ -2200,7 +2118,6 @@
       },
       _getCaretPosition: function(range) {
         var newRange, position, tmpSpan;
-
         tmpSpan = jQuery("<span/>");
         newRange = rangy.createRange();
         newRange.setStart(range.endContainer, range.endOffset);
@@ -2214,7 +2131,6 @@
       },
       setPosition: function() {
         var elementBottom, elementTop, height, offset, scrollTop, topOffset;
-
         if (this.options.parentElement !== 'body') {
           return;
         }
@@ -2239,10 +2155,139 @@
       _updatePosition: function(position) {},
       _bindEvents: function() {
         var _this = this;
-
         this.element.on('halloactivated', function(event, data) {
           _this.setPosition();
           return _this.toolbar.show();
+        });
+        return this.element.on('hallodeactivated', function(event, data) {
+          return _this.toolbar.hide();
+        });
+      }
+    });
+  })(jQuery);
+
+}).call(this);
+
+(function() {
+  (function(jQuery) {
+    return jQuery.widget('IKS.halloToolbarInstant', {
+      toolbar: null,
+      options: {
+        parentElement: 'body',
+        editable: null,
+        toolbar: null,
+        positionAbove: false
+      },
+      _create: function() {
+        var _this = this;
+        this.toolbar = this.options.toolbar;
+        jQuery(this.options.parentElement).append(this.toolbar);
+        this._bindEvents();
+        return jQuery(window).resize(function(event) {
+          return _this._updatePosition(_this._getPosition(event));
+        });
+      },
+      _getPosition: function(event, selection) {
+        var eventType, position;
+        if (!event) {
+          return;
+        }
+        eventType = event.type;
+        switch (eventType) {
+          case 'keydown':
+          case 'keyup':
+          case 'keypress':
+            return this._getCaretPosition(selection);
+          case 'click':
+          case 'mousedown':
+          case 'mouseup':
+            return position = {
+              top: event.pageY,
+              left: event.pageX
+            };
+        }
+      },
+      _getCaretPosition: function(range) {
+        var newRange, position, tmpSpan;
+        tmpSpan = jQuery("<span/>");
+        newRange = rangy.createRange();
+        newRange.setStart(range.endContainer, range.endOffset);
+        newRange.insertNode(tmpSpan.get(0));
+        position = {
+          top: tmpSpan.offset().top,
+          left: tmpSpan.offset().left
+        };
+        tmpSpan.remove();
+        return position;
+      },
+      setPosition: function() {
+        if (this.options.parentElement !== 'body') {
+          this.options.parentElement = 'body';
+          jQuery(this.options.parentElement).append(this.toolbar);
+        }
+        this.toolbar.css('position', 'absolute');
+        this.toolbar.css('top', this.element.offset().top - 20);
+        return this.toolbar.css('left', this.element.offset().left);
+      },
+      _updatePosition: function(position, selection) {
+        var left, selectionRect, toolbar_height_offset, top, top_offset;
+        if (selection == null) {
+          selection = null;
+        }
+        if (!position) {
+          return;
+        }
+        if (!(position.top && position.left)) {
+          return;
+        }
+        toolbar_height_offset = this.toolbar.outerHeight() + 10;
+        if (selection && !selection.collapsed && selection.nativeRange) {
+          selectionRect = selection.nativeRange.getBoundingClientRect();
+          if (this.options.positionAbove) {
+            top_offset = selectionRect.top - toolbar_height_offset;
+          } else {
+            top_offset = selectionRect.bottom + 10;
+          }
+          top = jQuery(window).scrollTop() + top_offset;
+          left = jQuery(window).scrollLeft() + selectionRect.left;
+        } else {
+          if (this.options.positionAbove) {
+            top_offset = -10 - toolbar_height_offset;
+          } else {
+            top_offset = 20;
+          }
+          top = position.top + top_offset;
+          left = position.left - this.toolbar.outerWidth() / 2 + 30;
+        }
+        this.toolbar.css('top', top);
+        return this.toolbar.css('left', left);
+      },
+      _bindEvents: function() {
+        var _this = this;
+        this.element.on('click', function(event, data) {
+          var position, scrollTop;
+          position = {};
+          scrollTop = $('window').scrollTop();
+          position.top = event.clientY + scrollTop;
+          position.left = event.clientX;
+          _this._updatePosition(position, null);
+          if (_this.toolbar.html() !== '') {
+            return _this.toolbar.show();
+          }
+        });
+        this.element.on('halloselected', function(event, data) {
+          var position;
+          position = _this._getPosition(data.originalEvent, data.selection);
+          if (!position) {
+            return;
+          }
+          _this._updatePosition(position, data.selection);
+          if (_this.toolbar.html() !== '') {
+            return _this.toolbar.show();
+          }
+        });
+        this.element.on('hallounselected', function(event, data) {
+          return _this.toolbar.hide();
         });
         return this.element.on('hallodeactivated', function(event, data) {
           return _this.toolbar.hide();
@@ -2269,10 +2314,9 @@
         cssClass: null
       },
       _create: function() {
-        var hoverclass, id, opts, _base, _ref,
+        var hoverclass, id, opts, _base,
           _this = this;
-
-        if ((_ref = (_base = this.options).icon) == null) {
+        if ((_base = this.options).icon == null) {
           _base.icon = "icon-" + (this.options.label.toLowerCase());
         }
         id = "" + this.options.uuid + "-" + this.options.label;
@@ -2302,7 +2346,6 @@
       _init: function() {
         var editableElement, events, queryState,
           _this = this;
-
         if (!this.button) {
           this.button = this._prepareButton();
         }
@@ -2310,7 +2353,6 @@
         if (this.options.queryState === true) {
           queryState = function(event) {
             var compared, e, value;
-
             if (!_this.options.command) {
               return;
             }
@@ -2336,7 +2378,9 @@
             } else {
               _this.options.editable.execute(_this.options.command);
             }
-            queryState();
+            if (typeof queryState === 'function') {
+              queryState();
+            }
             return false;
           });
         }
@@ -2375,7 +2419,6 @@
       },
       _createButton: function(id, command, label, icon) {
         var classes;
-
         classes = ['ui-button', 'ui-widget', 'ui-state-default', 'ui-corner-all', 'ui-button-text-only', "" + command + "_button"];
         return jQuery("<button id=\"" + id + "\"        class=\"" + (classes.join(' ')) + "\" title=\"" + label + "\">          <span class=\"ui-button-text\">            <i class=\"" + icon + "\"></i>          </span>        </button>");
       }
@@ -2390,7 +2433,6 @@
       },
       refresh: function() {
         var rtl;
-
         rtl = this.element.css('direction') === 'rtl';
         this.buttons = this.element.find('.ui-button');
         this.buttons.removeClass('ui-corner-all ui-corner-left ui-corner-right');
@@ -2420,14 +2462,12 @@
         cssClass: null
       },
       _create: function() {
-        var _base, _ref;
-
-        return (_ref = (_base = this.options).icon) != null ? _ref : _base.icon = "icon-" + (this.options.label.toLowerCase());
+        var _base;
+        return (_base = this.options).icon != null ? (_base = this.options).icon : _base.icon = "icon-" + (this.options.label.toLowerCase());
       },
       _init: function() {
         var target,
           _this = this;
-
         target = jQuery(this.options.target);
         target.css('position', 'absolute');
         target.addClass('dropdown-menu');
@@ -2452,7 +2492,6 @@
       },
       _showTarget: function() {
         var target;
-
         target = jQuery(this.options.target);
         this._updateTargetPosition();
         target.addClass('open');
@@ -2460,14 +2499,12 @@
       },
       _hideTarget: function() {
         var target;
-
         target = jQuery(this.options.target);
         target.removeClass('open');
         return target.hide();
       },
       _updateTargetPosition: function() {
         var left, target, top, _ref;
-
         target = jQuery(this.options.target);
         _ref = this.button.position(), top = _ref.top, left = _ref.left;
         top += this.button.outerHeight();
@@ -2476,7 +2513,6 @@
       },
       _prepareButton: function() {
         var buttonEl, classes, id;
-
         id = "" + this.options.uuid + "-" + this.options.label;
         classes = ['ui-button', 'ui-widget', 'ui-state-default', 'ui-corner-all', 'ui-button-text-only'];
         buttonEl = jQuery("<button id=\"" + id + "\"       class=\"" + (classes.join(' ')) + "\" title=\"" + this.options.label + "\">       <span class=\"ui-button-text\"><i class=\"" + this.options.icon + "\"></i></span>       </button>");
