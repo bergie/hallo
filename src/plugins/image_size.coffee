@@ -14,8 +14,7 @@
     populateToolbar: (toolbar) ->
       widget = this
 
-      @buttons = []
-      @buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
+      buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
 
       container = widget.options.editable.getSelection().startContainer;
 
@@ -28,7 +27,7 @@
           command: null
           icon: icon
           cssClass: @options.buttonCssClass
-        @buttonset.append buttonElement
+        buttonset.append buttonElement
         return buttonElement
 
       resizeStep = @options.resizeStep
@@ -48,18 +47,18 @@
             image.width ( width * faktor )
             image.height ( height * faktor )
 
-      @buttons.push sizeButton "Smaller", "icon-resize-small", (100 - resizeStep)
-      @buttons.push sizeButton "Original", "icon-fullscreen", 100
-      @buttons.push sizeButton "Bigger", "icon-resize-full", (100 + resizeStep)
+      sizeButton "Smaller", "icon-resize-small", (100 - resizeStep)
+      sizeButton "Original", "icon-fullscreen", 100
+      sizeButton "Bigger", "icon-resize-full", (100 + resizeStep)
 
-      @buttonset.hallobuttonset()
-      toolbar.append @buttonset
+      buttonset.hallobuttonset()
+      toolbar.append buttonset
 
       jQuery(document).on "halloselected", =>
         selection = jQuery(widget.options.editable.getSelection().startContainer)
         elements = selection.find "img"
         if elements.length
-          @buttonset.show()
+          buttonset.show()
         else
-          @buttonset.hide()
+          buttonset.hide()
 )(jQuery)
