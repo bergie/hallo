@@ -1,6 +1,8 @@
 #    Plugin to work with images inside the editable for Hallo
 #    (c) 2013 Christian Grobmeier, http://www.grobmeier.de
 #    This plugin may be freely distributed under the MIT license
+#
+#    Depends on: hallo-image-select
 ((jQuery) ->
   jQuery.widget "IKS.hallo-image-float",
     options:
@@ -52,6 +54,8 @@
         selection = jQuery(widget.options.editable.getSelection().startContainer)
         elements = selection.find "img"
 
+        activate(elements[0])
+
         if elements.length
           @buttonset.show()
         else
@@ -71,11 +75,4 @@
           if button.alignment is alignment
             button.find("button").addClass('ui-state-active')
         toggle(btn, alignment) for btn in @buttons
-
-      jQuery(widget.options.editable.element).on "click", "img", (event) =>
-        sel = rangy.getSelection();
-        range = rangy.createRange();
-        range.selectNode event.target;
-        sel.setSingleRange range;
-        activate(event.target)
 )(jQuery)

@@ -1,6 +1,8 @@
 #    Plugin to work with images inside the editable for Hallo
 #    (c) 2013 Christian Grobmeier, http://www.grobmeier.de
 #    This plugin may be freely distributed under the MIT license
+#
+#    Depends on: hallo-image-select
 ((jQuery) ->
   jQuery.widget "IKS.hallo-image-size",
     options:
