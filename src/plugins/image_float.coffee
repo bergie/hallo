@@ -2,7 +2,7 @@
 #    (c) 2013 Christian Grobmeier, http://www.grobmeier.de
 #    This plugin may be freely distributed under the MIT license
 ((jQuery) ->
-  jQuery.widget "IKS.hallo-image-edit",
+  jQuery.widget "IKS.hallo-image-float",
     options:
       editable: null
       toolbar: null
@@ -30,7 +30,7 @@
         @buttonset.append buttonElement
         return buttonElement
 
-      createButton = (alignment, icon, addClasses, removeClasses, toolbarButtons) ->
+      floatButton = (alignment, icon, addClasses, removeClasses, toolbarButtons) ->
         button = buttonize alignment, icon
         button.alignment = alignment
         button.on "click", ->
@@ -41,9 +41,9 @@
           btn.find("button").removeClass('ui-state-active') for btn in toolbarButtons
           jQuery(@).find("button").addClass('ui-state-active')
 
-      @buttons.push createButton "Left", "icon-arrow-left", [@options.floatLeftClass], [@options.floatRightClass], @buttons
-      @buttons.push createButton "Eraser", "icon-eraser", [], [@options.floatRightClass, @options.floatLeftClass], @buttons
-      @buttons.push createButton "Right", "icon-arrow-right", [@options.floatRightClass], [@options.floatLeftClass], @buttons
+      @buttons.push floatButton "Left", "icon-arrow-left", [@options.floatLeftClass], [@options.floatRightClass], @buttons
+      @buttons.push floatButton "Eraser", "icon-eraser", [], [@options.floatRightClass, @options.floatLeftClass], @buttons
+      @buttons.push floatButton "Right", "icon-arrow-right", [@options.floatRightClass], [@options.floatLeftClass], @buttons
 
       @buttonset.hallobuttonset()
       toolbar.append @buttonset
