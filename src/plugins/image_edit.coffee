@@ -49,4 +49,10 @@
 
       buttonset.hallobuttonset()
       toolbar.append buttonset
+
+      jQuery(widget.options.editable.element).on "click", "img", (event) =>
+        sel = rangy.getSelection();
+        range = rangy.createRange();
+        range.selectNode event.target;
+        sel.setSingleRange range;
 )(jQuery)
