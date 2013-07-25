@@ -14,5 +14,6 @@
         range = rangy.createRange();
         range.selectNode event.target;
         sel.setSingleRange range;
+        @options.editable.selectedImage = jQuery(event.target);
 
 )(jQuery)

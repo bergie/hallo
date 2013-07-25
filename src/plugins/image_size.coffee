@@ -16,8 +16,6 @@
 
       buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
 
-      container = widget.options.editable.getSelection().startContainer;
-
       buttonize = (label, icon) =>
         buttonElement = jQuery '<span></span>'
         buttonElement.hallobutton
@@ -33,9 +31,8 @@
       resizeStep = @options.resizeStep
       sizeButton = (alignment, icon, resize) ->
         button = buttonize alignment, icon
-        button.on "click", ->
-          selection = jQuery(container)
-          image = selection.find('img');
+        button.on "click", =>
+          image = widget.options.editable.selectedImage
 
           if resize is 100
            image.css('width', 'auto')
