@@ -1,5 +1,5 @@
 #
-#    Plugin to work with images inside the editable for Hallo
+#    Browser plugin to work with images inside the editable for Hallo
 #    (c) 2013 Christian Grobmeier, http://www.grobmeier.de
 #    This plugin may be freely distributed under the MIT license
 #
@@ -20,7 +20,9 @@
       dialog: null
       buttonCssClass: null
       searchurl : null
-
+      limit: 4
+    currentpage: 1
+    lastquery: ""
 
     populateToolbar: (toolbar) ->
       widget = this
@@ -29,6 +31,10 @@
         <div id=\"hallo-image-browser-container\">
           <input id=\"hallo-image-browser-search-value\" type=\"text\" /> <button id=\"hallo-image-browser-search\">Search</button>
           <hr />
+          <div id=\"hallo-image-browser-paging\" style=\"display:none\">
+              <button id=\"hallo-image-browser-paging-back\" style=\"display:none\">Back</button>
+              <button id=\"hallo-image-browser-paging-forward\" style=\"display:none\">Forward</button>
+          </div>
           <div id=\"hallo-image-browser-search-result\">
             <p id=\"hallo-image-browser-no-search-result\">No images to view.</p>
           </div>
@@ -65,17 +71,60 @@
       @options.dialog.dialog("option", "title", "Insert Image")
       @options.dialog.on 'dialogclose', => @options.editable.element.focus()
 
-      if @noresult is undefined
-        @noresult = jQuery '#hallo-image-browser-no-search-result'
+      @paging ?= jQuery('#hallo-image-browser-paging')
+      @pagingback ?= jQuery('#hallo-image-browser-paging-back')
+      @pagingforward ?= jQuery('#hallo-image-browser-paging-forward')
 
-      if @searchvalue is undefined
-        @searchvalue = @options.dialog.find('#hallo-image-browser-search-value')
+      @pagingback.on "click", =>
+        @currentpage--;
+        @_search()
 
-      if @searchbutton is undefined
+      @pagingforward.on "click", =>
+        @currentpage++;
+        @_search()
+
+      @noresult ?= jQuery '#hallo-image-browser-no-search-result'
+      @searchvalue ?= @options.dialog.find('#hallo-image-browser-search-value')
+
+      initSearchButton = =>
         @searchbutton = @options.dialog.find('#hallo-image-browser-search')
-        @searchbutton.on "click", =>
-          jQuery.getJSON @options.searchurl, (data) =>
-            @_preview_images(data)
+        @searchbutton.on "click", => @_search()
+      @searchbutton ?= initSearchButton()
+
+    _search: ->
+      query = @searchvalue.val()
+
+      if @lastquery isnt query
+        @currentpage = 1
+        @lastquery = query
+
+      data =
+        limit: @options.limit
+        page : @currentpage
+        query: query
+
+      jQuery.getJSON @options.searchurl, data, (data) =>
+        @_resetSearchResults()
+        @_paging(data.page, data.total)
+        @_preview_images(data.results)
+
+    _paging: (page, total) ->
+      if total < @limit
+        @paging.hide()
+        return
+      else
+        @paging.show()
+
+      if page > 1
+        @pagingback.show()
+      else
+        @pagingback.hide()
+
+      numberofpages = Math.ceil ( total / @options.limit )
+      if page < numberofpages
+        @pagingforward.show()
+      else
+        @pagingforward.hide()
 
     _preview_images: (data) ->
       widget = @
@@ -109,8 +158,11 @@
       @searchvalue.val('')
       @_closeDialog()
 
-    _closeDialog: ->
+    _resetSearchResults: ->
       @noresult.show()
       jQuery('.hallo-image-browser-preview').remove()
+
+    _closeDialog: ->
+      @_resetSearchResults()
       @options.dialog.dialog("close")
 ) jQuery

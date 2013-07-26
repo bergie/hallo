@@ -32,24 +32,6 @@
     </div>
 
     <script>
-        searchresult = [];
-        searchresult.push({
-            url: 'http://farm4.staticflickr.com/3139/2780642603_8d2c90e364.jpg',
-            alt: 'Apple in red'
-        });
-        searchresult.push({
-            url: 'http://farm5.staticflickr.com/4152/5030705620_34a1a832e7.jpg',
-            alt: 'Drawn apple'
-        });
-        searchresult.push({
-            url: 'http://farm1.staticflickr.com/249/448820990_099a4aa69f.jpg',
-            alt: 'Lot of apples'
-        });
-        searchresult.push({
-            url: 'http://farm1.staticflickr.com/42/117674694_6dd1d296d7.jpg',
-            alt: 'Apples and friends'
-        });
-
         jQuery('.editable').hallo({
           plugins: {
             'halloformat': {},
@@ -59,7 +41,12 @@
             'hallo-image-size': {},
             'hallo-image-insert-url': {},
             'hallo-image-browser': {
-                searchurl : "image-edit.json"
+               // If you can't test with the php, file just use this static json file
+               // which should give you an idea how the browser works. Of course paging is
+               // not supported here
+               // searchurl : "image-edit.json"
+               searchurl : "image-edit.php",
+               limit : 4
             }
           }
         });
