@@ -9,3 +9,21 @@
 .hallo-float-right{
     float: right;
 }
+
+.hallo-image-browser-preview {
+    width: 220px;
+    height: 220px;
+    background-color: lightgrey;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    margin: 10px;
+    float: left;
+    padding: 10px;
+}
+
+.hallo-image-browser-preview img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
