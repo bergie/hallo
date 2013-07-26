@@ -45,15 +45,16 @@
         cssClass: @options.buttonCssClass
       buttonset.append button
 
-      button.click -> widget._openDialog(toolbar)
+      button.click ->
+        toolbar.hide()
+        widget._openDialog()
 
       toolbar.append buttonset
       @options.dialog.dialog(@options.dialogOpts)
 
-    _openDialog: (toolbar) ->
+    _openDialog: ->
       @lastSelection = @options.editable.getSelection()
 
-      toolbar.hide()
       @options.dialog.dialog("open")
       @options.dialog.dialog("option", "title", "Insert Image")
       @options.dialog.on 'dialogclose', => @options.editable.element.focus()
