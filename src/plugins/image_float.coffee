@@ -18,8 +18,6 @@
       @buttons = []
       @buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
 
-      container = widget.options.editable.getSelection().startContainer;
-
       buttonize = (alignment, icon) =>
         buttonElement = jQuery '<span></span>'
         buttonElement.hallobutton
@@ -36,10 +34,9 @@
         button = buttonize alignment, icon
         button.alignment = alignment
         button.on "click", ->
-          selection = jQuery(container)
-          elements = selection.find "img"
-          elements.removeClass(rcl) for rcl in removeClasses
-          elements.addClass(acl) for acl in addClasses
+          image = widget.options.editable.selectedImage
+          image.removeClass(rcl) for rcl in removeClasses
+          image.addClass(acl) for acl in addClasses
           btn.find("button").removeClass('ui-state-active') for btn in toolbarButtons
           jQuery(@).find("button").addClass('ui-state-active')
 
