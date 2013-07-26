@@ -30,7 +30,7 @@
       "
 
       @options.dialog = jQuery("<div>").
-        attr('id', "#{@options.uuid}-insert-image-dialog").
+        attr('id', "#{@options.uuid}-image-insert-dialog").
         html(dialog)
 
       buttonset = jQuery("<span>").addClass @widgetName
