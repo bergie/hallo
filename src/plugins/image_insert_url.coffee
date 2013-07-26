@@ -69,6 +69,7 @@
       image = jQuery '<img>'
       image.attr src: source
       @lastSelection.insertNode image[0]
+      @urlvalue.val('')
       @_closeDialog()
 
     _closeDialog: ->
