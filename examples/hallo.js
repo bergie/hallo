@@ -1178,18 +1178,20 @@
         this.buttons.push(floatButton("Eraser", "icon-eraser", [], [this.options.floatRightClass, this.options.floatLeftClass], this.buttons));
         this.buttons.push(floatButton("Right", "icon-arrow-right", [this.options.floatRightClass], [this.options.floatLeftClass], this.buttons));
         this.buttonset.hallobuttonset();
+        this.buttonset.hide();
         toolbar.append(this.buttonset);
         jQuery(document).on("halloselected", function() {
-          activate();
-          if (elements.length) {
+          var element;
+          element = _this.options.editable.selectedImage;
+          if (element !== null) {
+            activate(element);
             return _this.buttonset.show();
           } else {
             return _this.buttonset.hide();
           }
         });
-        return activate = function() {
-          var alignment, btn, element, toggle, _i, _len, _ref, _results;
-          element = _this.options.editable.selectedImage;
+        return activate = function(element) {
+          var alignment, btn, toggle, _i, _len, _ref, _results;
           if (element.hasClass(_this.options.floatLeftClass)) {
             alignment = "Left";
           } else if (element.hasClass(_this.options.floatRightClass)) {
@@ -1306,13 +1308,21 @@
       },
       populateToolbar: function() {
         var _this = this;
-        return jQuery(this.options.editable.element).on("click", "img", function(event) {
+        this.options.editable.selectedImage = null;
+        jQuery(this.options.editable.element).on("click", "img", function(event) {
           var range, sel;
           sel = rangy.getSelection();
           range = rangy.createRange();
           range.selectNode(event.target);
           sel.setSingleRange(range);
           return _this.options.editable.selectedImage = jQuery(event.target);
+        });
+        return jQuery(document).on("halloselected", function(a, b) {
+          var source;
+          source = jQuery(b.originalEvent.originalEvent.srcElement);
+          if (!source.is('img')) {
+            return _this.options.editable.selectedImage = null;
+          }
         });
       }
     });
@@ -1346,6 +1356,7 @@
             cssClass: _this.options.buttonCssClass
           });
           buttonset.append(buttonElement);
+          buttonset.hide();
           return buttonElement;
         };
         resizeStep = this.options.resizeStep;
@@ -1374,10 +1385,9 @@
         buttonset.hallobuttonset();
         toolbar.append(buttonset);
         return jQuery(document).on("halloselected", function() {
-          var elements, selection;
-          selection = jQuery(widget.options.editable.getSelection().startContainer);
-          elements = selection.find("img");
-          if (elements.length) {
+          var element;
+          element = _this.options.editable.selectedImage;
+          if (element !== null) {
             return buttonset.show();
           } else {
             return buttonset.hide();
