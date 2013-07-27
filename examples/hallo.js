@@ -2295,6 +2295,116 @@
 
 (function() {
   (function(jQuery) {
+    return jQuery.widget("IKS.hallo-image-upload", {
+      options: {
+        editable: null,
+        toolbar: null,
+        uuid: "",
+        dialogOpts: {
+          autoOpen: false,
+          width: 'auto',
+          height: 'auto',
+          modal: true,
+          resizable: true,
+          draggable: true,
+          dialogClass: 'insert-image-upload-dialog'
+        },
+        dialog: null,
+        buttonCssClass: null,
+        uploadpath: null
+      },
+      populateToolbar: function(toolbar) {
+        var button, buttonset, dialog, widget;
+        widget = this;
+        Dropzone.autoDiscover = false;
+        dialog = "        <div id=\"hallo-image-upload-container\">          <p class=\"hallo-image-upload-hint\">DROP YOUR IMAGE HERE</p>          <p class=\"hallo-image-upload-error\"></p>          <p class=\"hallo-image-upload-spinner\" style=\"display:none\"><i class=\"icon-spinner icon-spin icon-large\"></i></p>        </div>      ";
+        this.options.dialog = jQuery("<div>").attr('id', "" + this.options.uuid + "-image-upload-dialog").html(dialog);
+        buttonset = jQuery("<span>").addClass(this.widgetName);
+        button = jQuery('<span>');
+        button.hallobutton({
+          label: 'Upload Image',
+          icon: 'icon-upload',
+          editable: this.options.editable,
+          command: null,
+          queryState: false,
+          uuid: this.options.uuid,
+          cssClass: this.options.buttonCssClass
+        });
+        buttonset.append(button);
+        button.click(function() {
+          toolbar.hide();
+          return widget._openDialog();
+        });
+        toolbar.append(buttonset);
+        return this.options.dialog.dialog(this.options.dialogOpts);
+      },
+      _openDialog: function() {
+        var _this = this;
+        this.lastSelection = this.options.editable.getSelection();
+        this.options.dialog.dialog("open");
+        this.options.dialog.dialog("option", "title", "Upload Image");
+        this.options.dialog.on('dialogclose', function() {
+          return _this.options.editable.element.focus();
+        });
+        if (this.hint == null) {
+          this.hint = jQuery(".hallo-image-upload-hint");
+        }
+        if (this.error == null) {
+          this.error = jQuery(".hallo-image-upload-error");
+        }
+        if (this.spinner == null) {
+          this.spinner = jQuery(".hallo-image-upload-spinner");
+        }
+        return this.uploadContainer != null ? this.uploadContainer : this.uploadContainer = this._createDropzone();
+      },
+      _createDropzone: function() {
+        var options,
+          _this = this;
+        options = {
+          url: this.options.uploadpath
+        };
+        this.uploadContainer = new Dropzone("#hallo-image-upload-container", options);
+        this.uploadContainer.on('drop', function() {
+          _this.error.html('');
+          _this.error.hide();
+          _this.hint.hide();
+          return _this.spinner.show();
+        });
+        this.uploadContainer.on('success', function(file, responseText) {
+          var response;
+          _this.uploadContainer.removeAllFiles();
+          response = jQuery.parseJSON(responseText);
+          _this.spinner.hide();
+          _this.hint.show();
+          return _this._insert_image(response.url);
+        });
+        return this.uploadContainer.on('error', function(file, errorMessage) {
+          _this.uploadContainer.removeAllFiles();
+          _this.spinner.hide();
+          _this.hint.show();
+          _this.error.html(errorMessage);
+          return _this.error.show();
+        });
+      },
+      _insert_image: function(source) {
+        var image;
+        image = jQuery('<img>');
+        image.attr({
+          src: source
+        });
+        this.lastSelection.insertNode(image[0]);
+        return this._closeDialog();
+      },
+      _closeDialog: function() {
+        return this.options.dialog.dialog("close");
+      }
+    });
+  })(jQuery);
+
+}).call(this);
+
+(function() {
+  (function(jQuery) {
     return jQuery.widget('IKS.halloindicator', {
       options: {
         editable: null,
