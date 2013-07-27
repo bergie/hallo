@@ -30,7 +30,7 @@
       Dropzone.autoDiscover = false;
 
       dialog = "
-        <div class=\"hallo-image-upload-container\">
+        <div id=\"hallo-image-upload-container-#{@options.uuid}\" class=\"hallo-image-upload-container\">
           <p class=\"hallo-image-upload-hint\">DROP YOUR IMAGE HERE</p>
           <p class=\"hallo-image-upload-error\"></p>
           <p class=\"hallo-image-upload-spinner\" style=\"display:none\"><i class=\"icon-spinner icon-spin icon-large\"></i></p>
@@ -67,16 +67,16 @@
       @options.dialog.dialog("option", "title", "Upload Image")
       @options.dialog.on 'dialogclose', => @options.editable.element.focus()
 
-      @hint ?= jQuery ".hallo-image-upload-hint"
-      @error ?= jQuery ".hallo-image-upload-error"
-      @spinner ?= jQuery ".hallo-image-upload-spinner"
+      @hint ?= jQuery ".hallo-image-upload-hint", @options.dialog
+      @error ?= jQuery ".hallo-image-upload-error", @options.dialog
+      @spinner ?= jQuery ".hallo-image-upload-spinner", @options.dialog
       @uploadContainer ?= @_createDropzone()
 
     _createDropzone: ->
       options =
         url : @options.uploadpath
 
-      @uploadContainer = new Dropzone "#hallo-image-upload-container", options
+      @uploadContainer = new Dropzone "#hallo-image-upload-container-#{@options.uuid}", options
       @uploadContainer.on 'drop', =>
         @error.html('')
         @error.hide()

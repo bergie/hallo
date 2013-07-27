@@ -2317,7 +2317,7 @@
         var button, buttonset, dialog, widget;
         widget = this;
         Dropzone.autoDiscover = false;
-        dialog = "        <div id=\"hallo-image-upload-container\">          <p class=\"hallo-image-upload-hint\">DROP YOUR IMAGE HERE</p>          <p class=\"hallo-image-upload-error\"></p>          <p class=\"hallo-image-upload-spinner\" style=\"display:none\"><i class=\"icon-spinner icon-spin icon-large\"></i></p>        </div>      ";
+        dialog = "        <div id=\"hallo-image-upload-container-" + this.options.uuid + "\" class=\"hallo-image-upload-container\">          <p class=\"hallo-image-upload-hint\">DROP YOUR IMAGE HERE</p>          <p class=\"hallo-image-upload-error\"></p>          <p class=\"hallo-image-upload-spinner\" style=\"display:none\"><i class=\"icon-spinner icon-spin icon-large\"></i></p>        </div>      ";
         this.options.dialog = jQuery("<div>").attr('id', "" + this.options.uuid + "-image-upload-dialog").html(dialog);
         buttonset = jQuery("<span>").addClass(this.widgetName);
         button = jQuery('<span>');
@@ -2347,13 +2347,14 @@
           return _this.options.editable.element.focus();
         });
         if (this.hint == null) {
-          this.hint = jQuery(".hallo-image-upload-hint");
+          this.hint = jQuery(".hallo-image-upload-hint", this.options.dialog);
         }
+        console.log(this.hint);
         if (this.error == null) {
-          this.error = jQuery(".hallo-image-upload-error");
+          this.error = jQuery(".hallo-image-upload-error", this.options.dialog);
         }
         if (this.spinner == null) {
-          this.spinner = jQuery(".hallo-image-upload-spinner");
+          this.spinner = jQuery(".hallo-image-upload-spinner", this.options.dialog);
         }
         return this.uploadContainer != null ? this.uploadContainer : this.uploadContainer = this._createDropzone();
       },
@@ -2363,7 +2364,8 @@
         options = {
           url: this.options.uploadpath
         };
-        this.uploadContainer = new Dropzone("#hallo-image-upload-container", options);
+        console.log("." + this.options.uuid + "-hallo-image-upload-container");
+        this.uploadContainer = new Dropzone("#hallo-image-upload-container-" + this.options.uuid, options);
         this.uploadContainer.on('drop', function() {
           _this.error.html('');
           _this.error.hide();
