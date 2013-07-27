@@ -48,18 +48,15 @@
       toolbar.append @buttonset
 
       jQuery(document).on "halloselected", =>
-        selection = jQuery(widget.options.editable.getSelection().startContainer)
-        elements = selection.find "img"
-
-        activate(elements[0])
-
+        activate()
         if elements.length
           @buttonset.show()
         else
           @buttonset.hide()
 
-      activate = (element) =>
-        element = jQuery(element)
+      activate = () =>
+        element = @options.editable.selectedImage
+
         if (element.hasClass(@options.floatLeftClass))
           alignment = "Left"
         else if (element.hasClass(@options.floatRightClass))
