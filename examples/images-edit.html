@@ -11,7 +11,8 @@
 <![endif]-->
     <script src="../deps/jquery-1.9.1.min.js"></script>
     <script src="../deps/jquery-ui-1.10.2.min.js"></script>
-    <script src="../deps/rangy-core-1.2.3.js"></script>
+    <script src="../deps/dropzone.js"></script>
+    <script src="http://rangy.googlecode.com/svn/trunk/dev/rangy-core.js"></script>
     <script src="hallo.js"></script>
     <title>Hallo example</title>
   </head>
@@ -47,6 +48,9 @@
                // searchurl : "image-edit.json"
                searchurl : "image-edit.php",
                limit : 4
+            },
+            'hallo-image-upload': {
+                uploadpath: "image-upload.php"
             }
           }
         });
