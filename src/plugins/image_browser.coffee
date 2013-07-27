@@ -28,15 +28,15 @@
       widget = this
 
       dialog = "
-        <div id=\"hallo-image-browser-container\">
-          <input id=\"hallo-image-browser-search-value\" type=\"text\" /> <button id=\"hallo-image-browser-search\">Search</button>
+        <div id=\"hallo-image-browser-container-#{@options.uuid}\">
+          <input class=\"hallo-image-browser-search-value\" type=\"text\" /> <button class=\"hallo-image-browser-search\">Search</button>
           <hr />
-          <div id=\"hallo-image-browser-paging\" style=\"display:none\">
-              <button id=\"hallo-image-browser-paging-back\" style=\"display:none\">Back</button>
-              <button id=\"hallo-image-browser-paging-forward\" style=\"display:none\">Forward</button>
+          <div class=\"hallo-image-browser-paging\" style=\"display:none\">
+              <button class=\"hallo-image-browser-paging-back\" style=\"display:none\">Back</button>
+              <button class=\"hallo-image-browser-paging-forward\" style=\"display:none\">Forward</button>
           </div>
-          <div id=\"hallo-image-browser-search-result\">
-            <p id=\"hallo-image-browser-no-search-result\">No images to view.</p>
+          <div class=\"hallo-image-browser-search-result\">
+            <p class=\"hallo-image-browser-no-search-result\">No images to view.</p>
           </div>
         </div>
       "
@@ -71,9 +71,11 @@
       @options.dialog.dialog("option", "title", "Insert Image")
       @options.dialog.on 'dialogclose', => @options.editable.element.focus()
 
-      @paging ?= jQuery('#hallo-image-browser-paging')
-      @pagingback ?= jQuery('#hallo-image-browser-paging-back')
-      @pagingforward ?= jQuery('#hallo-image-browser-paging-forward')
+      @container ?= jQuery "#hallo-image-browser-container-#{@options.uuid}"
+
+      @paging ?= jQuery '.hallo-image-browser-paging', @container
+      @pagingback ?= jQuery '.hallo-image-browser-paging-back', @container
+      @pagingforward ?= jQuery '.hallo-image-browser-paging-forward', @container
 
       @pagingback.on "click", =>
         @currentpage--;
@@ -83,11 +85,11 @@
         @currentpage++;
         @_search()
 
-      @noresult ?= jQuery '#hallo-image-browser-no-search-result'
-      @searchvalue ?= @options.dialog.find('#hallo-image-browser-search-value')
+      @noresult ?= jQuery '.hallo-image-browser-no-search-result', @container
+      @searchvalue ?= @options.dialog.find('.hallo-image-browser-search-value')
 
       initSearchButton = =>
-        @searchbutton = @options.dialog.find('#hallo-image-browser-search')
+        @searchbutton = @options.dialog.find('.hallo-image-browser-search')
         @searchbutton.on "click", => @_search()
       @searchbutton ?= initSearchButton()
 
@@ -128,7 +130,7 @@
 
     _preview_images: (data) ->
       widget = @
-      previewbox = jQuery '#hallo-image-browser-search-result'
+      previewbox = jQuery '.hallo-image-browser-search-result', @container
 
       _showImage = (definition) ->
         imageContainer = jQuery ("<div></div>")
@@ -160,7 +162,7 @@
 
     _resetSearchResults: ->
       @noresult.show()
-      jQuery('.hallo-image-browser-preview').remove()
+      jQuery('.hallo-image-browser-preview', @container).remove()
 
     _closeDialog: ->
       @_resetSearchResults()
