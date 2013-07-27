@@ -9,6 +9,8 @@
       uuid: ''
 
     populateToolbar: ->
+      @options.editable.selectedImage = null
+
       jQuery(@options.editable.element).on "click", "img", (event) =>
         sel = rangy.getSelection();
         range = rangy.createRange();
@@ -16,4 +18,8 @@
         sel.setSingleRange range;
         @options.editable.selectedImage = jQuery(event.target);
 
+      jQuery(document).on "halloselected", (a, b) =>
+        source = jQuery b.originalEvent.originalEvent.srcElement
+        if !source.is('img')
+          @options.editable.selectedImage = null
 )(jQuery)

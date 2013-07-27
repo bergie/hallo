@@ -45,18 +45,18 @@
       @buttons.push floatButton "Right", "icon-arrow-right", [@options.floatRightClass], [@options.floatLeftClass], @buttons
 
       @buttonset.hallobuttonset()
+      @buttonset.hide()
       toolbar.append @buttonset
 
       jQuery(document).on "halloselected", =>
-        activate()
-        if elements.length
+        element = @options.editable.selectedImage
+        if element isnt null
+          activate(element)
           @buttonset.show()
         else
           @buttonset.hide()
 
-      activate = () =>
-        element = @options.editable.selectedImage
-
+      activate = (element) =>
         if (element.hasClass(@options.floatLeftClass))
           alignment = "Left"
         else if (element.hasClass(@options.floatRightClass))

@@ -26,6 +26,7 @@
           icon: icon
           cssClass: @options.buttonCssClass
         buttonset.append buttonElement
+        buttonset.hide()
         return buttonElement
 
       resizeStep = @options.resizeStep
@@ -52,9 +53,8 @@
       toolbar.append buttonset
 
       jQuery(document).on "halloselected", =>
-        selection = jQuery(widget.options.editable.getSelection().startContainer)
-        elements = selection.find "img"
-        if elements.length
+        element = @options.editable.selectedImage
+        if element isnt null
           buttonset.show()
         else
           buttonset.hide()
