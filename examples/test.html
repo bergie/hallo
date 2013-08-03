@@ -13,6 +13,11 @@
     <script src="../deps/rangy-core-1.2.3.js"></script>
     <script src="hallo.js"></script>
     <title>Hallo example</title>
+    <style>
+      .inPlaceholderMode{
+        color: #ccc;
+      }
+    </style>
   </head>
   <body>
 
@@ -21,6 +26,7 @@
     <p id="modified">Editables have not been modified</p>
 
     <h1 class="editable">Hello World</h1>
+    <h2 class="editable"></h2>
     <div class="editable">
       <p>
         Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.
@@ -48,7 +54,8 @@
             //'hallolink': {},
             'halloreundo': {}
           },
-          editable: true
+          editable: true,
+          placeholder: 'Hello World placeholder'
         });
         jQuery('.editable').bind('hallomodified', function(event, data) {
             jQuery('#modified').html("Editables modified");

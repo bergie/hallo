@@ -110,6 +110,7 @@
         this.element.attr("contentEditable", true);
         if (!jQuery.parseHTML(this.element.html())) {
           this.element.html(this.options.placeholder);
+          this.element.addClass("inPlaceholderMode");
           this.element.css({
             'min-width': this.element.innerWidth(),
             'min-height': this.element.innerHeight()
@@ -374,6 +375,7 @@
         if (this.getContents() === this.options.placeholder) {
           this.setContents('');
         }
+        jQuery(this.element).removeClass('inPlaceholderMode');
         jQuery(this.element).addClass('inEditMode');
         return this._trigger("activated", null, this);
       },
@@ -381,6 +383,7 @@
         jQuery(this.element).removeClass('inEditMode');
         this._trigger("deactivated", null, this);
         if (!this.getContents()) {
+          jQuery(this.element).addClass('inPlaceholderMode');
           return this.setContents(this.options.placeholder);
         }
       },
