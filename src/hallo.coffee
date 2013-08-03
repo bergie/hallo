@@ -177,6 +177,7 @@ http://hallojs.org
 
       unless jQuery.parseHTML(@element.html())
         @element.html this.options.placeholder
+        jQuery(@element).addClass 'inPlaceholderMode'
         @element.css
           'min-width': @element.innerWidth()
           'min-height': @element.innerHeight()
@@ -400,6 +401,7 @@ http://hallojs.org
       if this.getContents() is this.options.placeholder
         this.setContents ''
 
+      jQuery(@element).removeClass 'inPlaceholderMode'
       jQuery(@element).addClass 'inEditMode'
       @_trigger "activated", null, @
 
@@ -408,6 +410,7 @@ http://hallojs.org
       @_trigger "deactivated", null, @
 
       unless @getContents()
+        jQuery(@element).addClass 'inPlaceholderMode'
         @setContents @options.placeholder
 
     _activated: (event) ->
