@@ -1030,7 +1030,7 @@
         return this.searchbutton != null ? this.searchbutton : this.searchbutton = initSearchButton();
       },
       _search: function() {
-        var data, query,
+        var data, query, success,
           _this = this;
         query = this.searchvalue.val();
         if (this.lastquery !== query) {
@@ -1042,14 +1042,14 @@
           page: this.currentpage,
           query: query
         };
-        return jQuery.get(this.options.searchurl, data, function(data) {
+        success = function(data) {
           data = data.replace(_this.options.protectionPrefix, '');
           data = jQuery.parseJSON(data);
-          console.log(data);
           _this._resetSearchResults();
           _this._paging(data.page, data.total);
           return _this._preview_images(data.results);
-        });
+        };
+        return jQuery.get(this.options.searchurl, data, success, "text");
       },
       _paging: function(page, total) {
         var numberofpages;

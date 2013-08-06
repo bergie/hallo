@@ -106,13 +106,15 @@
         page : @currentpage
         query: query
 
-      jQuery.get @options.searchurl, data, (data) =>
+      success = (data) =>
         data = data.replace @options.protectionPrefix, ''
         data = jQuery.parseJSON data
 
         @_resetSearchResults()
         @_paging(data.page, data.total)
         @_preview_images(data.results)
+
+      jQuery.get @options.searchurl, data, success, "text"
 
     _paging: (page, total) ->
       if total < @limit
