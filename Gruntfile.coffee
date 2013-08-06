@@ -28,6 +28,12 @@ module.exports = ->
         dest: 'tmp/widgets'
         cwd: 'src/widgets'
         ext: '.js'
+      pluginsimage:
+        expand: true
+        src: ['**.coffee']
+        dest: 'tmp/plugins'
+        cwd: 'src/plugins/image'
+        ext: '.js'  
       plugins:
         expand: true
         src: ['**.coffee']

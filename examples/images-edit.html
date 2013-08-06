@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="jquery-ui-bootstrap/css/custom-theme/jquery-ui-1.8.16.custom.css" />
+    <link rel="stylesheet" href="hallo.css" />
+    <link rel="stylesheet" href="image-edit.css" />
+    <link rel="stylesheet" href="fontawesome/css/font-awesome.css" charset="utf-8" />
+<!--[if lt IE 9]>
+    <link rel="stylesheet" href="fontawesome/css/font-awesome-ie7.css" charset="utf-8" />
+<![endif]-->
+    <script src="../deps/jquery-1.9.1.min.js"></script>
+    <script src="../deps/jquery-ui-1.10.2.min.js"></script>
+    <script src="../deps/dropzone.js"></script>
+    <script src="http://rangy.googlecode.com/svn/trunk/dev/rangy-core.js"></script>
+    <script src="hallo.js"></script>
+    <title>Hallo example</title>
+  </head>
+  <body>
+
+    <h1 class="editable">Hello World</h1>
+    <div class="editable">
+      <p>
+        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod
+        tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam,
+        quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.
+      </p>
+      <img src="http://farm4.staticflickr.com/3139/2780642603_8d2c90e364.jpg" style="width: 328.5px; height: 197.1px;">
+      <p>
+        Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius.
+      </p>
+      <img src="http://farm1.staticflickr.com/42/117674694_6dd1d296d7.jpg" style="width: 180px; height: 239.4px;">
+    </div>
+
+    <br style="clear:both" />
+
+    <div class="editable">
+      <p>Second editable</p>
+      <img src="http://farm4.staticflickr.com/3139/2780642603_8d2c90e364.jpg" style="width: 328.5px; height: 197.1px;">
+    </div>
+
+    <script>
+        jQuery('.editable').hallo({
+          plugins: {
+            'halloformat': {},
+            'hallojustify': {},
+            'hallo-image-select': {},
+            'hallo-image-float': {},
+            'hallo-image-size': {},
+            'hallo-image-insert-url': {},
+            'hallo-image-browser': {
+               // If you can't test with the php, file just use this static json file
+               // which should give you an idea how the browser works. Of course paging is
+               // not supported here
+               // searchurl : "image-edit.json"
+               searchurl : "image-edit.php",
+               limit : 4
+            },
+            'hallo-image-upload': {
+                uploadpath: "image-upload.php"
+            }
+          }
+        });
+
+    </script>
+  </body>
+</html>
