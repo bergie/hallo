@@ -81,4 +81,4 @@ $result->page = $page;
 $result->total = sizeOf($selection);
 
 $result->results = array_splice($selection, $start, $limit);
-echo json_encode($result);
+echo ')]}\','.PHP_EOL.json_encode($result);

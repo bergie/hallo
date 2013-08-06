@@ -21,6 +21,7 @@
       buttonCssClass: null
       searchurl : null
       limit: 4
+      protectionPrefix: /^\)\]\}',?\n/
     currentpage: 1
     lastquery: ""
 
@@ -105,7 +106,10 @@
         page : @currentpage
         query: query
 
-      jQuery.getJSON @options.searchurl, data, (data) =>
+      jQuery.get @options.searchurl, data, (data) =>
+        data = data.replace @options.protectionPrefix, ''
+        data = jQuery.parseJSON data
+
         @_resetSearchResults()
         @_paging(data.page, data.total)
         @_preview_images(data.results)

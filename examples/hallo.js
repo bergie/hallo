@@ -957,7 +957,8 @@
         dialog: null,
         buttonCssClass: null,
         searchurl: null,
-        limit: 4
+        limit: 4,
+        protectionPrefix: /^\)\]\}',?\n/
       },
       currentpage: 1,
       lastquery: "",
@@ -1041,7 +1042,10 @@
           page: this.currentpage,
           query: query
         };
-        return jQuery.getJSON(this.options.searchurl, data, function(data) {
+        return jQuery.get(this.options.searchurl, data, function(data) {
+          data = data.replace(_this.options.protectionPrefix, '');
+          data = jQuery.parseJSON(data);
+          console.log(data);
           _this._resetSearchResults();
           _this._paging(data.page, data.total);
           return _this._preview_images(data.results);
