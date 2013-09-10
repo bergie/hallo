@@ -1,6 +1,10 @@
 Hallo Editor ChangeLog
 ======================
 
+## 1.0.4 (git master)
+
+* Plugin instance fetching is now more robust and gives better errors on plugins not compatible with jQuery 1.10
+
 ## 1.0.3 (September 10th 2013)
 
 * Ported the build environment to [Grunt](http://gruntjs.com)
