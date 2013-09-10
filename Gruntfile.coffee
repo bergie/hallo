@@ -8,6 +8,10 @@ module.exports = ->
   @initConfig
     pkg: @file.readJSON 'package.json'
 
+    # Install dependencies
+    bower:
+      install: {}
+
     # CoffeeScript complication
     coffee:
       core:
@@ -34,6 +38,12 @@ module.exports = ->
         dest: 'tmp/plugins'
         cwd: 'src/plugins'
         ext: '.js'
+      plugins_image:
+        expand: true
+        src: ['**.coffee']
+        dest: 'tmp/plugins/image'
+        cwd: 'src/plugins/image'
+        ext: '.js'
 
     # Build setup: concatenate source files
     concat:
@@ -44,8 +54,9 @@ module.exports = ->
         src: [
           'tmp/*.js'
           'tmp/**/*.js'
+          'tmp/**/**/*.js'
         ]
-        dest: 'examples/hallo.js'
+        dest: 'dist/hallo.js'
 
     # Remove tmp directory once builds are complete
     clean: ['tmp']
@@ -57,7 +68,7 @@ module.exports = ->
         report: 'min'
       full:
         files:
-          'examples/hallo-min.js': ['examples/hallo.js']
+          'dist/hallo-min.js': ['dist/hallo.js']
 
     # Coding standards verification
     coffeelint:
@@ -69,6 +80,9 @@ module.exports = ->
     # Unit tests
     qunit:
       all: ['test/*.html']
+
+  # Dependency installation
+  @loadNpmTasks 'grunt-bower-task'
 
   # Build dependencies
   @loadNpmTasks 'grunt-contrib-coffee'

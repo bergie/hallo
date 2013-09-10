@@ -2,8 +2,12 @@ language: node_js
 node_js:
   - 0.10
 
+before_script:
+  - npm install -g grunt-cli
+  - grunt bower 
+
 script:
-  - npm test
+  - grunt test
 
 notifications:
   irc:

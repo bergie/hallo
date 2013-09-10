@@ -89,7 +89,7 @@ Hallo is written in [CoffeeScript](http://jashkenas.github.com/coffee-script/), 
 
     $ npm install
 
-To generate the JavaScript code to `examples/hallo.js` from Hallo sources, run [Grunt](http://gruntjs.com):
+To generate the JavaScript code to `dist/hallo.js` from Hallo sources, run [Grunt](http://gruntjs.com):
 
     $ grunt build
 
