@@ -2439,7 +2439,7 @@
 
 (function() {
   (function(jQuery) {
-    return jQuery.widget("Liip.hallooverlay", {
+    return jQuery.widget("IKS.hallooverlay", {
       options: {
         editable: null,
         toolbar: null,

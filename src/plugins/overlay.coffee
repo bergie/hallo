@@ -13,7 +13,7 @@
 # "floating" hallo option to be false to look nice. Furthermore, the
 # toolbar should have the same width as the editable element.
 ((jQuery) ->
-  jQuery.widget "Liip.hallooverlay",
+  jQuery.widget "IKS.hallooverlay",
     options:
       editable: null
       toolbar: null
