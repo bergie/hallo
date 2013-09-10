@@ -182,7 +182,11 @@
         if (instance) {
           return instance;
         }
-        return jQuery(this.element).data(plugin);
+        instance = jQuery(this.element).data(plugin);
+        if (instance) {
+          return instance;
+        }
+        throw new Error("Plugin " + plugin + " not found");
       },
       getContents: function() {
         var cleanup, instance, plugin;
@@ -248,7 +252,7 @@
         return "" + (S4()) + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + (S4()) + (S4());
       },
       _prepareToolbar: function() {
-        var defaults, plugin, populate, toolbarOptions;
+        var defaults, instance, plugin, populate, toolbarOptions;
         this.toolbar = jQuery('<div class="hallotoolbar"></div>').hide();
         if (this.options.toolbarCssClass) {
           this.toolbar.addClass(this.options.toolbarCssClass);
@@ -262,7 +266,11 @@
         toolbarOptions = jQuery.extend({}, defaults, this.options.toolbarOptions);
         this.element[this.options.toolbar](toolbarOptions);
         for (plugin in this.options.plugins) {
-          populate = this.getPluginInstance(plugin).populateToolbar;
+          instance = this.getPluginInstance(plugin);
+          if (!instance) {
+            continue;
+          }
+          populate = instance.populateToolbar;
           if (!jQuery.isFunction(populate)) {
             continue;
           }
@@ -2572,7 +2580,7 @@
 
 (function() {
   (function(jQuery) {
-    return jQuery.widget("Liip.hallotoolbarlinebreak", {
+    return jQuery.widget("IKS.hallotoolbarlinebreak", {
       options: {
         editable: null,
         uuid: "",
