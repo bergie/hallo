@@ -1,6 +1,6 @@
 {
   "name": "hallo",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "./dist/hallo.js",
   "license": "MIT",
   "ignore": [
