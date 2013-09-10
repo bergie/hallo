@@ -247,7 +247,9 @@ http://hallojs.org
     # Get contents of an editable as HTML string
     getContents: ->
       for plugin of @options.plugins
-        cleanup = @getPluginInstance(plugin).cleanupContentClone
+        instance = @getPluginInstance(plugin)
+        continue unless instance
+        cleanup = instance.cleanupContentClone
         continue unless jQuery.isFunction cleanup
         jQuery(@element)[plugin] 'cleanupContentClone', @element
       @element.html()

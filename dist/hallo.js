@@ -185,9 +185,13 @@
         return jQuery(this.element).data(plugin);
       },
       getContents: function() {
-        var cleanup, plugin;
+        var cleanup, instance, plugin;
         for (plugin in this.options.plugins) {
-          cleanup = this.getPluginInstance(plugin).cleanupContentClone;
+          instance = this.getPluginInstance(plugin);
+          if (!instance) {
+            continue;
+          }
+          cleanup = instance.cleanupContentClone;
           if (!jQuery.isFunction(cleanup)) {
             continue;
           }
