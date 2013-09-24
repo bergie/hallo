@@ -1598,7 +1598,7 @@
         dialogOpts: {
           autoOpen: false,
           width: 540,
-          height: 200,
+          height: 300,
           title: "Enter Link",
           buttonTitle: "Insert",
           buttonUpdateTitle: "Update",
@@ -1685,6 +1685,7 @@
             }
             widget.options.editable.keepActivated(true);
             dialog.dialog('open');
+            toolbar.hide();
             dialog.on('dialogclose', function() {
               widget.options.editable.restoreSelection(widget.lastSelection);
               jQuery('label', buttonHolder).removeClass('ui-state-active');
@@ -2035,17 +2036,6 @@
       },
       _bindEvents: function() {
         var _this = this;
-        this.element.on('click', function(event, data) {
-          var position, scrollTop;
-          position = {};
-          scrollTop = $('window').scrollTop();
-          position.top = event.clientY + scrollTop;
-          position.left = event.clientX;
-          _this._updatePosition(position, null);
-          if (_this.toolbar.html() !== '') {
-            return _this.toolbar.show();
-          }
-        });
         this.element.on('halloselected', function(event, data) {
           var position;
           position = _this._getPosition(data.originalEvent, data.selection);
@@ -2172,20 +2162,28 @@
   (function(jQuery) {
     return jQuery.widget('IKS.halloToolbarInstant', {
       toolbar: null,
+      isActive: false,
       options: {
         parentElement: 'body',
         editable: null,
         toolbar: null,
-        positionAbove: false
+        positionAbove: true,
+        toolbarActiveClass: 'hallotoolbar-active'
       },
       _create: function() {
-        var _this = this;
         this.toolbar = this.options.toolbar;
         jQuery(this.options.parentElement).append(this.toolbar);
-        this._bindEvents();
-        return jQuery(window).resize(function(event) {
-          return _this._updatePosition(_this._getPosition(event));
-        });
+        return this._bindEvents();
+      },
+      getToolbarTopOffset: function() {
+        var toolbar_height_offset;
+        toolbar_height_offset = this.toolbar.outerHeight() + 10;
+        if (this.options.positionAbove) {
+          this.top_offset = -10 - toolbar_height_offset;
+        } else {
+          this.top_offset = 20;
+        }
+        return this.top_offset;
       },
       _getPosition: function(event, selection) {
         var eventType, position;
@@ -2207,19 +2205,6 @@
             };
         }
       },
-      _getCaretPosition: function(range) {
-        var newRange, position, tmpSpan;
-        tmpSpan = jQuery("<span/>");
-        newRange = rangy.createRange();
-        newRange.setStart(range.endContainer, range.endOffset);
-        newRange.insertNode(tmpSpan.get(0));
-        position = {
-          top: tmpSpan.offset().top,
-          left: tmpSpan.offset().left
-        };
-        tmpSpan.remove();
-        return position;
-      },
       setPosition: function() {
         if (this.options.parentElement !== 'body') {
           this.options.parentElement = 'body';
@@ -2229,68 +2214,46 @@
         this.toolbar.css('top', this.element.offset().top - 20);
         return this.toolbar.css('left', this.element.offset().left);
       },
-      _updatePosition: function(position, selection) {
-        var left, selectionRect, toolbar_height_offset, top, top_offset;
-        if (selection == null) {
-          selection = null;
-        }
+      _updatePosition: function(position) {
+        var left, top;
         if (!position) {
           return;
         }
         if (!(position.top && position.left)) {
           return;
         }
-        toolbar_height_offset = this.toolbar.outerHeight() + 10;
-        if (selection && !selection.collapsed && selection.nativeRange) {
-          selectionRect = selection.nativeRange.getBoundingClientRect();
-          if (this.options.positionAbove) {
-            top_offset = selectionRect.top - toolbar_height_offset;
-          } else {
-            top_offset = selectionRect.bottom + 10;
-          }
-          top = jQuery(window).scrollTop() + top_offset;
-          left = jQuery(window).scrollLeft() + selectionRect.left;
-        } else {
-          if (this.options.positionAbove) {
-            top_offset = -10 - toolbar_height_offset;
-          } else {
-            top_offset = 20;
-          }
-          top = position.top + top_offset;
-          left = position.left - this.toolbar.outerWidth() / 2 + 30;
-        }
+        top = position.top - this.getToolbarTopOffset();
+        left = position.left;
         this.toolbar.css('top', top);
         return this.toolbar.css('left', left);
       },
       _bindEvents: function() {
         var _this = this;
+        jQuery(window).resize(function(event) {
+          return _this._updatePosition(_this._getPosition(event));
+        });
         this.element.on('click', function(event, data) {
-          var position, scrollTop;
+          var $element, position, scrollTop;
           position = {};
-          scrollTop = $('window').scrollTop();
-          position.top = event.clientY + scrollTop;
-          position.left = event.clientX;
-          _this._updatePosition(position, null);
+          $element = jQuery(event.currentTarget);
+          scrollTop = jQuery(window).scrollTop();
+          position.top = $element.offset().top - _this.getToolbarTopOffset();
+          position.left = $element.offset().left;
+          _this._updatePosition(position);
           if (_this.toolbar.html() !== '') {
-            return _this.toolbar.show();
+            if (!_this.isActive) {
+              _this.toolbar.show();
+              _this.toolbar.addClass(_this.options.toolbarActiveClass);
+              return _this.isActive = true;
+            }
           }
-        });
-        this.element.on('halloselected', function(event, data) {
-          var position;
-          position = _this._getPosition(data.originalEvent, data.selection);
-          if (!position) {
-            return;
-          }
-          _this._updatePosition(position, data.selection);
-          if (_this.toolbar.html() !== '') {
-            return _this.toolbar.show();
-          }
-        });
-        this.element.on('hallounselected', function(event, data) {
-          return _this.toolbar.hide();
         });
         return this.element.on('hallodeactivated', function(event, data) {
-          return _this.toolbar.hide();
+          if (_this.isActive) {
+            _this.toolbar.removeClass(_this.options.toolbarActiveClass);
+            _this.toolbar.hide();
+            return _this.isActive = false;
+          }
         });
       }
     });
