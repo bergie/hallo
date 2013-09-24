@@ -17,16 +17,21 @@
       positionAbove: true
       toolbarActiveClass: 'hallotoolbar-active'
 
+    #
+    # Constructor
+    #
     _create: ->
       @toolbar = @options.toolbar
       jQuery(@options.parentElement).append @toolbar
 
       @_bindEvents()
 
+    #
+    # Returns an offset to be applied
+    # based on the toolbar's height
+    #
     getToolbarTopOffset: ->
-      # In case there is a selection, move toolbar on top of it and align with
-      # start of selection.
-      # Else move it on top of current position, center it and move
+      # Move it on top of current position, center it and move
       # it slightly to the right.
       toolbar_height_offset = this.toolbar.outerHeight() + 10
 
@@ -38,17 +43,22 @@
       # return the top_offset
       @top_offset
 
-    _getPosition: (event, selection) ->
+    #
+    # Get top and left positions
+    # based on the event
+    #
+    _getPosition: (event) ->
       return unless event
       eventType = event.type
       switch eventType
-        when 'keydown', 'keyup', 'keypress'
-          return @_getCaretPosition selection
         when 'click', 'mousedown', 'mouseup'
           return position =
             top: event.pageY
             left: event.pageX
 
+    #
+    # Sets the initial position of the toolbar
+    #
     setPosition: ->
       unless @options.parentElement is 'body'
         # Floating toolbar, move to body
@@ -59,6 +69,10 @@
       @toolbar.css 'top', @element.offset().top - 20
       @toolbar.css 'left', @element.offset().left
 
+    #
+    # Updates the top and left positions of the toolbar
+    # based on the click event
+    #
     _updatePosition: (position) ->
       return unless position
       return unless position.top and position.left
@@ -69,6 +83,9 @@
       @toolbar.css 'top', top
       @toolbar.css 'left', left
 
+    #
+    # Attach event listeners
+    #
     _bindEvents: ->
 
       jQuery(window).resize (event) =>
