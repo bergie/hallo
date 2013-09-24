@@ -1,4 +1,4 @@
-/* Hallo 1.0.2 - rich text editor for jQuery UI
+/* Hallo 1.0.4 - rich text editor for jQuery UI
 * by Henri Bergius and contributors. Available under the MIT license.
 * See http://hallojs.org for more information
 */(function() {
@@ -110,6 +110,7 @@
         this.element.attr("contentEditable", true);
         if (!jQuery.parseHTML(this.element.html())) {
           this.element.html(this.options.placeholder);
+          jQuery(this.element).addClass('inPlaceholderMode');
           this.element.css({
             'min-width': this.element.innerWidth(),
             'min-height': this.element.innerHeight()
@@ -181,12 +182,20 @@
         if (instance) {
           return instance;
         }
-        return jQuery(this.element).data(plugin);
+        instance = jQuery(this.element).data(plugin);
+        if (instance) {
+          return instance;
+        }
+        throw new Error("Plugin " + plugin + " not found");
       },
       getContents: function() {
-        var cleanup, plugin;
+        var cleanup, instance, plugin;
         for (plugin in this.options.plugins) {
-          cleanup = this.getPluginInstance(plugin).cleanupContentClone;
+          instance = this.getPluginInstance(plugin);
+          if (!instance) {
+            continue;
+          }
+          cleanup = instance.cleanupContentClone;
           if (!jQuery.isFunction(cleanup)) {
             continue;
           }
@@ -243,7 +252,7 @@
         return "" + (S4()) + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + (S4()) + (S4());
       },
       _prepareToolbar: function() {
-        var defaults, plugin, populate, toolbarOptions;
+        var defaults, instance, plugin, populate, toolbarOptions;
         this.toolbar = jQuery('<div class="hallotoolbar"></div>').hide();
         if (this.options.toolbarCssClass) {
           this.toolbar.addClass(this.options.toolbarCssClass);
@@ -257,7 +266,11 @@
         toolbarOptions = jQuery.extend({}, defaults, this.options.toolbarOptions);
         this.element[this.options.toolbar](toolbarOptions);
         for (plugin in this.options.plugins) {
-          populate = this.getPluginInstance(plugin).populateToolbar;
+          instance = this.getPluginInstance(plugin);
+          if (!instance) {
+            continue;
+          }
+          populate = instance.populateToolbar;
           if (!jQuery.isFunction(populate)) {
             continue;
           }
@@ -374,6 +387,7 @@
         if (this.getContents() === this.options.placeholder) {
           this.setContents('');
         }
+        jQuery(this.element).removeClass('inPlaceholderMode');
         jQuery(this.element).addClass('inEditMode');
         return this._trigger("activated", null, this);
       },
@@ -381,6 +395,7 @@
         jQuery(this.element).removeClass('inEditMode');
         this._trigger("deactivated", null, this);
         if (!this.getContents()) {
+          jQuery(this.element).addClass('inPlaceholderMode');
           return this.setContents(this.options.placeholder);
         }
       },
@@ -1136,6 +1151,670 @@
 
 (function() {
   (function(jQuery) {
+    return jQuery.widget('IKS.halloimagecurrent', {
+      options: {
+        imageWidget: null,
+        startPlace: '',
+        draggables: [],
+        maxWidth: 400,
+        maxHeight: 200
+      },
+      _create: function() {
+        this.element.html('<div>\
+        <div class="activeImageContainer">\
+          <div class="rotationWrapper">\
+            <div class="hintArrow"></div>\
+              <img src="" class="activeImage" />\
+            </div>\
+            <img src="" class="activeImage activeImageBg" />\
+          </div>\
+        </div>');
+        this.element.hide();
+        return this._prepareDnD();
+      },
+      _init: function() {
+        var editable, widget;
+        editable = jQuery(this.options.editable.element);
+        widget = this;
+        jQuery('img', editable).each(function(index, elem) {
+          return widget._initDraggable(elem, editable);
+        });
+        return jQuery('p', editable).each(function(index, elem) {
+          if (jQuery(elem).data('jquery_droppable_initialized')) {
+            return;
+          }
+          jQuery(elem).droppable({
+            tolerance: 'pointer',
+            drop: function(event, ui) {
+              return widget._handleDropEvent(event, ui);
+            },
+            over: function(event, ui) {
+              return widget._handleOverEvent(event, ui);
+            },
+            out: function(event, ui) {
+              return widget._handleLeaveEvent(event, ui);
+            }
+          });
+          return jQuery(elem).data('jquery_droppable_initialized', true);
+        });
+      },
+      _prepareDnD: function() {
+        var editable, overlayMiddleConfig, widget;
+        widget = this;
+        editable = jQuery(this.options.editable.element);
+        this.options.offset = editable.offset();
+        this.options.third = parseFloat(editable.width() / 3);
+        overlayMiddleConfig = {
+          width: this.options.third,
+          height: editable.height()
+        };
+        this.overlay = {
+          big: jQuery("<div/>").addClass("bigOverlay").css({
+            width: this.options.third * 2,
+            height: editable.height()
+          }),
+          left: jQuery("<div/>").addClass("smallOverlay smallOverlayLeft"),
+          right: jQuery("<div/>").addClass("smallOverlay smallOverlayRight")
+        };
+        this.overlay.left.css(overlayMiddleConfig);
+        this.overlay.right.css(overlayMiddleConfig).css("left", this.options.third * 2);
+        editable.on('halloactivated', function() {
+          return widget._enableDragging();
+        });
+        return editable.on('hallodeactivated', function() {
+          return widget._disableDragging();
+        });
+      },
+      setImage: function(image) {
+        if (!image) {
+          return;
+        }
+        this.element.show();
+        jQuery('.activeImage', this.element).attr('src', image.url);
+        if (image.label) {
+          jQuery('input', this.element).val(image.label);
+        }
+        return this._initImage(jQuery(this.options.editable.element));
+      },
+      _delayAction: function(functionToCall, delay) {
+        var timer;
+        timer = clearTimeout(timer);
+        if (!timer) {
+          return timer = setTimeout(functionToCall, delay);
+        }
+      },
+      _calcDropPosition: function(offset, event) {
+        var position, rightTreshold;
+        position = offset.left + this.options.third;
+        rightTreshold = offset.left + this.options.third * 2;
+        if (event.pageX >= position && event.pageX <= rightTreshold) {
+          return 'middle';
+        } else if (event.pageX < position) {
+          return 'left';
+        } else if (event.pageX > rightTreshold) {
+          return 'right';
+        }
+      },
+      _createInsertElement: function(image, tmp) {
+        var imageInsert, tmpImg;
+        imageInsert = jQuery('<img>');
+        tmpImg = new Image();
+        jQuery(tmpImg).on('load', function() {});
+        tmpImg.src = image.src;
+        imageInsert.attr({
+          src: tmpImg.src,
+          alt: !tmp ? jQuery(image).attr('alt') : void 0,
+          "class": tmp ? 'halloTmp' : 'imageInText'
+        });
+        imageInsert.show();
+        return imageInsert;
+      },
+      _createLineFeedbackElement: function() {
+        return jQuery('<div/>').addClass('halloTmpLine');
+      },
+      _removeFeedbackElements: function() {
+        this.overlay.big.remove();
+        this.overlay.left.remove();
+        this.overlay.right.remove();
+        return jQuery('.halloTmp, .halloTmpLine', this.options.editable.element).remove();
+      },
+      _removeCustomHelper: function() {
+        return jQuery('.customHelper').remove();
+      },
+      _showOverlay: function(position) {
+        var eHeight, editable;
+        editable = jQuery(this.options.editable.element);
+        eHeight = editable.height();
+        eHeight += parseFloat(editable.css('paddingTop'));
+        eHeight += parseFloat(editable.css('paddingBottom'));
+        this.overlay.big.css({
+          height: eHeight
+        });
+        this.overlay.left.css({
+          height: eHeight
+        });
+        this.overlay.right.css({
+          height: eHeight
+        });
+        switch (position) {
+          case 'left':
+            this.overlay.big.addClass("bigOverlayLeft");
+            this.overlay.big.removeClass("bigOverlayRight");
+            this.overlay.big.css({
+              left: this.options.third
+            });
+            this.overlay.big.show();
+            this.overlay.left.hide();
+            return this.overlay.right.hide();
+          case 'middle':
+            this.overlay.big.removeClass("bigOverlayLeft bigOverlayRight");
+            this.overlay.big.hide();
+            this.overlay.left.show();
+            return this.overlay.right.show();
+          case 'right':
+            this.overlay.big.addClass("bigOverlayRight");
+            this.overlay.big.removeClass("bigOverlayLeft");
+            this.overlay.big.css({
+              left: 0
+            });
+            this.overlay.big.show();
+            this.overlay.left.hide();
+            return this.overlay.right.hide();
+        }
+      },
+      _checkOrigin: function(event) {
+        if (jQuery(event.target).parents("[contenteditable]").length !== 0) {
+          return true;
+        }
+        return false;
+      },
+      _createFeedback: function(image, position) {
+        var el;
+        if (position === 'middle') {
+          return this._createLineFeedbackElement();
+        }
+        el = this._createInsertElement(image, true);
+        return el.addClass("inlineImage-" + position);
+      },
+      _handleOverEvent: function(event, ui) {
+        var editable, postPone, widget;
+        widget = this;
+        editable = jQuery(this.options.editable);
+        postPone = function() {
+          var position, target;
+          window.waitWithTrash = clearTimeout(window.waitWithTrash);
+          position = widget._calcDropPosition(widget.options.offset, event);
+          jQuery('.trashcan', ui.helper).remove();
+          editable[0].element.append(widget.overlay.big);
+          editable[0].element.append(widget.overlay.left);
+          editable[0].element.append(widget.overlay.right);
+          widget._removeFeedbackElements();
+          target = jQuery(event.target);
+          target.prepend(widget._createFeedback(ui.draggable[0], position));
+          if (position === 'middle') {
+            target.prepend(widget._createFeedback(ui.draggable[0], 'right'));
+            jQuery('.halloTmp', event.target).hide();
+          } else {
+            target.prepend(widget._createFeedback(ui.draggable[0], 'middle'));
+            jQuery('.halloTmpLine', event.target).hide();
+          }
+          return widget._showOverlay(position);
+        };
+        return setTimeout(postPone, 5);
+      },
+      _handleDragEvent: function(event, ui) {
+        var position, tmpFeedbackLR, tmpFeedbackMiddle;
+        position = this._calcDropPosition(this.options.offset, event);
+        if (position === this._lastPositionDrag) {
+          return;
+        }
+        this._lastPositionDrag = position;
+        tmpFeedbackLR = jQuery('.halloTmp', this.options.editable.element);
+        tmpFeedbackMiddle = jQuery('.halloTmpLine', this.options.editable.element);
+        if (position === 'middle') {
+          tmpFeedbackMiddle.show();
+          tmpFeedbackLR.hide();
+        } else {
+          tmpFeedbackMiddle.hide();
+          tmpFeedbackLR.removeClass('inlineImage-left inlineImage-right');
+          tmpFeedbackLR.addClass("inlineImage-" + position);
+          tmpFeedbackLR.show();
+        }
+        return this._showOverlay(position);
+      },
+      _handleLeaveEvent: function(event, ui) {
+        var func;
+        func = function() {
+          if (!jQuery('div.trashcan', ui.helper).length) {
+            jQuery(ui.helper).append(jQuery('<div class="trashcan"></div>'));
+            return jQuery('.bigOverlay, .smallOverlay').remove();
+          }
+        };
+        window.waitWithTrash = setTimeout(func, 200);
+        return this._removeFeedbackElements();
+      },
+      _handleStartEvent: function(event, ui) {
+        var internalDrop;
+        internalDrop = this._checkOrigin(event);
+        if (internalDrop) {
+          jQuery(event.target).remove();
+        }
+        jQuery(document).trigger('startPreventSave');
+        return this.options.startPlace = jQuery(event.target);
+      },
+      _handleStopEvent: function(event, ui) {
+        var internalDrop;
+        internalDrop = this._checkOrigin(event);
+        if (internalDrop) {
+          jQuery(event.target).remove();
+        } else {
+          jQuery(this.options.editable.element).trigger('change');
+        }
+        this.overlay.big.hide();
+        this.overlay.left.hide();
+        this.overlay.right.hide();
+        return jQuery(document).trigger('stopPreventSave');
+      },
+      _handleDropEvent: function(event, ui) {
+        var classes, editable, imageInsert, internalDrop, left, position;
+        editable = jQuery(this.options.editable.element);
+        internalDrop = this._checkOrigin(event);
+        position = this._calcDropPosition(this.options.offset, event);
+        this._removeFeedbackElements();
+        this._removeCustomHelper();
+        imageInsert = this._createInsertElement(ui.draggable[0], false);
+        classes = 'inlineImage-middle inlineImage-left inlineImage-right';
+        if (position === 'middle') {
+          imageInsert.show();
+          imageInsert.removeClass(classes);
+          left = editable.width();
+          left += parseFloat(editable.css('paddingLeft'));
+          left += parseFloat(editable.css('paddingRight'));
+          left -= imageInsert.attr('width');
+          imageInsert.addClass("inlineImage-" + position).css({
+            position: 'relative',
+            left: left / 2
+          });
+          imageInsert.insertBefore(jQuery(event.target));
+        } else {
+          imageInsert.removeClass(classes);
+          imageInsert.addClass("inlineImage-" + position);
+          imageInsert.css('display', 'block');
+          jQuery(event.target).prepend(imageInsert);
+        }
+        this.overlay.big.hide();
+        this.overlay.left.hide();
+        this.overlay.right.hide();
+        editable.trigger('change');
+        return this._initImage(editable);
+      },
+      _createHelper: function(event) {
+        return jQuery('<div>').css({
+          backgroundImage: "url(" + (jQuery(event.currentTarget).attr('src')) + ")"
+        }).addClass('customHelper').appendTo('body');
+      },
+      _initDraggable: function(elem, editable) {
+        var widget;
+        widget = this;
+        if (!elem.jquery_draggable_initialized) {
+          elem.jquery_draggable_initialized = true;
+          jQuery(elem).draggable({
+            cursor: 'move',
+            helper: function(event) {
+              return widget._createHelper(event);
+            },
+            drag: function(event, ui) {
+              return widget._handleDragEvent(event, ui);
+            },
+            start: function(event, ui) {
+              return widget._handleStartEvent(event, ui);
+            },
+            stop: function(event, ui) {
+              return widget._handleStopEvent(event, ui);
+            },
+            disabled: !editable.hasClass('inEditMode'),
+            cursorAt: {
+              top: 50,
+              left: 50
+            }
+          });
+        }
+        return widget.options.draggables.push(elem);
+      },
+      _initImage: function(editable) {
+        var widget;
+        widget = this;
+        return jQuery('.rotationWrapper img', this.options.dialog).each(function(index, elem) {
+          return widget._initDraggable(elem, editable);
+        });
+      },
+      _enableDragging: function() {
+        return jQuery.each(this.options.draggables, function(index, d) {
+          return jQuery(d).draggable('option', 'disabled', false);
+        });
+      },
+      _disableDragging: function() {
+        return jQuery.each(this.options.draggables, function(index, d) {
+          return jQuery(d).draggable('option', 'disabled', true);
+        });
+      }
+    });
+  })(jQuery);
+
+}).call(this);
+
+(function() {
+  (function(jQuery) {
+    return jQuery.widget('IKS.halloimagesearch', {
+      options: {
+        imageWidget: null,
+        searchCallback: null,
+        searchUrl: null,
+        limit: 5
+      },
+      _create: function() {
+        return this.element.html('<div>\
+        <form method="get">\
+          <input type="text" class="searchInput" placeholder="Search" />\
+          <input type="submit" class="btn searchButton" value="OK" />\
+        </form>\
+        <div class="searchResults imageThumbnailContainer">\
+          <div class="activitySpinner">Loading images...</div>\
+          <ul></ul>\
+        </div>\
+      </div>');
+      },
+      _init: function() {
+        var _this = this;
+        if (this.options.searchUrl && !this.options.searchCallback) {
+          this.options.searchCallback = this._ajaxSearch;
+        }
+        jQuery('.activitySpinner', this.element).hide();
+        return jQuery('form', this.element).submit(function(event) {
+          var query;
+          event.preventDefault();
+          jQuery('.activitySpinner', _this.element).show();
+          query = jQuery('.searchInput', _this.element.element).val();
+          return _this.options.searchCallback(query, _this.options.limit, 0, function(results) {
+            return _this._showResults(results);
+          });
+        });
+      },
+      _showResult: function(image) {
+        var html,
+          _this = this;
+        if (!image.label) {
+          image.label = image.alt;
+        }
+        html = jQuery("<li>        <img src=\"" + image.url + "\" class=\"imageThumbnail\"          title=\"" + image.label + "\"></li>");
+        html.on('click', function() {
+          return _this.options.imageWidget.setCurrent(image);
+        });
+        jQuery('img', html).on('mousedown', function(event) {
+          event.preventDefault();
+          return _this.options.imageWidget.setCurrent(image);
+        });
+        return jQuery('.imageThumbnailContainer ul', this.element).append(html);
+      },
+      _showNextPrev: function(results) {
+        var container,
+          _this = this;
+        container = jQuery('imageThumbnailContainer ul', this.element);
+        container.prepend(jQuery('<div class="pager-prev" style="display:none" />'));
+        container.append(jQuery('<div class="pager-next" style="display:none" />'));
+        if (results.offset > 0) {
+          jQuery('.pager-prev', container).show();
+        }
+        if (results.offset < results.total) {
+          jQuery('.pager-next', container).show();
+        }
+        jQuery('.pager-prev', container).click(function(event) {
+          var offset;
+          offset = results.offset - _this.options.limit;
+          return _this.options.searchCallback(query, _this.options.limit, offset, function(results) {
+            return _this._showResults(results);
+          });
+        });
+        return jQuery('.pager-next', container).click(function(event) {
+          var offset;
+          offset = results.offset + _this.options.limit;
+          return _this.options.searchCallback(query, _this.options.limit, offset, function(results) {
+            return _this._showResults(results);
+          });
+        });
+      },
+      _showResults: function(results) {
+        var image, _i, _len, _ref;
+        jQuery('.activitySpinner', this.element).hide();
+        jQuery('.imageThumbnailContainer ul', this.element).empty();
+        jQuery('.imageThumbnailContainer ul', this.element).show();
+        _ref = results.assets;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          image = _ref[_i];
+          this._showResult(image);
+        }
+        this.options.imageWidget.setCurrent(results.assets.shift());
+        return this._showNextPrev(results);
+      },
+      _ajaxSearch: function(query, limit, offset, success) {
+        var searchUrl;
+        searchUrl = this.searchUrl + '?' + jQuery.param({
+          q: query,
+          limit: limit,
+          offset: offset
+        });
+        return jQuery.getJSON(searchUrl, success);
+      }
+    });
+  })(jQuery);
+
+}).call(this);
+
+(function() {
+  (function(jQuery) {
+    return jQuery.widget('IKS.halloimagesuggestions', {
+      loaded: false,
+      options: {
+        entity: null,
+        vie: null,
+        dbPediaUrl: null,
+        getSuggestions: null,
+        thumbnailUri: '<http://dbpedia.org/ontology/thumbnail>'
+      },
+      _create: function() {
+        return this.element.html('\
+      <div id="' + this.options.uuid + '-tab-suggestions">\
+        <div class="imageThumbnailContainer">\
+          <div class="activitySpinner">Loading images...</div>\
+          <ul></ul>\
+        </div>\
+      </div>');
+      },
+      _init: function() {
+        return jQuery('.activitySpinner', this.element).hide();
+      },
+      _normalizeRelated: function(related) {
+        if (_.isString(related)) {
+          return related;
+        }
+        if (_.isArray(related)) {
+          return related.join(',');
+        }
+        return related.pluck('@subject').join(',');
+      },
+      _prepareVIE: function() {
+        if (!this.options.vie) {
+          this.options.vie = new VIE;
+        }
+        if (this.options.vie.services.dbpedia) {
+          return;
+        }
+        if (!this.options.dbPediaUrl) {
+          return;
+        }
+        return this.options.vie.use(new vie.DBPediaService({
+          url: this.options.dbPediaUrl,
+          proxyDisabled: true
+        }));
+      },
+      _getSuggestions: function() {
+        var limit, normalizedTags, tags;
+        if (this.loaded) {
+          return;
+        }
+        if (!this.options.entity) {
+          return;
+        }
+        jQuery('.activitySpinner', this.element).show();
+        tags = this.options.entity.get('skos:related');
+        if (tags.length === 0) {
+          jQuery("#activitySpinner").html('No images found.');
+          return;
+        }
+        jQuery('.imageThumbnailContainer ul', this.element).empty();
+        normalizedTags = this._normalizeRelated(tags);
+        limit = this.options.limit;
+        if (this.options.getSuggestions) {
+          this.options.getSuggestions(normalizedTags, limit, 0, this._showSuggestions);
+        }
+        this._prepareVIE();
+        if (this.options.vie.services.dbpedia) {
+          this._getSuggestionsDbPedia(tags);
+        }
+        return this.loaded = true;
+      },
+      _getSuggestionsDbPedia: function(tags) {
+        var thumbId, widget;
+        widget = this;
+        thumbId = 1;
+        return _.each(tags, function(tag) {
+          return vie.load({
+            entity: tag
+          }).using('dbpedia').execute().done(function(entities) {
+            jQuery('.activitySpinner', this.element).hide();
+            return _.each(entities, function(entity) {
+              var img, thumbnail;
+              thumbnail = entity.attributes[widget.options.thumbnailUri];
+              if (!thumbnail) {
+                return;
+              }
+              if (_.isObject(thumbnail)) {
+                img = thumbnail[0].value;
+              }
+              if (_.isString(thumbnail)) {
+                img = widget.options.entity.fromReference(thumbnail);
+              }
+              return widget._showSuggestion({
+                url: img,
+                label: tag
+              });
+            });
+          });
+        });
+      },
+      _showSuggestion: function(image) {
+        var html,
+          _this = this;
+        html = jQuery("<li>        <img src=\"" + image.url + "\" class=\"imageThumbnail\"          title=\"" + image.label + "\">        </li>");
+        html.on('click', function() {
+          return _this.options.imageWidget.setCurrent(image);
+        });
+        return jQuery('.imageThumbnailContainer ul', this.element).append(html);
+      },
+      _showSuggestions: function(suggestions) {
+        var _this = this;
+        jQuery('.activitySpinner', this.element).hide();
+        return _.each(suggestions, function(image) {
+          return _this._showSuggestion(image);
+        });
+      }
+    });
+  })(jQuery);
+
+}).call(this);
+
+(function() {
+  (function(jQuery) {
+    return jQuery.widget('IKS.halloimageupload', {
+      options: {
+        uploadCallback: null,
+        uploadUrl: null,
+        imageWidget: null,
+        entity: null
+      },
+      _create: function() {
+        return this.element.html('\
+        <form class="upload">\
+        <input type="file" class="file" name="userfile" accept="image/*" />\
+        <input type="hidden" name="tags" value="" />\
+        <input type="text" class="caption" name="caption" placeholder="Title" />\
+        <button class="uploadSubmit">Upload</button>\
+        </form>\
+      ');
+      },
+      _init: function() {
+        var widget;
+        widget = this;
+        if (widget.options.uploadUrl && !widget.options.uploadCallback) {
+          widget.options.uploadCallback = widget._iframeUpload;
+        }
+        return jQuery('.uploadSubmit', this.element).on('click', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          return widget.options.uploadCallback({
+            widget: widget,
+            success: function(url) {
+              return widget.options.imageWidget.setCurrent({
+                url: url,
+                label: ''
+              });
+            }
+          });
+        });
+      },
+      _prepareIframe: function(widget) {
+        var iframe, iframeName;
+        iframeName = "" + widget.widgetName + "_postframe_" + widget.options.uuid;
+        iframeName = iframeName.replace(/-/g, '_');
+        iframe = jQuery("#" + iframeName);
+        if (iframe.length) {
+          return iframe;
+        }
+        iframe = jQuery("<iframe name=\"" + iframeName + "\" id=\"" + iframeName + "\"        class=\"hidden\" style=\"display:none\" />");
+        this.element.append(iframe);
+        iframe.get(0).name = iframeName;
+        return iframe;
+      },
+      _iframeUpload: function(data) {
+        var iframe, uploadForm, uploadUrl, widget;
+        widget = data.widget;
+        iframe = widget._prepareIframe(widget);
+        uploadForm = jQuery('form.upload', widget.element);
+        if (typeof widget.options.uploadUrl === 'function') {
+          uploadUrl = widget.options.uploadUrl(widget.options.entity);
+        } else {
+          uploadUrl = widget.options.uploadUrl;
+        }
+        iframe.on('load', function() {
+          var imageUrl;
+          imageUrl = iframe.get(0).contentWindow.location.href;
+          widget.element.hide();
+          return data.success(imageUrl);
+        });
+        uploadForm.attr('action', uploadUrl);
+        uploadForm.attr('method', 'post');
+        uploadForm.attr('target', iframe.get(0).name);
+        uploadForm.attr('enctype', 'multipart/form-data');
+        uploadForm.attr('encoding', 'multipart/form-data');
+        return uploadForm.submit();
+      }
+    });
+  })(jQuery);
+
+}).call(this);
+
+(function() {
+  (function(jQuery) {
     return jQuery.widget("IKS.hallo-image-insert-edit", {
       options: {
         editable: null,
@@ -1769,7 +2448,7 @@
 
 (function() {
   (function(jQuery) {
-    return jQuery.widget("Liip.hallooverlay", {
+    return jQuery.widget("IKS.hallooverlay", {
       options: {
         editable: null,
         toolbar: null,
@@ -1902,7 +2581,7 @@
 
 (function() {
   (function(jQuery) {
-    return jQuery.widget("Liip.hallotoolbarlinebreak", {
+    return jQuery.widget("IKS.hallotoolbarlinebreak", {
       options: {
         editable: null,
         uuid: "",

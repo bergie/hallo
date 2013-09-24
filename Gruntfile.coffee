@@ -8,6 +8,10 @@ module.exports = ->
   @initConfig
     pkg: @file.readJSON 'package.json'
 
+    # Install dependencies
+    bower:
+      install: {}
+
     # CoffeeScript complication
     coffee:
       core:
@@ -34,6 +38,12 @@ module.exports = ->
         dest: 'tmp/plugins'
         cwd: 'src/plugins'
         ext: '.js'
+      plugins_image:
+        expand: true
+        src: ['**.coffee']
+        dest: 'tmp/plugins/image'
+        cwd: 'src/plugins/image'
+        ext: '.js'
 
     # Build setup: concatenate source files
     concat:
@@ -44,8 +54,9 @@ module.exports = ->
         src: [
           'tmp/*.js'
           'tmp/**/*.js'
+          'tmp/**/**/*.js'
         ]
-        dest: 'examples/hallo.js'
+        dest: 'dist/hallo.js'
 
     # Remove tmp directory once builds are complete
     clean: ['tmp']
@@ -57,7 +68,7 @@ module.exports = ->
         report: 'min'
       full:
         files:
-          'examples/hallo-min.js': ['examples/hallo.js']
+          'dist/hallo-min.js': ['dist/hallo.js']
 
     # Coding standards verification
     coffeelint:
@@ -70,6 +81,33 @@ module.exports = ->
     qunit:
       all: ['test/*.html']
 
+    # Cross-browser testing
+    connect:
+      server:
+        options:
+          base: ''
+          port: 9999
+
+    'saucelabs-qunit':
+      all:
+        options:
+          urls: ['http://127.0.0.1:9999/test/index.html']
+          browsers: [
+              browserName: 'chrome'
+            ,
+              browserName: 'safari'
+              platform: 'OS X 10.8'
+              version: '6'
+          ]
+          build: process.env.TRAVIS_JOB_ID
+          testname: 'hallo.js cross-browser tests'
+          tunnelTimeout: 5
+          concurrency: 3
+          detailedError: true
+
+  # Dependency installation
+  @loadNpmTasks 'grunt-bower-task'
+
   # Build dependencies
   @loadNpmTasks 'grunt-contrib-coffee'
   @loadNpmTasks 'grunt-contrib-concat'
@@ -81,7 +119,11 @@ module.exports = ->
   @loadNpmTasks 'grunt-contrib-jshint'
   @loadNpmTasks 'grunt-contrib-qunit'
 
+  # Cross-browser testing
+  @loadNpmTasks 'grunt-contrib-connect'
+  @loadNpmTasks 'grunt-saucelabs'
+
   # Local tasks
   @registerTask 'build', ['coffee', 'concat', 'clean', 'uglify']
   @registerTask 'test', ['coffeelint', 'build', 'qunit']
-
+  @registerTask 'crossbrowser', ['test', 'connect', 'saucelabs-qunit']

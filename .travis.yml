@@ -1,10 +1,15 @@
 language: node_js
 node_js:
-  - 0.10
-
+- "0.10"
+before_script:
+- npm install -g grunt-cli
+- grunt bower
 script:
-  - npm test
-
+- grunt crossbrowser
 notifications:
   irc:
-    - "irc.freenode.org#iks"
+  - irc.freenode.org#iks
+env:
+  global:
+  - secure: a7gNmuvehYer8OKmSYxF93A0kNqsgE7YWh4ml0Kme/ywZqal6LnkM8hX6ldmO3Wbzh703IiS1imY8MbQRsrA5xSl/HwaXiYOzan7RVHbSujcc4TxgYE4tKgdhM9ozWtX4XomJJ2E9kRTIShwEJkmC8sOh1uQ2IxxP3/MhxRtDNk=
+  - secure: Xqhsriuk54lMsiWiN8Axz3z0fVNv6pyK2LhNptDbzDXkgpdp1O8Sqk4LaqSLpOwO3gM0X6PUnqF9hDbIbp7t4JB636NYPigMCJAPt46CBw4N3B3Apysn35ENI7/sdVK8iKuqYRexUpRIP2Ylok2DmFdnXVywEfS01fXqhv+CRcI=

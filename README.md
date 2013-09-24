@@ -3,6 +3,8 @@ Hallo - contentEditable for jQuery UI [![Build Status](https://secure.travis-ci.
 
 ![Hallo Editor logo](https://raw.github.com/bergie/hallo/master/design/logo-200x59.png)
 
+[![Cross-browser testing status](https://saucelabs.com/browser-matrix/hallo-js.svg)](https://saucelabs.com/u/hallo-js)
+
 Hallo is a very simple in-place rich text editor for web pages. It uses jQuery UI and the [HTML5 contentEditable functionality](https://developer.mozilla.org/en/rich-text_editing_in_mozilla) to edit web content.
 
 The widget has been written as a simple and liberally licensed editor. It doesn't aim to replace popular editors like [Aloha](http://aloha-editor.org), but instead to provide a simpler and more reusable option.
@@ -89,7 +91,7 @@ Hallo is written in [CoffeeScript](http://jashkenas.github.com/coffee-script/), 
 
     $ npm install
 
-To generate the JavaScript code to `examples/hallo.js` from Hallo sources, run [Grunt](http://gruntjs.com):
+To generate the JavaScript code to `dist/hallo.js` from Hallo sources, run [Grunt](http://gruntjs.com):
 
     $ grunt build
 

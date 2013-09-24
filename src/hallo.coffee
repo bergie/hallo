@@ -177,6 +177,7 @@ http://hallojs.org
 
       unless jQuery.parseHTML(@element.html())
         @element.html this.options.placeholder
+        jQuery(@element).addClass 'inPlaceholderMode'
         @element.css
           'min-width': @element.innerWidth()
           'min-height': @element.innerHeight()
@@ -241,12 +242,16 @@ http://hallojs.org
       instance = jQuery(@element).data "IKS-#{plugin}"
       return instance if instance
       # Older jQuery UI
-      return jQuery(@element).data plugin
+      instance = jQuery(@element).data plugin
+      return instance if instance
+      throw new Error "Plugin #{plugin} not found"
 
     # Get contents of an editable as HTML string
     getContents: ->
       for plugin of @options.plugins
-        cleanup = @getPluginInstance(plugin).cleanupContentClone
+        instance = @getPluginInstance(plugin)
+        continue unless instance
+        cleanup = instance.cleanupContentClone
         continue unless jQuery.isFunction cleanup
         jQuery(@element)[plugin] 'cleanupContentClone', @element
       @element.html()
@@ -310,7 +315,9 @@ http://hallojs.org
       @element[@options.toolbar] toolbarOptions
 
       for plugin of @options.plugins
-        populate = @getPluginInstance(plugin).populateToolbar
+        instance = @getPluginInstance(plugin)
+        continue unless instance
+        populate = instance.populateToolbar
         continue unless jQuery.isFunction populate
         @element[plugin] 'populateToolbar', @toolbar
 
@@ -400,6 +407,7 @@ http://hallojs.org
       if this.getContents() is this.options.placeholder
         this.setContents ''
 
+      jQuery(@element).removeClass 'inPlaceholderMode'
       jQuery(@element).addClass 'inEditMode'
       @_trigger "activated", null, @
 
@@ -408,6 +416,7 @@ http://hallojs.org
       @_trigger "deactivated", null, @
 
       unless @getContents()
+        jQuery(@element).addClass 'inPlaceholderMode'
         @setContents @options.placeholder
 
     _activated: (event) ->

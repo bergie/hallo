@@ -19,7 +19,7 @@
 # Make sure to add this option _after_ all the plugins that output
 # toolbar icons when passing in the hallo options!
 ((jQuery) ->
-  jQuery.widget "Liip.hallotoolbarlinebreak",
+  jQuery.widget "IKS.hallotoolbarlinebreak",
     options:
       editable: null
       uuid: ""
