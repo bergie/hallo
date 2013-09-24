@@ -2715,6 +2715,17 @@
       },
       _bindEvents: function() {
         var _this = this;
+        this.element.on('click', function(event, data) {
+          var position, scrollTop;
+          position = {};
+          scrollTop = $('window').scrollTop();
+          position.top = event.clientY + scrollTop;
+          position.left = event.clientX;
+          _this._updatePosition(position, null);
+          if (_this.toolbar.html() !== '') {
+            return _this.toolbar.show();
+          }
+        });
         this.element.on('halloselected', function(event, data) {
           var position;
           position = _this._getPosition(data.originalEvent, data.selection);
@@ -2864,17 +2875,13 @@
         }
         return this.top_offset;
       },
-      _getPosition: function(event, selection) {
+      _getPosition: function(event) {
         var eventType, position;
         if (!event) {
           return;
         }
         eventType = event.type;
         switch (eventType) {
-          case 'keydown':
-          case 'keyup':
-          case 'keypress':
-            return this._getCaretPosition(selection);
           case 'click':
           case 'mousedown':
           case 'mouseup':
