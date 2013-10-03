@@ -48,13 +48,12 @@
     # based on the event
     #
     _getPosition: (event) ->
-      return unless event
-      eventType = event.type
-      switch eventType
-        when 'click', 'mousedown', 'mouseup'
-          return position =
-            top: event.pageY
-            left: event.pageX
+      $element = jQuery(event.currentTarget)
+      scrollTop = jQuery(window).scrollTop()
+
+      return position =
+          top: $element.offset().top - @getToolbarTopOffset()
+          left: $element.offset().left
 
     #
     # Sets the initial position of the toolbar
@@ -64,10 +63,6 @@
         # Floating toolbar, move to body
         @options.parentElement = 'body'
         jQuery(@options.parentElement).append @toolbar
-
-      @toolbar.css 'position', 'absolute'
-      @toolbar.css 'top', @element.offset().top - 20
-      @toolbar.css 'left', @element.offset().left
 
     #
     # Updates the top and left positions of the toolbar
@@ -80,6 +75,7 @@
       top = position.top - @getToolbarTopOffset()
       left = position.left
 
+      @toolbar.css 'position', 'absolute'
       @toolbar.css 'top', top
       @toolbar.css 'left', left
 
@@ -88,17 +84,9 @@
     #
     _bindEvents: ->
 
-      jQuery(window).resize (event) =>
-        @_updatePosition @_getPosition event
-
       # Show the toolbar when clicking the element
       @element.on 'click', (event, data) =>
-        position = {}
-        $element = jQuery(event.currentTarget)
-        scrollTop = jQuery(window).scrollTop()
-        position.top = $element.offset().top - @getToolbarTopOffset()
-        position.left = $element.offset().left
-        @_updatePosition position
+        @_updatePosition @_getPosition event
         if @toolbar.html() != ''
           unless @isActive
             @toolbar.show()
@@ -110,4 +98,6 @@
           @toolbar.removeClass @options.toolbarActiveClass
           @toolbar.hide()
           @isActive = false
+
+
 ) jQuery

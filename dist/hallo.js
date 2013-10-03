@@ -2876,29 +2876,19 @@
         return this.top_offset;
       },
       _getPosition: function(event) {
-        var eventType, position;
-        if (!event) {
-          return;
-        }
-        eventType = event.type;
-        switch (eventType) {
-          case 'click':
-          case 'mousedown':
-          case 'mouseup':
-            return position = {
-              top: event.pageY,
-              left: event.pageX
-            };
-        }
+        var $element, position, scrollTop;
+        $element = jQuery(event.currentTarget);
+        scrollTop = jQuery(window).scrollTop();
+        return position = {
+          top: $element.offset().top - this.getToolbarTopOffset(),
+          left: $element.offset().left
+        };
       },
       setPosition: function() {
         if (this.options.parentElement !== 'body') {
           this.options.parentElement = 'body';
-          jQuery(this.options.parentElement).append(this.toolbar);
+          return jQuery(this.options.parentElement).append(this.toolbar);
         }
-        this.toolbar.css('position', 'absolute');
-        this.toolbar.css('top', this.element.offset().top - 20);
-        return this.toolbar.css('left', this.element.offset().left);
       },
       _updatePosition: function(position) {
         var left, top;
@@ -2910,22 +2900,14 @@
         }
         top = position.top - this.getToolbarTopOffset();
         left = position.left;
+        this.toolbar.css('position', 'absolute');
         this.toolbar.css('top', top);
         return this.toolbar.css('left', left);
       },
       _bindEvents: function() {
         var _this = this;
-        jQuery(window).resize(function(event) {
-          return _this._updatePosition(_this._getPosition(event));
-        });
         this.element.on('click', function(event, data) {
-          var $element, position, scrollTop;
-          position = {};
-          $element = jQuery(event.currentTarget);
-          scrollTop = jQuery(window).scrollTop();
-          position.top = $element.offset().top - _this.getToolbarTopOffset();
-          position.left = $element.offset().left;
-          _this._updatePosition(position);
+          _this._updatePosition(_this._getPosition(event));
           if (_this.toolbar.html() !== '') {
             if (!_this.isActive) {
               _this.toolbar.show();
