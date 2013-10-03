@@ -80,6 +80,24 @@
       @toolbar.css 'left', left
 
     #
+    # Displays the toolbar
+    #
+    show: () ->
+      unless @isActive
+        @toolbar.show()
+        @toolbar.addClass @options.toolbarActiveClass
+        @isActive = true
+
+    #
+    # Hides the toolbar
+    #
+    hide: () ->
+      if @isActive
+        @toolbar.removeClass @options.toolbarActiveClass
+        @toolbar.hide()
+        @isActive = false
+
+    #
     # Attach event listeners
     #
     _bindEvents: ->
@@ -88,16 +106,11 @@
       @element.on 'click', (event, data) =>
         @_updatePosition @_getPosition event
         if @toolbar.html() != ''
-          unless @isActive
-            @toolbar.show()
-            @toolbar.addClass @options.toolbarActiveClass
-            @isActive = true
+          @show()
 
+      # Hide the toolbar when clicking outside
       @element.on 'hallodeactivated', (event, data) =>
-        if @isActive
-          @toolbar.removeClass @options.toolbarActiveClass
-          @toolbar.hide()
-          @isActive = false
+        @hide()
 
 
 ) jQuery

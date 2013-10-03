@@ -2904,24 +2904,30 @@
         this.toolbar.css('top', top);
         return this.toolbar.css('left', left);
       },
+      show: function() {
+        if (!this.isActive) {
+          this.toolbar.show();
+          this.toolbar.addClass(this.options.toolbarActiveClass);
+          return this.isActive = true;
+        }
+      },
+      hide: function() {
+        if (this.isActive) {
+          this.toolbar.removeClass(this.options.toolbarActiveClass);
+          this.toolbar.hide();
+          return this.isActive = false;
+        }
+      },
       _bindEvents: function() {
         var _this = this;
         this.element.on('click', function(event, data) {
           _this._updatePosition(_this._getPosition(event));
           if (_this.toolbar.html() !== '') {
-            if (!_this.isActive) {
-              _this.toolbar.show();
-              _this.toolbar.addClass(_this.options.toolbarActiveClass);
-              return _this.isActive = true;
-            }
+            return _this.show();
           }
         });
         return this.element.on('hallodeactivated', function(event, data) {
-          if (_this.isActive) {
-            _this.toolbar.removeClass(_this.options.toolbarActiveClass);
-            _this.toolbar.hide();
-            return _this.isActive = false;
-          }
+          return _this.hide();
         });
       }
     });
