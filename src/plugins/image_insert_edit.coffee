@@ -72,7 +72,7 @@
       $buttonHolder = jQuery '<span>'
       $buttonHolder.hallobutton
         label: @texts.title_insert
-        icon: 'icon-picture'
+        icon: 'fa-picture-o'
         editable: @options.editable
         command: null
         queryState: false
