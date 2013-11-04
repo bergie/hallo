@@ -14,7 +14,7 @@
     populateToolbar: ->
 
     buildIndicator: ->
-      editButton = jQuery '<div><i class="icon-edit"></i> Edit</div>'
+      editButton = jQuery '<div><i class="fa fa-edit"></i> Edit</div>'
       editButton.addClass @options.className
       do editButton.hide
 
