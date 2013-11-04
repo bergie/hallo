@@ -41,7 +41,7 @@
       buttonHolder = jQuery "<span class=\"#{@widgetName}\"></span>"
       @button = buttonHolder.hallobutton
         label: 'Annotate'
-        icon: 'icon-tags'
+        icon: 'fa-tags'
         editable: @options.editable
         command: null
         uuid: @options.uuid
