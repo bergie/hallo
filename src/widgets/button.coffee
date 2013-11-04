@@ -19,8 +19,8 @@
     _create: ->
       # By default the icon is icon-command, but this doesn't
       # always match with
-      # <http://fortawesome.github.com/Font-Awesome/#base-icons>
-      @options.icon ?= "icon-#{@options.label.toLowerCase()}"
+      # <http://fortawesome.github.io/Font-Awesome/icons/>
+      @options.icon ?= "fa-#{@options.label.toLowerCase()}"
 
       id = "#{@options.uuid}-#{@options.label}"
       opts = @options
@@ -109,7 +109,7 @@
       jQuery "<button id=\"#{id}\"
         class=\"#{classes.join(' ')}\" title=\"#{label}\">
           <span class=\"ui-button-text\">
-            <i class=\"#{icon}\"></i>
+            <i class=\"fa #{icon}\"></i>
           </span>
         </button>"
 
