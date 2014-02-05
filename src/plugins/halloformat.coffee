@@ -11,6 +11,8 @@
         italic: true
         strikeThrough: false
         underline: false
+        superscript: false
+        subscript: false
       buttonCssClass: null
 
     populateToolbar: (toolbar) ->
