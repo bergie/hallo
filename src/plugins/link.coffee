@@ -77,7 +77,7 @@
         buttonHolder = jQuery '<span></span>'
         buttonHolder.hallobutton
           label: 'Link'
-          icon: 'icon-link'
+          icon: 'fa fa-link'
           editable: @options.editable
           command: null
           queryState: false

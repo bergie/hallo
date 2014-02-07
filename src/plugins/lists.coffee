@@ -21,7 +21,7 @@
           editable: @options.editable
           label: label
           command: "insert#{type}List"
-          icon: "icon-list-#{label.toLowerCase()}"
+          icon: "fa fa-list-#{label.toLowerCase()}"
           cssClass: @options.buttonCssClass
         buttonset.append buttonElement
 

@@ -17,10 +17,10 @@
       cssClass: null
 
     _create: ->
-      # By default the icon is icon-command, but this doesn't
+      # By default the icon is fa fa-command, but this doesn't
       # always match with
       # <http://fortawesome.github.com/Font-Awesome/#base-icons>
-      @options.icon ?= "icon-#{@options.label.toLowerCase()}"
+      @options.icon ?= "fa fa-#{@options.label.toLowerCase()}"
 
       id = "#{@options.uuid}-#{@options.label}"
       opts = @options
