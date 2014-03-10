@@ -23,7 +23,7 @@
           command: "insert#{type}List"
           icon: "fa fa-list-#{label.toLowerCase()}"
           cssClass: @options.buttonCssClass
-        buttonset.append buttonElement
+        buttonset.append buttonElement.children()
 
       buttonize "Ordered", "OL" if @options.lists.ordered
       buttonize "Unordered", "UL" if @options.lists.unordered

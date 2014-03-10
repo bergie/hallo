@@ -20,7 +20,7 @@
           command: "justify#{alignment}"
           icon: "fa fa-align-#{alignment.toLowerCase()}"
           cssClass: @options.buttonCssClass
-        buttonset.append buttonElement
+        buttonset.append buttonElement.children()
       buttonize "Left"
       buttonize "Center"
       buttonize "Right"

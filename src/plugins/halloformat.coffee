@@ -15,7 +15,7 @@
 
     populateToolbar: (toolbar) ->
       widget = this
-      buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
+      buttonset = jQuery "<div class=\"#{widget.widgetName}\"></div>"
 
       buttonize = (format) =>
         buttonHolder = jQuery '<span></span>'
@@ -25,7 +25,7 @@
           command: format
           uuid: @options.uuid
           cssClass: @options.buttonCssClass
-        buttonset.append buttonHolder
+        buttonset.append buttonHolder.children()
 
       for format, enabled of @options.formattings
         continue unless enabled

@@ -32,13 +32,6 @@
       if @options.commandValue
         @button.data 'hallo-command-value', @options.commandValue
         
-      hoverclass = 'ui-state-hover'
-      @button.on 'mouseenter', (event) =>
-        if @isEnabled()
-          @button.addClass hoverclass
-      @button.on 'mouseleave', (event) =>
-        @button.removeClass hoverclass
-
     _init: ->
       @button = @_prepareButton() unless @button
       @element.append @button
@@ -89,9 +82,9 @@
 
     refresh: ->
       if @isChecked
-        @button.addClass 'ui-state-active'
+        @button.addClass 'btn-primary'
       else
-        @button.removeClass 'ui-state-active'
+        @button.removeClass 'btn-primary'
 
     checked: (checked) ->
       @isChecked = checked
@@ -99,37 +92,24 @@
 
     _createButton: (id, command, label, icon) ->
       classes = [
-        'ui-button'
-        'ui-widget'
-        'ui-state-default'
-        'ui-corner-all'
-        'ui-button-text-only'
+        "btn",
+        "btn-default",
         "#{command}_button"
       ]
       jQuery "<button id=\"#{id}\"
         class=\"#{classes.join(' ')}\" title=\"#{label}\">
-          <span class=\"ui-button-text\">
             <i class=\"#{icon}\"></i>
-          </span>
         </button>"
 
 
   jQuery.widget 'IKS.hallobuttonset',
     buttons: null
     _create: ->
-      @element.addClass 'ui-buttonset'
+      @element.addClass 'btn-group'
 
     _init: ->
       @refresh()
 
     refresh: ->
       rtl = @element.css('direction') == 'rtl'
-      @buttons = @element.find '.ui-button'
-      @buttons.removeClass 'ui-corner-all ui-corner-left ui-corner-right'
-      if rtl
-        @buttons.filter(':first').addClass 'ui-corner-right'
-        @buttons.filter(':last').addClass 'ui-corner-left'
-      else
-        @buttons.filter(':first').addClass 'ui-corner-left'
-        @buttons.filter(':last').addClass 'ui-corner-right'
 )(jQuery)
