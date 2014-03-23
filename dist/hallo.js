@@ -862,12 +862,12 @@
         lang: 'en',
         dialogOpts: {
           autoOpen: false,
-          width: 600,
+          width: 350,
           height: 'auto',
           modal: false,
           resizable: true,
           draggable: true,
-          dialogClass: 'htmledit-dialog'
+          dialogClass: 'panel panel-primary'
         },
         dialog: null,
         buttonCssClass: null
@@ -889,7 +889,7 @@
         this.texts = this.translations[this.options.lang];
         this.options.toolbar = $toolbar;
         selector = "" + this.options.uuid + "-htmledit-dialog";
-        this.options.dialog = jQuery("<div>").attr('id', selector);
+        this.options.dialog = jQuery("<div class='well well-sm' id=\"" + selector + "\" ></div>");
         $buttonset = jQuery("<span>").addClass(widget.widgetName);
         id = "" + this.options.uuid + "-htmledit";
         $buttonHolder = jQuery('<span>');
@@ -934,10 +934,10 @@
           _this.options.editable.element.focus();
           return _this.options.editable.keepActivated(false);
         });
-        this.options.dialog.html(jQuery("<textarea>").addClass('html_source'));
+        this.options.dialog.html(jQuery("<textarea cols='50' rows='8'>").addClass('html_source'));
         html = this.options.editable.element.html();
         this.options.dialog.children('.html_source').val(html);
-        this.options.dialog.prepend(jQuery("<button>" + this.texts.update + "</button>"));
+        this.options.dialog.append(jQuery("<button class='btn btn-primary'>" + this.texts.update + "</button>"));
         return this.options.dialog.on('click', 'button', function() {
           html = widget.options.dialog.children('.html_source').val();
           widget.options.editable.element.html(html);
@@ -2276,15 +2276,15 @@
         defaultUrl: 'http://',
         dialogOpts: {
           autoOpen: false,
-          width: 540,
-          height: 200,
+          width: 350,
+          height: 130,
           title: "Enter Link",
           buttonTitle: "Insert",
           buttonUpdateTitle: "Update",
           modal: true,
           resizable: false,
           draggable: false,
-          dialogClass: 'hallolink-dialog'
+          dialogClass: 'panel panel-primary'
         },
         buttonCssClass: null
       },
@@ -2295,7 +2295,7 @@
         dialogId = "" + this.options.uuid + "-dialog";
         butTitle = this.options.dialogOpts.buttonTitle;
         butUpdateTitle = this.options.dialogOpts.buttonUpdateTitle;
-        dialog = jQuery("<div id=\"" + dialogId + "\">        <form action=\"#\" method=\"post\" class=\"linkForm\">          <input class=\"url\" type=\"text\" name=\"url\"            value=\"" + this.options.defaultUrl + "\" />          <input type=\"submit\" id=\"addlinkButton\" value=\"" + butTitle + "\"/>        </form></div>");
+        dialog = jQuery("<div class='well well-sm' id=\"" + dialogId + "\">        <form action=\"#\" method=\"post\" class='navbar-form navbar-left'> <span class='input-group-btn'>         <input class='form-control' type=\"text\" name=\"url\"    size='30'        value=\"" + this.options.defaultUrl + "\" />          <input type=\"submit\" class='btn btn-primary' id=\"addlinkButton\" value=\"" + butTitle + "\"/> </span></form></div>");
         urlInput = jQuery('input[name=url]', dialog);
         isEmptyLink = function(link) {
           if ((new RegExp(/^\s*$/)).test(link)) {

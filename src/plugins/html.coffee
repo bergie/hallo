@@ -7,12 +7,12 @@
       lang: 'en'
       dialogOpts:
         autoOpen: false
-        width: 600
+        width: 350
         height: 'auto'
         modal: false
         resizable: true
         draggable: true
-        dialogClass: 'htmledit-dialog'
+        dialogClass: 'panel panel-primary'
       dialog: null
       buttonCssClass: null
 
@@ -34,7 +34,7 @@
 
       @options.toolbar = $toolbar
       selector = "#{@options.uuid}-htmledit-dialog"
-      @options.dialog = jQuery("<div>").attr 'id', selector
+      @options.dialog = jQuery("<div class='well well-sm' id=#{selector}></div>")
 
       $buttonset = jQuery("<span>").addClass widget.widgetName
 
@@ -84,13 +84,13 @@
         @options.editable.element.focus()
         @options.editable.keepActivated false
 
-      @options.dialog.html jQuery("<textarea>").addClass('html_source')
+      @options.dialog.html jQuery("<textarea cols='50' rows='8'>").addClass('html_source')
       html = @options.editable.element.html()
 
       #indented_html = @_indent_html html
 
       @options.dialog.children('.html_source').val html
-      @options.dialog.prepend jQuery("<button>#{@texts.update}</button>")
+      @options.dialog.append jQuery("<button class='btn btn-primary'>#{@texts.update}</button>")
 
       @options.dialog.on 'click', 'button', ->
         html = widget.options.dialog.children('.html_source').val()
