@@ -339,7 +339,10 @@ http://hallojs.org
 
     _checkModified: (event) ->
       widget = event.data
-      widget.setModified() if widget.isModified()
+      # Wait for the paste event to complete before trying to read the results
+      setTimeout ->
+        widget.setModified() if widget.isModified()
+      , 0
 
     _keys: (event) ->
       widget = event.data
