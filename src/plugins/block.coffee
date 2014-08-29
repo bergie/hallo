@@ -46,7 +46,8 @@
           tagName = element.toUpperCase()
           if el.hasClass 'disabled'
             return
-          if navigator.appName is 'Microsoft Internet Explorer'
+          trident = navigator.userAgent.indexOf('Trident') > -1
+          if navigator.appName is 'Microsoft Internet Explorer' or trident
             # In IE FormatBlock wants tags inside brackets
             @options.editable.execute 'FormatBlock', "<#{tagName}>"
             return

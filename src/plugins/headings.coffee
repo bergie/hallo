@@ -12,7 +12,8 @@
     populateToolbar: (toolbar) ->
       widget = this
       buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
-      ie = navigator.appName is 'Microsoft Internet Explorer'
+      trident = navigator.userAgent.indexOf('Trident') > -1
+      ie = navigator.appName is 'Microsoft Internet Explorer' or trident
       command = (if ie then "FormatBlock" else "formatBlock")
 
       buttonize = (format) =>
