@@ -636,12 +636,13 @@
             el.addClass('disabled');
           }
           el.on('click', function() {
-            var tagName;
+            var tagName, trident;
             tagName = element.toUpperCase();
             if (el.hasClass('disabled')) {
               return;
             }
-            if (navigator.appName === 'Microsoft Internet Explorer') {
+            trident = navigator.userAgent.indexOf('Trident') > -1;
+            if (navigator.appName === 'Microsoft Internet Explorer' || trident) {
               _this.options.editable.execute('FormatBlock', "<" + tagName + ">");
               return;
             }
@@ -796,11 +797,12 @@
         buttonCssClass: null
       },
       populateToolbar: function(toolbar) {
-        var buttonize, buttonset, command, format, ie, widget, _i, _len, _ref,
+        var buttonize, buttonset, command, format, ie, trident, widget, _i, _len, _ref,
           _this = this;
         widget = this;
         buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
-        ie = navigator.appName === 'Microsoft Internet Explorer';
+        trident = navigator.userAgent.indexOf('Trident') > -1;
+        ie = navigator.appName === 'Microsoft Internet Explorer' || trident;
         command = (ie ? "FormatBlock" : "formatBlock");
         buttonize = function(format) {
           var buttonHolder;
