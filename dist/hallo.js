@@ -2048,7 +2048,7 @@
           }) + this._property_cb_html('unfloat', this.$image.css('float') === 'none', {
             label: this.texts.float_none,
             row: false
-          }), this.texts[float]);
+          }), this.texts['float']);
           $img_properties.html(html);
           $img_properties.show();
         } else {
