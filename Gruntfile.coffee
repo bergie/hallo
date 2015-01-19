@@ -9,8 +9,12 @@ module.exports = ->
     pkg: @file.readJSON 'package.json'
 
     # Install dependencies
-    bower:
-      install: {}
+    'bower-install-simple':
+      deps:
+        options:
+          interactive: false
+          forceLatest: false
+          directory: 'bower_components'
 
     # CoffeeScript complication
     coffee:
@@ -96,8 +100,8 @@ module.exports = ->
               browserName: 'chrome'
             ,
               browserName: 'safari'
-              platform: 'OS X 10.8'
-              version: '6'
+              platform: 'OS X 10.9'
+              version: '7'
           ]
           build: process.env.TRAVIS_JOB_ID
           testname: 'hallo.js cross-browser tests'
@@ -106,7 +110,7 @@ module.exports = ->
           detailedError: true
 
   # Dependency installation
-  @loadNpmTasks 'grunt-bower-task'
+  @loadNpmTasks 'grunt-bower-install-simple'
 
   # Build dependencies
   @loadNpmTasks 'grunt-contrib-coffee'
@@ -124,6 +128,6 @@ module.exports = ->
   @loadNpmTasks 'grunt-saucelabs'
 
   # Local tasks
-  @registerTask 'build', ['coffee', 'concat', 'clean', 'uglify']
+  @registerTask 'build', ['bower-install-simple', 'coffee', 'concat', 'clean', 'uglify']
   @registerTask 'test', ['coffeelint', 'build', 'qunit']
   @registerTask 'crossbrowser', ['test', 'connect', 'saucelabs-qunit']

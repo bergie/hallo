@@ -14,9 +14,9 @@
     "grunt-coffeelint": "0.0.6",
     "grunt-contrib-clean": "~0.4.1",
     "grunt-contrib-jshint": "~0.5.4",
-    "grunt-bower-task": "~0.3.2",
     "grunt-contrib-connect": "~0.5.0",
-    "grunt-saucelabs": "~4.0.4"
+    "grunt-saucelabs": "^8.2.0",
+    "grunt-bower-install-simple": "^1.0.2"
   },
   "docco_husky": {
     "output_dir": "docs",
