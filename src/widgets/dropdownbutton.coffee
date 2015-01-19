@@ -67,7 +67,9 @@
       ]
       buttonEl = jQuery "<button id=\"#{id}\"
        class=\"#{classes.join(' ')}\" title=\"#{@options.label}\">
-       <span class=\"ui-button-text\"><i class=\"fa #{@options.icon}\"></i></span>
+         <span class=\"ui-button-text\">
+           <i class=\"fa #{@options.icon}\"></i>
+         </span>
        </button>"
       buttonEl.addClass @options.cssClass if @options.cssClass
       buttonEl
