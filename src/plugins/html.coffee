@@ -42,7 +42,7 @@
       $buttonHolder = jQuery '<span>'
       $buttonHolder.hallobutton
         label: @texts.title
-        icon: 'icon-list-alt'
+        icon: 'fa-list-alt'
         editable: @options.editable
         command: null
         queryState: false

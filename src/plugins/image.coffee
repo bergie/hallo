@@ -104,7 +104,7 @@
       buttonHolder = jQuery '<span></span>'
       buttonHolder.hallobutton
         label: 'Images'
-        icon: 'icon-picture'
+        icon: 'fa-picture-o'
         editable: @options.editable
         command: null
         queryState: false
