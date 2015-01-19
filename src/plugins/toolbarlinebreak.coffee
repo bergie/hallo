@@ -27,7 +27,7 @@
       breakAfter: []
 
     populateToolbar: (toolbar) ->
-      buttonsets = jQuery('.ui-buttonset', toolbar)
+      buttonsets = jQuery('.btn-group', toolbar)
       queuedButtonsets = jQuery()
       rowcounter = 0
 

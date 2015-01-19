@@ -18,9 +18,9 @@
           editable: @options.editable
           label: alignment
           command: "justify#{alignment}"
-          icon: "icon-align-#{alignment.toLowerCase()}"
+          icon: "fa fa-align-#{alignment.toLowerCase()}"
           cssClass: @options.buttonCssClass
-        buttonset.append buttonElement
+        buttonset.append buttonElement.children()
       buttonize "Left"
       buttonize "Center"
       buttonize "Right"

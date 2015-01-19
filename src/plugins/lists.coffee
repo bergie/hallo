@@ -21,9 +21,9 @@
           editable: @options.editable
           label: label
           command: "insert#{type}List"
-          icon: "icon-list-#{label.toLowerCase()}"
+          icon: "fa fa-list-#{label.toLowerCase()}"
           cssClass: @options.buttonCssClass
-        buttonset.append buttonElement
+        buttonset.append buttonElement.children()
 
       buttonize "Ordered", "OL" if @options.lists.ordered
       buttonize "Unordered", "UL" if @options.lists.unordered

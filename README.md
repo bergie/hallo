@@ -1,11 +1,11 @@
-Hallo - contentEditable for jQuery UI [![Build Status](https://secure.travis-ci.org/bergie/hallo.png)](http://travis-ci.org/bergie/hallo)
+Hallo - contentEditable for Bootstrap [![Build Status](https://secure.travis-ci.org/bergie/hallo.png)](http://travis-ci.org/bergie/hallo)
 =====================================
 
 ![Hallo Editor logo](https://raw.github.com/bergie/hallo/master/design/logo-200x59.png)
 
 [![Cross-browser testing status](https://saucelabs.com/browser-matrix/hallo-js.svg)](https://saucelabs.com/u/hallo-js)
 
-Hallo is a very simple in-place rich text editor for web pages. It uses jQuery UI and the [HTML5 contentEditable functionality](https://developer.mozilla.org/en/rich-text_editing_in_mozilla) to edit web content.
+Hallo is a very simple in-place rich text editor for web pages. It uses jQuery UI, Bootstrap and the [HTML5 contentEditable functionality](https://developer.mozilla.org/en/rich-text_editing_in_mozilla) to edit web content.
 
 The widget has been written as a simple and liberally licensed editor. It doesn't aim to replace popular editors like [Aloha](http://aloha-editor.org), but instead to provide a simpler and more reusable option.
 
@@ -21,11 +21,10 @@ You need jQuery, jQuery UI (1.10+), and [Rangy](https://code.google.com/p/rangy/
 <script src="http://rangy.googlecode.com/svn/trunk/currentrelease/rangy-core.js"></script>
 ```
 
-The editor toolbar is using jQuery UI theming, so you'll probably also want to [grab a theme](http://jqueryui.com/themeroller/) that fits your needs. Toolbar pluggins use icons from [Font Awesome](http://fortawesome.github.com/Font-Awesome/). Check these [integration instructions](http://fortawesome.github.com/Font-Awesome/#integration) for the right way to include Font Awesome depending on if/how you use Twitter Bootstrap. To style the toolbar as it appears in the demo, you'll also want to add some CSS (like background and border) to the class `hallotoolbar`.
+Toolbar pluggins use icons from [Font Awesome](http://fortawesome.github.com/Font-Awesome/). Check these [integration instructions](http://fortawesome.github.com/Font-Awesome/#integration) for the right way to include Font Awesome depending on if/how you use Twitter Bootstrap. To style the toolbar as it appears in the demo, you'll also want to add some CSS (like background and border) to the class `hallotoolbar`.
 
 ```html
-<link rel="stylesheet" href="/path/to/your/jquery-ui.css">
-<link rel="stylesheet" href="/path/to/your/font-awesome.css">
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css" rel="stylesheet"/>
 ```
 
 Then include Hallo itself:

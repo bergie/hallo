@@ -14,7 +14,7 @@
       cssClass: null
 
     _create: ->
-      @options.icon ?= "icon-#{@options.label.toLowerCase()}"
+      @options.icon ?= "fa fa-#{@options.label.toLowerCase()}"
 
     _init: ->
       target = jQuery @options.target

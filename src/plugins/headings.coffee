@@ -39,8 +39,8 @@
               buttonHolder.hallobutton('checked', result)
             catch e
               return
-        buttonHolder.find('button .ui-button-text').text(format.toUpperCase())
-        buttonset.append buttonHolder
+        buttonHolder.find('button.btn').text(format.toUpperCase())
+        buttonset.append buttonHolder.children()
 
       for format in @options.formatBlocks
         buttonize format
