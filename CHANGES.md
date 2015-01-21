@@ -1,6 +1,10 @@
 Hallo Editor ChangeLog
 ======================
 
+## 1.1.1 (January 21st 2015)
+
+* Switch everything to use dependencies installed via Bower instead of in-repository
+
 ## 1.1.0 (January 21st 2015)
 
 * Compatibility with Font Awesome 4.x

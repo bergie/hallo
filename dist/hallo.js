@@ -1,4 +1,4 @@
-/* Hallo 1.0.4 - rich text editor for jQuery UI
+/* Hallo 1.1.1 - rich text editor for jQuery UI
 * by Henri Bergius and contributors. Available under the MIT license.
 * See http://hallojs.org for more information
 */(function() {
