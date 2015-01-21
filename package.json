@@ -3,7 +3,7 @@
   "description": "Simple rich text editor",
   "author": "Henri Bergius <henri.bergius@iki.fi>",
   "homepage": "http://hallojs.org",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "dependencies": {},
   "devDependencies": {
     "grunt": "~0.4.1",
