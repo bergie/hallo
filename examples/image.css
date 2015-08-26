@@ -74,7 +74,7 @@
     margin-left: 50px;
     width: 18px;
     height: 8px;
-    display: relative;
+    position: relative;
     background: url('images/arrow.png');
 }
 
