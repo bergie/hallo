@@ -80,6 +80,9 @@ module.exports = ->
         'src/*.coffee'
         'src/**/*.coffee'
       ]
+      options:
+        'max_line_length':
+          'level': 'ignore'
 
     # Unit tests
     qunit:

@@ -104,8 +104,7 @@
       # Prevent contextual toolbar from showing when image is clicked.
       @options.editable.element.on 'halloselected', (event, data) ->
         toolbar_option = widget.options.editable.options.toolbar
-        if toolbar_option == "halloToolbarContextual" and
-         jQuery(data.originalEvent.target).is('img')
+        if toolbar_option == "halloToolbarContextual" and jQuery(data.originalEvent.target).is('img')
           $toolbar.hide()
           false
 
@@ -161,8 +160,7 @@
         jQuery(document).scrollTop(scrollbar_pos)  # restore scrollbar pos
         @options.editable.keepActivated false
 
-      if @options.insert_file_dialog_ui_url and not
-       @dialog_image_selection_ui_loaded
+      if @options.insert_file_dialog_ui_url and not @dialog_image_selection_ui_loaded
 
         @options.dialog.on 'click', ".reload_link", ->
           widget._load_dialog_image_selection_ui()
