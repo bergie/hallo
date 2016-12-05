@@ -3,6 +3,11 @@
   "description": "Simple rich text editor",
   "author": "Henri Bergius <henri.bergius@iki.fi>",
   "homepage": "http://hallojs.org",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/bergie/hallo.git"
+  },
   "version": "1.1.1",
   "dependencies": {},
   "devDependencies": {
