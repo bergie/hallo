@@ -5,9 +5,6 @@ before_script:
 - npm install -g grunt-cli
 script:
 - grunt crossbrowser
-notifications:
-  irc:
-  - irc.freenode.org#iks
 env:
   global:
   - secure: a7gNmuvehYer8OKmSYxF93A0kNqsgE7YWh4ml0Kme/ywZqal6LnkM8hX6ldmO3Wbzh703IiS1imY8MbQRsrA5xSl/HwaXiYOzan7RVHbSujcc4TxgYE4tKgdhM9ozWtX4XomJJ2E9kRTIShwEJkmC8sOh1uQ2IxxP3/MhxRtDNk=
