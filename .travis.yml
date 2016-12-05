@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-- "4.6"
+- '4.6'
 before_script:
 - npm install -g grunt-cli
 script:
@@ -9,3 +9,11 @@ env:
   global:
   - secure: a7gNmuvehYer8OKmSYxF93A0kNqsgE7YWh4ml0Kme/ywZqal6LnkM8hX6ldmO3Wbzh703IiS1imY8MbQRsrA5xSl/HwaXiYOzan7RVHbSujcc4TxgYE4tKgdhM9ozWtX4XomJJ2E9kRTIShwEJkmC8sOh1uQ2IxxP3/MhxRtDNk=
   - secure: Xqhsriuk54lMsiWiN8Axz3z0fVNv6pyK2LhNptDbzDXkgpdp1O8Sqk4LaqSLpOwO3gM0X6PUnqF9hDbIbp7t4JB636NYPigMCJAPt46CBw4N3B3Apysn35ENI7/sdVK8iKuqYRexUpRIP2Ylok2DmFdnXVywEfS01fXqhv+CRcI=
+deploy:
+  provider: npm
+  email: henri.bergius@iki.fi
+  api_key:
+    secure: h4RC9wynsPCjDEP5aBV2A8OSbf191U+tFlzSO/S6w3zJul04874LcITp5iJBq4PZaCBgMhbFht/ZcyHTTtYgXTb2U1OHUYQFQTmt72Lko2OWMRE/35Kl5Xr7kZK+OqEdmbGRRguc3mU7fkIOMc5n2CAUWdgf8GvyUGHJ57l3BWE=
+  on:
+    tags: true
+    repo: bergie/hallo
