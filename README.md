@@ -1,6 +1,8 @@
 Hallo - contentEditable for jQuery UI [![Build Status](https://secure.travis-ci.org/bergie/hallo.png)](http://travis-ci.org/bergie/hallo)
 =====================================
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/bergie/hallo.svg)](https://greenkeeper.io/)
+
 ![Hallo Editor logo](https://raw.github.com/bergie/hallo/master/design/logo-200x59.png)
 
 [![Cross-browser testing status](https://saucelabs.com/browser-matrix/hallo-js.svg)](https://saucelabs.com/u/hallo-js)
