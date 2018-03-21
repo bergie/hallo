@@ -28,18 +28,6 @@
       jQuery(window).scroll (event) =>
         @setPosition()
 
-      # Make sure the toolbar has not got the full width of the editable
-      # element when floating is set to true
-      if @options.parentElement is 'body'
-        el = jQuery(@element)
-        widthToAdd = parseFloat el.css('padding-left')
-        widthToAdd += parseFloat el.css('padding-right')
-        widthToAdd += parseFloat el.css('border-left-width')
-        widthToAdd += parseFloat el.css('border-right-width')
-        widthToAdd += (parseFloat el.css('outline-width')) * 2
-        widthToAdd += (parseFloat el.css('outline-offset')) * 2
-        jQuery(@toolbar).css "width", el.width() + widthToAdd
-
     _getPosition: (event, selection) ->
       return unless event
       width = parseFloat @element.css 'outline-width'
