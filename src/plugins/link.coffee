@@ -12,7 +12,7 @@
       dialogOpts:
         autoOpen: false
         width: 540
-        height: 200
+        height: 300
         title: "Enter Link"
         buttonTitle: "Insert"
         buttonUpdateTitle: "Update"
@@ -100,6 +100,7 @@
 
           widget.options.editable.keepActivated true
           dialog.dialog('open')
+          toolbar.hide()
 
           dialog.on 'dialogclose', ->
             widget.options.editable.restoreSelection widget.lastSelection
