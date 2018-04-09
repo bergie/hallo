@@ -32,6 +32,10 @@
         <form action=\"#\" method=\"post\" class=\"linkForm\">
           <input class=\"url\" type=\"text\" name=\"url\"
             value=\"#{@options.defaultUrl}\" />
+          <select name=\"linktarget\">
+            <option value=\"_self\">open in this tab</option>
+            <option value=\"_blank\">open in a new tab</option>
+          </select>
           <input type=\"submit\" id=\"addlinkButton\" value=\"#{butTitle}\"/>
         </form></div>"
       urlInput = jQuery('input[name=url]', dialog)
@@ -42,9 +46,12 @@
         false
 
       dialogSubmitCb = (event) ->
+        
+        urlTarget = jQuery('select[name=linktarget] option:selected', dialog)
         event.preventDefault()
 
         link = urlInput.val()
+        target = urlTarget.val()
         dialog.dialog('close')
 
         widget.options.editable.restoreSelection(widget.lastSelection)
@@ -60,10 +67,11 @@
             # following check will work around ie and ff bugs when using
             # "createLink" on an empty selection
             if widget.lastSelection.collapsed
-              linkNode = jQuery("<a href='#{link}'>#{link}</a>")[0]
+              linkNode = jQuery("<a href='#{link}' target='#{target}'>#{link}</a>")[0]
               widget.lastSelection.insertNode linkNode
             else
               document.execCommand "createLink", null, link
+              widget.lastSelection.startContainer.parentNode.target = target
           else
             widget.lastSelection.startContainer.parentNode.href = link
         widget.options.editable.element.trigger('change')
