@@ -12,7 +12,7 @@
   "dependencies": {},
   "devDependencies": {
     "grunt": "~1.0.1",
-    "grunt-contrib-uglify": "~3.1.0",
+    "grunt-contrib-uglify": "~4.0.0",
     "grunt-contrib-concat": "~1.0.1",
     "grunt-contrib-qunit": "~2.0.0",
     "grunt-contrib-coffee": "~1.0.0",
