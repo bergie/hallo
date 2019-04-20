@@ -20,7 +20,7 @@
     "grunt-contrib-clean": "~1.1.0",
     "grunt-contrib-jshint": "~1.1.0",
     "grunt-contrib-connect": "~1.0.2",
-    "grunt-saucelabs": "^9.0.0",
+    "grunt-saucelabs": "9.0.0",
     "grunt-bower-install-simple": "^1.0.2"
   },
   "docco_husky": {
