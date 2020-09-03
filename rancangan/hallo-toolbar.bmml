@@ -5,6 +5,10 @@
         <text>A%20Web%20Page%0Ahttp%3A//</text>
       </controlProperties>
     </control>
+<script>
+<head>
+<b/>
+<tytle>
     <control controlID="1" controlTypeID="com.balsamiq.mockups::Paragraph" x="605" y="548" w="200" h="170" measuredW="200" measuredH="140" zOrder="1" locked="false" isInGroup="-1">
       <controlProperties>
         <text>A%20paragraph%20of%20text.%0AA%20_second_%20%5Brow%5D%20of%20*text*.</text>
@@ -139,3 +143,5 @@
     </control>
   </controls>
 </mockup>
+<script>
+<head>
